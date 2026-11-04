@@ -101,7 +101,7 @@ export const voices = [
     id: 'marsalet',
     name: 'Stéphanie Marsalet',
     role: 'Architecte Data SI',
-    org: 'GIFI',
+    org: 'GIFI', logo: 'gifi',
     quote:
       'Avec myCarto, toutes les cartes sont générées automatiquement, contrairement aux solutions précédentes où chaque schéma devait être construit manuellement. C’est un véritable changement de paradigme.',
   },
@@ -109,7 +109,7 @@ export const voices = [
     id: 'delaux',
     name: 'Thomas Delaux',
     role: 'Architecte d’Entreprise',
-    org: 'Actia',
+    org: 'Actia', logo: 'actia',
     quote:
       'A la différence de la vision statique de notre CMDB, avec myCarto nous avons une vision dynamique des liens entre les couches du SI.',
   },
@@ -117,7 +117,7 @@ export const voices = [
     id: 'verschelde',
     name: 'Magali Verschelde-Delettrez',
     role: 'Urbaniste SI',
-    org: 'CHU de Lille',
+    org: 'CHU de Lille', logo: 'chu-lille',
     quote:
       'Le support est hyper réactif et répond précisément à la question. Ils cherchent à comprendre comment on fonctionne, pas à nous imposer quelque chose de préformaté.',
   },
@@ -125,21 +125,21 @@ export const voices = [
     id: 'lorho',
     name: 'Guillaume Lorho',
     role: 'Directeur adjoint',
-    org: 'Ville de Lorient',
+    org: 'Ville de Lorient', logo: 'lorient',
     quote: 'La DSI a souhaité dès le départ en faire un des outils de pilotage de la politique de sécurité du SI.',
   },
   {
     id: 'mercier',
     name: 'Valérie Mercier',
     role: 'Architecte fonctionnelle',
-    org: 'Bouygues Construction',
+    org: 'Bouygues Construction', logo: 'bouygues',
     quote: 'myCarto est une porte d’entrée du patrimoine de l’entreprise avec une vision graphique et intuitive.',
   },
   {
     id: 'delysse',
     name: 'Stéphane Delysse Hofman',
     role: 'DSI',
-    org: 'Andra',
+    org: 'Andra', logo: 'andra',
     quote: 'L’arrivée de myCarto marque un gap technologique qui est vraiment notable.',
   },
 ]

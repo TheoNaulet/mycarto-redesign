@@ -8,9 +8,7 @@ const current = computed(() => voices[active.value])
 
 async function onKey(e: KeyboardEvent, i: number) {
   const keys: Record<string, number> = {
-    ArrowDown: i + 1,
     ArrowRight: i + 1,
-    ArrowUp: i - 1,
     ArrowLeft: i - 1,
     Home: 0,
     End: voices.length - 1,
@@ -25,29 +23,8 @@ async function onKey(e: KeyboardEvent, i: number) {
 
 <template>
   <section id="temoignages" class="voices on-navy" aria-labelledby="voices-title">
-    <div class="wrap voices__grid">
-      <div class="voices__side">
-        <h2 id="voices-title">Ce qu’ils en disent</h2>
-        <div class="voices__tabs" role="tablist" aria-label="Témoignages clients" aria-orientation="vertical">
-          <button
-            v-for="(v, i) in voices"
-            :key="v.id"
-            ref="tabs"
-            type="button"
-            role="tab"
-            class="voice-tab"
-            :id="`tab-${v.id}`"
-            :aria-selected="i === active"
-            :aria-controls="`panel-voices`"
-            :tabindex="i === active ? 0 : -1"
-            @click="active = i"
-            @keydown="onKey($event, i)"
-          >
-            <span class="voice-tab__name">{{ v.name }}</span>
-            <span class="voice-tab__org">{{ v.org }}</span>
-          </button>
-        </div>
-      </div>
+    <div class="wrap voices__inner">
+      <h2 id="voices-title">Ce qu’ils en disent</h2>
 
       <div id="panel-voices" class="voices__stage" role="tabpanel" :aria-labelledby="`tab-${current.id}`">
         <Transition name="quote" mode="out-in">
@@ -62,6 +39,25 @@ async function onKey(e: KeyboardEvent, i: number) {
           </figure>
         </Transition>
       </div>
+
+      <div class="voices__tabs" role="tablist" aria-label="Choisir un témoignage">
+        <button
+          v-for="(v, i) in voices"
+          :id="`tab-${v.id}`"
+          :key="v.id"
+          ref="tabs"
+          type="button"
+          role="tab"
+          class="voice-tab"
+          :aria-selected="i === active"
+          aria-controls="panel-voices"
+          :tabindex="i === active ? 0 : -1"
+          @click="active = i"
+          @keydown="onKey($event, i)"
+        >
+          <img :src="`/brand/testimonials/${v.logo}.png`" :alt="v.org" />
+        </button>
+      </div>
     </div>
   </section>
 </template>
@@ -72,111 +68,105 @@ async function onKey(e: KeyboardEvent, i: number) {
   padding-block: var(--space-9);
 }
 
-.voices__grid {
+.voices__inner {
   display: grid;
-  grid-template-columns: minmax(16rem, 22rem) minmax(0, 1fr);
-  gap: var(--space-8);
-  align-items: start;
+  justify-items: center;
+  text-align: center;
 }
 
-.voices__side {
-  min-width: 0;
-}
-
-.voices__side h2 {
+.voices h2 {
   font-size: var(--fs-2xl);
-  margin-bottom: var(--space-6);
-}
-
-.voices__tabs {
-  display: grid;
-  border-top: 1px solid var(--on-navy-line);
-}
-
-.voice-tab {
-  display: grid;
-  gap: 0.1rem;
-  padding: 0.85rem 0.75rem 0.8rem 2.1rem;
-  border: 0;
-  border-bottom: 1px solid var(--on-navy-line);
-  background: transparent;
-  text-align: left;
-  position: relative;
-  transition: background-color 0.2s var(--ease-out);
-}
-
-.voice-tab::before {
-  content: '';
-  position: absolute;
-  left: 0.6rem;
-  top: 1.15rem;
-  width: 0.75rem;
-  height: 0.75rem;
-  border-radius: 50%;
-  border: 2px solid var(--on-navy-line);
-  transition:
-    background-color 0.2s var(--ease-out),
-    border-color 0.2s var(--ease-out);
-}
-
-.voice-tab:hover {
-  background: rgb(255 255 255 / 0.05);
-}
-
-.voice-tab[aria-selected='true']::before {
-  background: var(--yellow);
-  border-color: var(--yellow);
-}
-
-.voice-tab__name {
-  font-weight: 600;
-  font-size: var(--fs-s);
-}
-
-.voice-tab__org {
-  font-size: var(--fs-xs);
-  color: var(--on-navy-soft);
-}
-
-.voice-tab[aria-selected='true'] {
-  background: rgb(255 255 255 / 0.06);
 }
 
 .voices__stage {
-  min-height: 22rem;
-  display: flex;
-  align-items: center;
-  border-radius: 4px;
+  display: grid;
+  place-items: center;
+  min-height: 21rem;
+  margin-block: var(--space-6);
+}
+
+.quote blockquote {
+  position: relative;
+  padding-top: 4.5rem;
+}
+
+/* One oversized yellow guillemet opens the quote. */
+.quote blockquote::before {
+  content: '«';
+  position: absolute;
+  top: -1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 7rem;
+  line-height: 1;
+  color: var(--yellow);
 }
 
 .quote blockquote p {
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: clamp(1.6rem, 1.1rem + 1.6vw, 2.6rem);
-  line-height: 1.22;
+  font-size: clamp(1.5rem, 1.1rem + 1.4vw, 2.4rem);
+  line-height: 1.25;
   letter-spacing: -0.01em;
-  max-width: 28ch;
+  max-width: 34ch;
+  margin-inline: auto;
   text-wrap: balance;
-}
-
-.quote blockquote p::before {
-  content: '« ';
-  color: var(--yellow);
-}
-
-.quote blockquote p::after {
-  content: ' »';
-  color: var(--yellow);
 }
 
 .quote figcaption {
   display: grid;
+  gap: 0.15rem;
   margin-top: var(--space-6);
   font-size: var(--fs-s);
 }
 
+.quote figcaption strong {
+  font-family: var(--font-display);
+  font-size: var(--fs-l);
+}
+
 .quote figcaption span {
   color: var(--on-navy-soft);
+}
+
+.voices__tabs {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 9.5rem));
+  gap: var(--space-4);
+}
+
+.voice-tab {
+  display: grid;
+  place-items: center;
+  height: 6rem;
+  padding: var(--space-2) var(--space-3);
+  border: 3px solid transparent;
+  border-radius: var(--radius-plate);
+  background: var(--paper);
+  opacity: 0.55;
+  transition:
+    opacity 0.25s var(--ease-out),
+    transform 0.25s var(--ease-out),
+    border-color 0.25s var(--ease-out);
+}
+
+.voice-tab img {
+  max-width: 100%;
+  max-height: 4.25rem;
+  width: auto;
+  object-fit: contain;
+}
+
+.voice-tab:hover {
+  opacity: 0.85;
+}
+
+.voice-tab[aria-selected='true'] {
+  opacity: 1;
+  border-color: var(--yellow);
+  transform: translateY(-4px);
 }
 
 .quote-enter-active,
@@ -195,37 +185,30 @@ async function onKey(e: KeyboardEvent, i: number) {
   opacity: 0;
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 900px) {
   .voices {
     padding-block: var(--space-8);
   }
 
-  .voices__grid {
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-6);
-  }
-
-  .voices__side h2 {
-    margin-bottom: var(--space-5);
-  }
-
   .voices__tabs {
-    grid-auto-flow: column;
-    grid-auto-columns: max-content;
-    overflow-x: auto;
-    border-top: 0;
-    gap: var(--space-2);
-    scrollbar-width: none;
-  }
-
-  .voice-tab {
-    border: 2px solid var(--on-navy-line);
-    border-radius: var(--radius-plate);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: 100%;
+    gap: var(--space-3);
   }
 
   .voices__stage {
-    min-height: 0;
-    display: block;
+    min-height: 26rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .voice-tab {
+    height: 4.25rem;
+    padding: var(--space-2);
+  }
+
+  .voices__stage {
+    min-height: 30rem;
   }
 }
 </style>
