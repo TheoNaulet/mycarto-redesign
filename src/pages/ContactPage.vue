@@ -67,7 +67,7 @@ const textFields: { id: Exclude<Field, 'message' | 'consent'>; label: string; ty
 
 <template>
   <div class="contact">
-    <header class="wrap page-head">
+    <header class="wrap page-head contact__head">
       <h1>Parlons de votre SI</h1>
       <p>Une question, un besoin précis ? L’équipe commerciale vous répond rapidement.</p>
     </header>
@@ -83,7 +83,7 @@ const textFields: { id: Exclude<Field, 'message' | 'consent'>; label: string; ty
         </div>
 
         <form v-else ref="formEl" novalidate @submit.prevent="submit">
-          <div class="fields">
+          <div class="fields fields--3">
             <div v-for="f in textFields" :key="f.id" class="field">
               <label :for="`c-${f.id}`">
                 {{ f.label }} <span v-if="f.optional" class="optional">facultatif</span>
@@ -107,7 +107,7 @@ const textFields: { id: Exclude<Field, 'message' | 'consent'>; label: string; ty
                 id="c-message"
                 v-model="form.message"
                 name="message"
-                rows="5"
+                rows="3"
                 placeholder="Votre contexte, vos questions sur l’offre, le SaaS ou l’On Premise…"
                 :aria-invalid="!!errors.message"
                 aria-describedby="ce-message"
@@ -181,10 +181,18 @@ const textFields: { id: Exclude<Field, 'message' | 'consent'>; label: string; ty
   align-items: start;
 }
 
+.contact__head {
+  padding-block: var(--space-7) var(--space-6);
+}
+
 .contact__panel {
   border: var(--frame) solid var(--navy);
   border-radius: var(--radius-panel);
-  padding: var(--space-6);
+  padding: var(--space-5) var(--space-6);
+}
+
+.contact__panel .submit {
+  margin-top: var(--space-2);
 }
 
 .ways {
