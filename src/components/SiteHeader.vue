@@ -269,7 +269,7 @@ onBeforeUnmount(() => {
 
 .menu__item {
   display: grid;
-  grid-template-columns: 2.75rem minmax(0, 1fr);
+  grid-template-columns: 2rem minmax(0, 1fr);
   grid-template-areas:
     'icon name'
     'icon line';
@@ -282,8 +282,8 @@ onBeforeUnmount(() => {
 
 .menu__item img {
   grid-area: icon;
-  width: 2.75rem;
-  height: 2.75rem;
+  width: 2rem;
+  height: 2rem;
   object-fit: contain;
 }
 
