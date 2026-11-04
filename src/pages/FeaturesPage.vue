@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { featureDetails } from '../data/pages'
+import MapIllustration from '../components/MapIllustration.vue'
 
 const f = Object.fromEntries(featureDetails.map((d) => [d.id, d])) as Record<string, (typeof featureDetails)[number]>
 const meta = f['meta-modele']
@@ -76,7 +77,7 @@ const dashIcons = [
     <section :id="cartes.id" class="feat" aria-labelledby="t-cartes">
       <div class="wrap cartes">
         <figure class="cartes__visual">
-          <img src="/brand/articles/pos.webp" alt="Plan d’urbanisme aux bâtiments surlignés en jaune" width="1200" height="688" />
+          <MapIllustration />
         </figure>
         <div>
           <span class="feat__icon"><img :src="`/brand/features/${cartes.icon}.svg`" alt="" /></span>
@@ -484,16 +485,10 @@ const dashIcons = [
 }
 
 .cartes__visual {
-  border: var(--frame) solid var(--navy);
+  margin: 0;
+  padding: var(--space-7);
   border-radius: var(--radius-panel);
-  overflow: hidden;
-}
-
-.cartes__visual img {
-  width: 100%;
-  height: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
+  background: var(--yellow);
 }
 
 /* 3. Tableaux de bord */
