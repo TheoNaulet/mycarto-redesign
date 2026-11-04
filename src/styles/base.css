@@ -65,6 +65,10 @@
   --max: 1400px;
 
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  /* Motion: lines trace like a pen (slow in, slow out), stops land with the out curve. */
+  --ease-draw: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-draw: 1.1s;
+  --stagger: 90ms;
   --focus: var(--navy);
 
   color-scheme: light;
@@ -334,4 +338,16 @@ button {
 
 .ground-cool {
   background: var(--paper-cool);
+}
+
+/* Route change: the new page settles in; the old one leaves at once, so the scroll reset is never seen. */
+.page-enter-active {
+  transition:
+    opacity 0.32s var(--ease-out),
+    transform 0.32s var(--ease-out);
+}
+
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
 }

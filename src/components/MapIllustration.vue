@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { vDraw } from '../motion/draw'
+
 // A flat illustration of a generated map (a POS of a fictional SI), drawn in the brand's flat style.
 const zones = [
   { name: 'Pilotage', x: 24, y: 84, w: 552, h: 82, fill: '#fbf1c6', blocks: [[44, 116], [164, 116], [284, 116], [404, 116]] },
@@ -8,7 +10,7 @@ const zones = [
 </script>
 
 <template>
-  <svg class="map-illu" viewBox="0 0 600 440" role="img" aria-label="Illustration : une carte du SI générée par myCarto, rangée par zones">
+  <svg v-draw class="map-illu" viewBox="0 0 600 440" role="img" aria-label="Illustration : une carte du SI générée par myCarto, rangée par zones">
     <!-- window -->
     <rect x="1.5" y="1.5" width="597" height="437" rx="18" fill="#fff" stroke="#262e6f" stroke-width="3" />
     <path d="M1.5 54V20A18.5 18.5 0 0 1 20 1.5h560A18.5 18.5 0 0 1 598.5 20v34z" fill="#262e6f" />
@@ -44,21 +46,24 @@ const zones = [
     <rect v-for="x in [40, 172, 304, 436]" :key="x" :x="x" y="376" width="120" height="28" rx="7" fill="#fff" opacity="0.92" />
 
     <!-- flux -->
-    <g fill="none" stroke="#398acb" stroke-width="3" stroke-linecap="round">
-      <path d="M96 252v18" />
-      <path d="M216 252v18" />
-      <path d="M388 232h26" />
-      <path d="M336 156v56" />
-      <path d="M466 310v66" />
-      <path d="M96 310v66" />
+    <g class="flux" fill="none" stroke="#398acb" stroke-width="3" stroke-linecap="round">
+      <path
+        v-for="(d, i) in ['M96 252v18', 'M216 252v18', 'M388 232h26', 'M336 156v56', 'M466 310v66', 'M96 310v66']"
+        :key="d"
+        :d="d"
+        pathLength="1"
+        :style="{ '--i': i }"
+      />
     </g>
 
     <!-- the obsolete application, highlighted -->
     <rect x="284" y="212" width="104" height="40" rx="8" fill="#fac130" stroke="#262e6f" stroke-width="2.5" />
     <g transform="translate(372 196)">
-      <circle r="13" fill="#262e6f" />
-      <path d="M0-6v7" stroke="#fff" stroke-width="2.6" stroke-linecap="round" />
-      <circle cy="6" r="1.6" fill="#fff" />
+      <g class="badge">
+        <circle r="13" fill="#262e6f" />
+        <path d="M0-6v7" stroke="#fff" stroke-width="2.6" stroke-linecap="round" />
+        <circle cy="6" r="1.6" fill="#fff" />
+      </g>
     </g>
   </svg>
 </template>
@@ -87,5 +92,29 @@ const zones = [
   fill: #262e6f;
   font-weight: 700;
   font-size: 14px;
+}
+
+/* Once in view, the flows trace themselves, then the obsolete application gets flagged. */
+.flux path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.5s var(--ease-draw) calc(0.2s + var(--i) * 110ms);
+}
+
+.badge {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    scale 0.45s var(--ease-out) 1.05s,
+    opacity 0.2s linear 1.05s;
+}
+
+.map-illu[data-draw]:not(.is-drawn) .flux path {
+  stroke-dashoffset: 1;
+}
+
+.map-illu[data-draw]:not(.is-drawn) .badge {
+  opacity: 0;
+  scale: 0.2;
 }
 </style>

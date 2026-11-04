@@ -9,11 +9,13 @@ import ClubSection from '../components/ClubSection.vue'
 </script>
 
 <template>
-  <HeroSection />
-  <ClientsStrip />
-  <UseCases />
-  <FeatureLegend />
-  <VoicesBoard />
-  <RouteSection />
-  <ClubSection />
+  <div>
+    <HeroSection />
+    <ClientsStrip />
+    <UseCases />
+    <FeatureLegend />
+    <VoicesBoard />
+    <RouteSection />
+    <ClubSection />
+  </div>
 </template>

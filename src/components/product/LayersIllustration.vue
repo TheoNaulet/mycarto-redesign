@@ -4,6 +4,7 @@
  * A dotted chain runs from a strategic objective down to a server: one referential, every layer linked.
  */
 import { layers } from '../../data/product'
+import { vDraw } from '../../motion/draw'
 
 type Pt = [number, number]
 
@@ -96,13 +97,13 @@ const order = [...plates].reverse()
 </script>
 
 <template>
-  <svg class="layers" viewBox="0 0 560 520" role="img" aria-labelledby="layers-desc">
+  <svg v-draw class="layers" viewBox="0 0 560 520" role="img" aria-labelledby="layers-desc">
     <desc id="layers-desc">
       Le système d’information en cinq couches empilées : stratégie, métier, fonctionnel, applicatif et
       infrastructure. Un lien en pointillés relie un objectif stratégique à un processus, une fonction, une
       application puis un serveur.
     </desc>
-    <g v-for="p in order" :key="p.name" :class="`plate plate--${p.tone}`">
+    <g v-for="(p, k) in order" :key="p.name" :class="`plate plate--${p.tone}`" :style="{ '--i': k }">
       <polygon class="plate__side" :points="p.shape.left" />
       <polygon class="plate__side" :points="p.shape.right" />
       <polygon class="plate__top" :points="p.shape.top" />
@@ -114,9 +115,9 @@ const order = [...plates].reverse()
     </g>
 
     <polyline class="chain" :points="pts(chain)" />
-    <circle v-for="(c, k) in chain" :key="k" class="chain__dot" :cx="c[0]" :cy="c[1]" r="5" />
+    <circle v-for="(c, k) in chain" :key="k" class="chain__dot" :cx="c[0]" :cy="c[1]" r="5" :style="{ '--i': k }" />
 
-    <g v-for="p in plates" :key="`l-${p.name}`" class="label">
+    <g v-for="p in plates" :key="`l-${p.name}`" class="label" :style="{ '--i': 4 - p.i }">
       <line :x1="CX + W / 2 + 6" :y1="p.y" :x2="CX + W / 2 + 26" :y2="p.y" />
       <text :x="CX + W / 2 + 34" :y="p.y + 6">{{ p.name }}</text>
     </g>
@@ -216,6 +217,41 @@ const order = [...plates].reverse()
   fill: var(--paper);
   stroke: var(--navy);
   stroke-width: 3;
+}
+
+/* The stack builds from the infrastructure up, then the chain is pinned from the objective down. */
+.plate,
+.label {
+  transition:
+    transform 0.6s var(--ease-out) calc(0.1s + var(--i) * 110ms),
+    opacity 0.35s linear calc(0.1s + var(--i) * 110ms);
+}
+
+.chain {
+  transition: opacity 0.4s linear 0.85s;
+}
+
+.chain__dot {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    scale 0.4s var(--ease-out) calc(0.9s + var(--i) * 100ms),
+    opacity 0.2s linear calc(0.9s + var(--i) * 100ms);
+}
+
+.layers[data-draw]:not(.is-drawn) .plate,
+.layers[data-draw]:not(.is-drawn) .label {
+  opacity: 0;
+  transform: translateY(-28px);
+}
+
+.layers[data-draw]:not(.is-drawn) .chain {
+  opacity: 0;
+}
+
+.layers[data-draw]:not(.is-drawn) .chain__dot {
+  opacity: 0;
+  scale: 0;
 }
 
 .label line {

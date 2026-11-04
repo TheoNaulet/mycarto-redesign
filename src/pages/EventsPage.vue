@@ -23,7 +23,7 @@ const firstYear = new Date(past[past.length - 1]?.start ?? Date.now()).getFullYe
       </template>
       <template #aside>
         <article v-if="featured" class="next" aria-labelledby="t-featured">
-          <img :src="featured.image" alt="" width="1100" height="620" fetchpriority="high" />
+          <img :src="featured.image" alt="" width="1084" height="559" fetchpriority="high" />
           <div class="next__body">
             <p class="next__when">
               <time :datetime="featured.start">{{ eventDay(featured.start) }}, {{ eventTime(featured.start) }}</time>
@@ -48,7 +48,7 @@ const firstYear = new Date(past[past.length - 1]?.start ?? Date.now()).getFullYe
         <ul class="past">
           <li v-for="e in listed" :key="e.id">
             <component :is="e.to ? RouterLink : 'div'" class="past__row" v-bind="e.to ? { to: e.to } : {}">
-              <img :src="e.image" alt="" width="1100" height="620" loading="lazy" />
+              <img :src="e.image" alt="" width="1084" height="559" loading="lazy" />
               <span class="past__body">
                 <span class="past__when">
                   <time :datetime="e.start">{{ eventDay(e.start, false) }}</time>

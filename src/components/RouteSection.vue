@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { hosting, route } from '../data/content'
+import { vDraw } from '../motion/draw'
 </script>
 
 <template>
@@ -10,7 +11,7 @@ import { hosting, route } from '../data/content'
         <p>Plus de 200 projets d’implémentation.</p>
       </div>
 
-      <ol class="steps">
+      <ol v-draw class="steps">
         <li v-for="stop in route" :key="stop.id" class="step">
           <img :src="`/brand/steps/${stop.id}.svg`" alt="" width="96" height="96" />
           <h3>{{ stop.name }}</h3>
@@ -75,6 +76,17 @@ import { hosting, route } from '../data/content'
   background: var(--navy);
   mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 24"><path d="M6 12h34M31 4l9 8-9 8" fill="none" stroke="black" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>')
     center / contain no-repeat;
+  /* Drawn left to right once the route is in view, the second arrow after the first. */
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 0.6s var(--ease-draw) 0.25s;
+}
+
+.step:nth-child(3)::before {
+  transition-delay: 0.85s;
+}
+
+.steps[data-draw]:not(.is-drawn) .step + .step::before {
+  clip-path: inset(0 100% 0 0);
 }
 
 .step img {

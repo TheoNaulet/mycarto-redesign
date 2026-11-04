@@ -2,6 +2,7 @@
 import PageHero from '../components/ui/PageHero.vue'
 import KeyList from '../components/ui/KeyList.vue'
 import { practices, projectSteps, services, smart } from '../data/product'
+import { vDraw } from '../motion/draw'
 
 const serviceKeys = services.map((s) => ({ name: s.name, line: s.line, icon: `/brand/integration/${s.icon}.svg` }))
 </script>
@@ -47,8 +48,8 @@ const serviceKeys = services.map((s) => ({ name: s.name, line: s.line, icon: `/b
           <h2 id="steps-title">Six étapes, du lancement à la clôture</h2>
           <p>Des cycles courts, et des résultats concrets à chaque comité de pilotage.</p>
         </div>
-        <ol class="stepper">
-          <li v-for="(s, i) in projectSteps" :key="s.name">
+        <ol v-draw class="stepper">
+          <li v-for="(s, i) in projectSteps" :key="s.name" :style="{ '--i': i }">
             <span class="stepper__num" aria-hidden="true">{{ i + 1 }}</span>
             <div>
               <h3>{{ s.name }}</h3>
@@ -174,6 +175,21 @@ const serviceKeys = services.map((s) => ({ name: s.name, line: s.line, icon: `/b
   bottom: 0;
   width: 3px;
   background: var(--on-navy-line);
+  transform-origin: top;
+  transition: transform 0.35s var(--ease-draw) calc(0.25s + var(--i) * 160ms);
+}
+
+/* Once in view, the rail runs down from disc to disc. */
+.stepper__num {
+  transition: scale 0.35s var(--ease-out) calc(0.1s + var(--i) * 160ms);
+}
+
+.stepper[data-draw]:not(.is-drawn) li::before {
+  transform: scaleY(0);
+}
+
+.stepper[data-draw]:not(.is-drawn) .stepper__num {
+  scale: 0.5;
 }
 
 .stepper__num {

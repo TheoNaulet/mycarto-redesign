@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import PageHero from '../components/ui/PageHero.vue'
 import { ambition, identity, phases, timeline, values } from '../data/company'
+import { vDraw } from '../motion/draw'
 
 const rail = ref<HTMLElement | null>(null)
 
@@ -44,8 +45,8 @@ function scrollRail(dir: 1 | -1) {
           <h2 id="double-title">Éditeur et intégrateur</h2>
           <p>La même équipe conçoit l’outil et le déploie chez vous.</p>
         </div>
-        <ol class="stops">
-          <li v-for="p in phases" :key="p.id">
+        <ol v-draw class="stops">
+          <li v-for="(p, i) in phases" :key="p.id" :style="{ '--i': i }">
             <span class="stops__dot"><img :src="`/brand/steps/${p.id}.svg`" alt="" width="96" height="96" /></span>
             <h3>{{ p.name }}</h3>
             <p>{{ p.line }}</p>
@@ -85,8 +86,8 @@ function scrollRail(dir: 1 | -1) {
             </button>
           </div>
         </div>
-        <ol ref="rail" class="rail" tabindex="0" aria-label="Les dates clés, de 2006 à 2026">
-          <li v-for="t in timeline" :key="t.year">
+        <ol ref="rail" v-draw class="rail" tabindex="0" aria-label="Les dates clés, de 2006 à 2026">
+          <li v-for="(t, i) in timeline" :key="t.year" :style="{ '--i': i }">
             <span class="rail__year">{{ t.year }}</span>
             <p>{{ t.line }}</p>
           </li>
@@ -203,6 +204,20 @@ function scrollRail(dir: 1 | -1) {
   height: 0.5rem;
   border-radius: var(--radius-pill);
   background: var(--yellow);
+  transform-origin: left;
+  transition: transform 1s var(--ease-draw) 0.15s;
+}
+
+.stops__dot {
+  transition: scale 0.45s var(--ease-out) calc(0.1s + var(--i) * 420ms);
+}
+
+.stops[data-draw]:not(.is-drawn)::before {
+  transform: scaleX(0);
+}
+
+.stops[data-draw]:not(.is-drawn) .stops__dot {
+  scale: 0.6;
 }
 
 .stops li {
@@ -354,6 +369,21 @@ function scrollRail(dir: 1 | -1) {
   right: 0;
   height: 0.5rem;
   background: var(--navy);
+  transform-origin: left;
+  transition: transform 0.25s linear calc(0.2s + var(--i) * 110ms);
+}
+
+/* The years are laid one after the other along the rail. */
+.rail li::after {
+  transition: scale 0.35s var(--ease-out) calc(0.2s + var(--i) * 110ms);
+}
+
+.rail[data-draw]:not(.is-drawn) li::before {
+  transform: scaleX(0);
+}
+
+.rail[data-draw]:not(.is-drawn) li::after {
+  scale: 0;
 }
 
 .rail li:first-child::before {
@@ -428,11 +458,15 @@ function scrollRail(dir: 1 | -1) {
   .stops::before {
     top: 3.5rem;
     bottom: 3.5rem;
-    left: 50%;
+    left: calc(50% - 0.25rem);
     right: auto;
     width: 0.5rem;
     height: auto;
-    transform: translateX(-50%);
+    transform-origin: top;
+  }
+
+  .stops[data-draw]:not(.is-drawn)::before {
+    transform: scaleY(0);
   }
 
   .stops li {
@@ -478,6 +512,14 @@ function scrollRail(dir: 1 | -1) {
 
   .rail li:last-child::before {
     display: none;
+  }
+
+  .rail li::before {
+    transform-origin: top;
+  }
+
+  .rail[data-draw]:not(.is-drawn) li::before {
+    transform: scaleY(0);
   }
 }
 

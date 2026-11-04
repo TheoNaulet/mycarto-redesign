@@ -88,7 +88,34 @@
 .hero__visual img {
   width: 100%;
   height: auto;
-  animation: rise 0.9s var(--ease-out) 0.1s both;
+  animation: rise 0.9s var(--ease-out) 0.4s both;
+}
+
+/*
+ * The page's one orchestrated moment, kept calm: the copy settles line by line,
+ * the yellow frame settles with it, and the user steps up into the frame.
+ */
+.hero__copy > * {
+  animation: settle 0.7s var(--ease-out) both;
+}
+
+.hero__copy > :nth-child(2) {
+  animation-delay: 0.08s;
+}
+
+.hero__copy > :nth-child(3) {
+  animation-delay: 0.16s;
+}
+
+.hero__visual {
+  animation: settle 0.8s var(--ease-out) 0.12s both;
+}
+
+@keyframes settle {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
 }
 
 @keyframes rise {

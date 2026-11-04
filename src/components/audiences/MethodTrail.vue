@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { MethodStep } from '../../data/audiences'
+import { vDraw } from '../../motion/draw'
 
 /**
  * The method drawn as a trail on their yellow ground: a white road with a navy centre line
@@ -20,9 +21,9 @@ const points = props.steps.map((s, i) => ({ ...s, x: spots[i][0], y: spots[i][1]
 </script>
 
 <template>
-  <figure class="trail">
+  <figure v-draw class="trail">
     <svg viewBox="0 0 760 520" role="group" aria-label="Les 10 points de passage de la démarche">
-      <path class="trail__road" :d="road" />
+      <path class="trail__road" :d="road" pathLength="1" />
       <path class="trail__line" :d="road" />
 
       <g class="trail__start" aria-hidden="true">
@@ -34,7 +35,14 @@ const points = props.steps.map((s, i) => ({ ...s, x: spots[i][0], y: spots[i][1]
         <path class="trail__flag" d="M700 368h36l-9 12 9 12h-36z" />
       </g>
 
-      <a v-for="p in points" :key="p.n" class="stop" :href="`#etape-${p.n}`" :aria-label="`Étape ${p.n} : ${p.name}`">
+      <a
+        v-for="(p, i) in points"
+        :key="p.n"
+        class="stop"
+        :href="`#etape-${p.n}`"
+        :aria-label="`Étape ${p.n} : ${p.name}`"
+        :style="{ '--i': i }"
+      >
         <circle :cx="p.x" :cy="p.y" r="25" />
         <text class="stop__n" :x="p.x" :y="p.y + 7">{{ p.n }}</text>
         <text class="stop__label" :x="p.x" :y="p.y + 52">{{ p.short }}</text>
@@ -97,6 +105,48 @@ const points = props.steps.map((s, i) => ({ ...s, x: spots[i][0], y: spots[i][1]
   fill: var(--navy);
   stroke-width: 2;
   stroke-linejoin: round;
+}
+
+/* The road is laid from the start, each waypoint lands as the road reaches it, the flag goes up last. */
+.trail__road {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 1.5s var(--ease-draw) 0.15s;
+}
+
+.trail__line {
+  transition: opacity 0.4s linear 1.4s;
+}
+
+.stop {
+  transform-box: fill-box;
+  transform-origin: 50% 30%;
+  transition:
+    scale 0.4s var(--ease-out) calc(0.3s + var(--i) * 120ms),
+    opacity 0.2s linear calc(0.3s + var(--i) * 120ms);
+}
+
+.trail__end {
+  transform-box: fill-box;
+  transform-origin: 0% 100%;
+  transition: scale 0.4s var(--ease-out) 1.55s;
+}
+
+.trail[data-draw]:not(.is-drawn) .trail__road {
+  stroke-dashoffset: 1;
+}
+
+.trail[data-draw]:not(.is-drawn) .trail__line {
+  opacity: 0;
+}
+
+.trail[data-draw]:not(.is-drawn) .stop {
+  opacity: 0;
+  scale: 0.4;
+}
+
+.trail[data-draw]:not(.is-drawn) .trail__end {
+  scale: 0;
 }
 
 .stop circle {

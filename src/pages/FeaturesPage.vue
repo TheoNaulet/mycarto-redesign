@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { featureDetails } from '../data/pages'
+import { ref } from 'vue'
 import MapIllustration from '../components/MapIllustration.vue'
+import { prefersReduced, vDraw } from '../motion/draw'
 
 const f = Object.fromEntries(featureDetails.map((d) => [d.id, d])) as Record<string, (typeof featureDetails)[number]>
 const meta = f['meta-modele']
@@ -8,6 +10,21 @@ const cartes = f['cartes']
 const dash = f['tableaux-de-bord']
 const interop = f['interoperabilite']
 const bpmn = f['bpmn']
+
+/**
+ * A BPMN token runs the example process once when the diagram comes into view, lighting each task
+ * and the server it runs on as it passes. "Suivre une commande" runs it again.
+ */
+const diagram = ref<HTMLElement | null>(null)
+
+function runToken() {
+  const root = diagram.value
+  if (!root || prefersReduced()) return
+  root.classList.remove('is-running')
+  void root.getBoundingClientRect()
+  root.classList.add('is-running')
+  root.querySelector<SVGAnimationElement>('#bpmn-token')?.beginElement()
+}
 
 const systems = ['CMDB', 'ITSM', 'PPM', 'BI', 'SI Finances', 'Connaissances', 'LDAP']
 
@@ -124,15 +141,23 @@ const dashIcons = [
             <li v-for="p in interop.points" :key="p">{{ p }}</li>
           </ul>
         </div>
-        <div class="hub" role="img" :aria-label="`myCarto relié à ${systems.join(', ')}`">
+        <div v-draw class="hub" role="img" :aria-label="`myCarto relié à ${systems.join(', ')}`">
           <svg class="hub__lines" viewBox="0 0 100 100" aria-hidden="true">
-            <line v-for="(s, i) in systems" :key="s" x1="50" y1="50" :x2="hubPos(i).x" :y2="hubPos(i).y" />
+            <line
+              v-for="(s, i) in systems"
+              :key="s"
+              x1="50"
+              y1="50"
+              :x2="hubPos(i).x"
+              :y2="hubPos(i).y"
+              :style="{ '--i': i }"
+            />
           </svg>
           <span
             v-for="(s, i) in systems"
             :key="s"
             class="hub__node"
-            :style="{ left: `${hubPos(i).x}%`, top: `${hubPos(i).y}%` }"
+            :style="{ left: `${hubPos(i).x}%`, top: `${hubPos(i).y}%`, '--i': i }"
             aria-hidden="true"
           >{{ s }}</span>
           <span class="hub__core" aria-hidden="true">
@@ -152,7 +177,7 @@ const dashIcons = [
           <p class="feat__why">{{ bpmn.why }}</p>
         </div>
 
-        <figure class="diagram">
+        <figure ref="diagram" v-draw="runToken" class="diagram">
           <div class="diagram__scroll">
             <svg viewBox="0 0 1000 390" role="img" aria-labelledby="bpmn-desc">
               <desc id="bpmn-desc">
@@ -189,6 +214,16 @@ const dashIcons = [
                 <text x="478" y="150">Nouveau</text>
                 <text x="640" y="56">Connu</text>
               </g>
+              <!-- the token runs on the flows, behind the tasks it goes through; started by runToken() -->
+              <circle class="token" r="10" aria-hidden="true">
+                <animateMotion
+                  id="bpmn-token"
+                  begin="indefinite"
+                  dur="3.4s"
+                  fill="freeze"
+                  path="M180 65H470V195H940V65"
+                />
+              </circle>
               <!-- associations to infrastructure -->
               <g class="assoc">
                 <path d="M605 225V292" />
@@ -198,7 +233,7 @@ const dashIcons = [
               <circle class="ev-start" cx="180" cy="65" r="18" />
               <circle class="ev-end" cx="940" cy="65" r="18" />
               <!-- tasks -->
-              <g class="task">
+              <g class="task task--receive">
                 <rect x="216" y="35" width="196" height="60" rx="10" />
                 <text x="314" y="70">Recevoir la commande</text>
               </g>
@@ -206,30 +241,33 @@ const dashIcons = [
                 <path d="M470 37 498 65 470 93 442 65z" />
                 <path class="gateway__x" d="M461 56 479 74M479 56 461 74" />
               </g>
-              <g class="task">
+              <g class="task task--crm">
                 <rect x="520" y="165" width="170" height="60" rx="10" />
                 <text x="605" y="192">CRM Ventes</text>
                 <text x="605" y="212" class="task__sub">créer la fiche</text>
               </g>
-              <g class="task">
+              <g class="task task--erp">
                 <rect x="740" y="165" width="150" height="60" rx="10" />
                 <text x="815" y="192">ERP Finance</text>
                 <text x="815" y="212" class="task__sub">facturer</text>
               </g>
               <!-- systems -->
-              <g class="system">
+              <g class="system system--cloud">
                 <path d="M555 300a50 10 0 0 1 100 0v40a50 10 0 0 1-100 0z" />
                 <path d="M555 300a50 10 0 0 0 100 0" />
                 <text x="605" y="336">Cloud EU</text>
               </g>
-              <g class="system">
+              <g class="system system--srv">
                 <path d="M765 300a50 10 0 0 1 100 0v40a50 10 0 0 1-100 0z" />
                 <path d="M765 300a50 10 0 0 0 100 0" />
                 <text x="815" y="336">srv-app-01</text>
               </g>
             </svg>
           </div>
-          <figcaption>Exemple de processus fictif : une commande client, du métier au serveur.</figcaption>
+          <figcaption>
+            Exemple de processus fictif : une commande client, du métier au serveur.
+            <button type="button" class="replay" @click="runToken">Suivre une commande</button>
+          </figcaption>
         </figure>
 
         <ul class="bpmn__points">
@@ -592,9 +630,30 @@ const dashIcons = [
   stroke: var(--navy);
   stroke-width: 0.6;
   stroke-dasharray: 1.6 1.2;
+  /* Each link grows out of myCarto, then its tool lands at the end of it. */
+  transform-box: view-box;
+  transform-origin: 50% 50%;
+  transition: transform 0.55s var(--ease-out) calc(0.25s + var(--i) * 80ms);
+}
+
+.hub[data-draw]:not(.is-drawn) .hub__lines line {
+  transform: scale(0);
+}
+
+.hub[data-draw]:not(.is-drawn) .hub__node {
+  opacity: 0;
+  scale: 0.6;
+}
+
+.hub[data-draw]:not(.is-drawn) .hub__core {
+  opacity: 0;
+  scale: 0.85;
 }
 
 .hub__node {
+  transition:
+    opacity 0.3s var(--ease-out) calc(0.55s + var(--i) * 80ms),
+    scale 0.45s var(--ease-out) calc(0.55s + var(--i) * 80ms);
   position: absolute;
   transform: translate(-50%, -50%);
   padding: 0.7rem 1.15rem 0.6rem;
@@ -608,6 +667,9 @@ const dashIcons = [
 }
 
 .hub__core {
+  transition:
+    opacity 0.4s var(--ease-out),
+    scale 0.5s var(--ease-out);
   position: absolute;
   left: 50%;
   top: 50%;
@@ -766,6 +828,102 @@ const dashIcons = [
   font-size: var(--fs-s);
   color: var(--text-muted);
   text-align: center;
+}
+
+.replay {
+  margin-left: var(--space-3);
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--navy);
+  text-decoration: underline;
+  text-decoration-color: var(--yellow);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 0.3em;
+}
+
+.replay:hover {
+  text-decoration-color: currentColor;
+}
+
+/* The token and what it lights up on its way: timings follow its 3.4s run along the flow. */
+.token {
+  fill: var(--yellow);
+  stroke: var(--navy);
+  stroke-width: 3;
+  opacity: 0;
+}
+
+.is-running .token {
+  animation: token 3.5s linear;
+}
+
+@keyframes token {
+  0%,
+  100% {
+    opacity: 0;
+  }
+
+  3%,
+  95% {
+    opacity: 1;
+  }
+}
+
+.is-running .task--receive rect {
+  animation: lit 0.8s linear 0.05s;
+}
+
+.is-running .task--crm rect {
+  animation: lit 0.7s linear 1.5s;
+}
+
+.is-running .system--cloud path:first-child {
+  animation: lit-server 0.7s linear 1.5s;
+}
+
+.is-running .task--erp rect {
+  animation: lit 0.65s linear 2.22s;
+}
+
+.is-running .system--srv path:first-child {
+  animation: lit-server 0.65s linear 2.22s;
+}
+
+.is-running .ev-end {
+  animation: lit 1.2s linear 3.3s;
+}
+
+@keyframes lit {
+  0%,
+  100% {
+    fill: var(--paper);
+  }
+
+  20%,
+  75% {
+    fill: var(--yellow);
+  }
+}
+
+@keyframes lit-server {
+  0%,
+  100% {
+    fill: var(--yellow-soft);
+  }
+
+  20%,
+  75% {
+    fill: var(--yellow);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .replay {
+    display: none;
+  }
 }
 
 .bpmn__points {

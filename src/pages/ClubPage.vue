@@ -69,7 +69,7 @@ const pastClubs = computed(() =>
     <section id="prochain" class="section next" aria-labelledby="t-next">
       <div class="wrap next__grid">
         <figure class="next__visual">
-          <img :src="next.image" :alt="`Affiche du ${nextClub.edition}`" width="1100" height="620" loading="lazy" />
+          <img :src="next.image" :alt="`Affiche du ${nextClub.edition}`" width="1084" height="559" loading="lazy" />
         </figure>
         <div>
           <p class="next__date">
@@ -110,7 +110,7 @@ const pastClubs = computed(() =>
         <ul class="past">
           <li v-for="e in pastClubs" :key="e.id">
             <component :is="e.to ? RouterLink : 'div'" class="past__card" v-bind="e.to ? { to: e.to } : {}">
-              <img :src="e.image" alt="" width="1100" height="620" loading="lazy" />
+              <img :src="e.image" alt="" width="1084" height="559" loading="lazy" />
               <span class="past__body">
                 <time :datetime="e.start">{{ eventDay(e.start, false) }}</time>
                 <span class="past__title">{{ e.title }}</span>

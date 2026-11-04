@@ -254,10 +254,15 @@ const topicLabel = (id: Topic) => topics.find((t) => t.id === id)?.label
   font-size: var(--fs-s);
 }
 
+/* Filtering: the cards that stay slide to their new place, the new ones settle in. */
+.cards-move {
+  transition: transform 0.45s var(--ease-out);
+}
+
 .cards-enter-active {
   transition:
-    opacity 0.3s var(--ease-out),
-    transform 0.3s var(--ease-out);
+    opacity 0.3s var(--ease-out) 0.1s,
+    transform 0.3s var(--ease-out) 0.1s;
 }
 
 .cards-enter-from {

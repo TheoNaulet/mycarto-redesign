@@ -5,13 +5,20 @@ import FinalCall from './components/FinalCall.vue'
 import SiteFooter from './components/SiteFooter.vue'
 
 const route = useRoute()
+
+// Switching role tabs (/metiers/dsi → /metiers/rssi) stays on the same page, so no page transition.
+const pageKey = (r: typeof route) => (r.name === 'roles' ? 'roles' : r.path)
 </script>
 
 <template>
   <a class="skip" href="#main">Aller au contenu</a>
   <SiteHeader />
   <main id="main">
-    <RouterView />
+    <RouterView v-slot="{ Component, route: r }">
+      <Transition name="page">
+        <component :is="Component" :key="pageKey(r)" />
+      </Transition>
+    </RouterView>
   </main>
   <FinalCall v-if="route.name !== 'demo' && route.name !== 'contact'" />
   <SiteFooter />

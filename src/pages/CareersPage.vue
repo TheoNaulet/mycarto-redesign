@@ -2,6 +2,7 @@
 import PageHero from '../components/ui/PageHero.vue'
 import { candidate, site } from '../data/content'
 import { careersEmail, hiringSteps, reasons } from '../data/company'
+import { vDraw } from '../motion/draw'
 
 const spontaneous = `mailto:${careersEmail}?subject=${encodeURIComponent('Candidature spontanée')}`
 </script>
@@ -59,8 +60,8 @@ const spontaneous = `mailto:${careersEmail}?subject=${encodeURIComponent('Candid
           <h2 id="process-title">Le recrutement, en six étapes</h2>
           <p>Une lettre qui vous ressemble compte plus qu’un publipostage.</p>
         </div>
-        <ol class="process">
-          <li v-for="(s, i) in hiringSteps" :key="s.name">
+        <ol v-draw class="process">
+          <li v-for="(s, i) in hiringSteps" :key="s.name" :style="{ '--i': i }">
             <span class="process__num" aria-hidden="true">{{ i + 1 }}</span>
             <h3>{{ s.name }}</h3>
             <p>{{ s.line }}</p>
@@ -214,6 +215,21 @@ a.job:hover svg {
   height: 0.35rem;
   border-radius: var(--radius-pill);
   background: var(--navy);
+  transform-origin: left;
+  transition: transform 0.3s var(--ease-draw) calc(0.3s + var(--i) * 180ms);
+}
+
+/* Step by step: each number lands, then the rail runs to the next one. */
+.process__num {
+  transition: scale 0.35s var(--ease-out) calc(0.15s + var(--i) * 180ms);
+}
+
+.process[data-draw]:not(.is-drawn) li::after {
+  transform: scaleX(0);
+}
+
+.process[data-draw]:not(.is-drawn) .process__num {
+  scale: 0.4;
 }
 
 .process__num {
@@ -291,6 +307,11 @@ a.job:hover svg {
     right: auto;
     width: 0.35rem;
     height: auto;
+    transform-origin: top;
+  }
+
+  .process[data-draw]:not(.is-drawn) li::after {
+    transform: scaleY(0);
   }
 }
 </style>

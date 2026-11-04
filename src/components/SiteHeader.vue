@@ -387,6 +387,14 @@ onBeforeUnmount(() => {
 
   .header__nav.is-open {
     display: flex;
+    animation: drawer 0.28s var(--ease-out);
+  }
+
+  @keyframes drawer {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
   }
 
   .menu {
