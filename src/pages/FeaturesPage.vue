@@ -63,7 +63,7 @@ const dashIcons = [
     <section :id="cartes.id" class="feat" aria-labelledby="t-cartes">
       <div class="wrap cartes">
         <figure class="cartes__visual">
-          <img src="/brand/photos/hero-banner.webp" alt="" width="1173" height="839" />
+          <img src="/brand/articles/pos.webp" alt="Plan d’urbanisme aux bâtiments surlignés en jaune" width="1200" height="688" />
         </figure>
         <div>
           <span class="feat__icon"><img :src="`/brand/features/${cartes.icon}.svg`" alt="" /></span>
@@ -311,14 +311,14 @@ const dashIcons = [
 .cartes__visual {
   border: var(--frame) solid var(--navy);
   border-radius: var(--radius-panel);
-  background: var(--yellow);
-  padding: var(--space-6) var(--space-6) 0;
   overflow: hidden;
 }
 
 .cartes__visual img {
   width: 100%;
-  height: auto;
+  height: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
 }
 
 /* 3. Tableaux de bord */
