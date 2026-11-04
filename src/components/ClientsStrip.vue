@@ -1,24 +1,16 @@
 <script setup lang="ts">
 import { clients } from '../data/content'
 
-const shown = clients.filter((c) => c.file !== 'bouygues-construction').slice(0, 12)
+const shown = clients.slice(0, 14)
 </script>
 
 <template>
-  <section class="section clients" aria-labelledby="clients-title">
-    <div class="wrap split">
-      <div class="section-head">
-        <h2 id="clients-title">Plus de 200 organisations s’y retrouvent</h2>
-        <p>97 % de satisfaction.</p>
-      </div>
-      <ul class="frame clients__logos">
+  <section class="clients on-navy" aria-labelledby="clients-title">
+    <div class="wrap">
+      <h2 id="clients-title">Plus de 200 organisations s’y retrouvent, <span>97 % satisfaites.</span></h2>
+      <ul class="clients__logos">
         <li v-for="c in shown" :key="c.file">
-          <span
-            class="logo"
-            role="img"
-            :aria-label="c.name"
-            :style="{ '--logo': `url(/brand/clients/${c.file}.svg)` }"
-          />
+          <img :src="`/brand/clients/${c.file}.svg`" :alt="c.name" />
         </li>
       </ul>
     </div>
@@ -27,66 +19,48 @@ const shown = clients.filter((c) => c.file !== 'bouygues-construction').slice(0,
 
 <style scoped>
 .clients {
-  padding-top: var(--space-2);
+  background: var(--navy);
+  padding-block: var(--space-7);
+}
+
+.clients h2 {
+  font-size: var(--fs-xl);
+  line-height: 1.2;
+}
+
+.clients h2 span {
+  color: var(--yellow);
 }
 
 .clients__logos {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  padding: 0;
-  overflow: hidden;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--space-5) var(--space-6);
+  margin-top: var(--space-6);
 }
 
 .clients__logos li {
   display: grid;
   place-items: center;
-  height: 6.5rem;
-  padding: var(--space-4) var(--space-5);
-  border-right: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
+  height: 3.5rem;
 }
 
-.clients__logos li:nth-child(4n) {
-  border-right: 0;
+.clients__logos img {
+  max-height: 100%;
+  max-width: 100%;
+  width: auto;
 }
 
-.clients__logos li:nth-last-child(-n + 4) {
-  border-bottom: 0;
+@media (max-width: 900px) {
+  .clients__logos {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
-/* Their logos are white monochrome files: recolour them in navy. */
-.logo {
-  display: block;
-  width: 100%;
-  height: 100%;
-  background: var(--navy);
-  mask: var(--logo) center / contain no-repeat;
-}
-
-@media (max-width: 720px) {
+@media (max-width: 520px) {
   .clients__logos {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .clients__logos li {
-    height: 5rem;
-    padding: var(--space-3);
-  }
-
-  .clients__logos li:nth-child(4n) {
-    border-right: 1px solid var(--line);
-  }
-
-  .clients__logos li:nth-child(3n) {
-    border-right: 0;
-  }
-
-  .clients__logos li:nth-last-child(-n + 4) {
-    border-bottom: 1px solid var(--line);
-  }
-
-  .clients__logos li:nth-last-child(-n + 3) {
-    border-bottom: 0;
+    gap: var(--space-4);
   }
 }
 </style>

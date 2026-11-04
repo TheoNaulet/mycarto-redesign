@@ -23,10 +23,6 @@ import { features } from '../data/content'
 </template>
 
 <style scoped>
-.legend-section {
-  padding-top: 0;
-}
-
 .legend {
   display: grid;
   grid-template-columns: minmax(16rem, 0.8fr) minmax(0, 1.6fr);

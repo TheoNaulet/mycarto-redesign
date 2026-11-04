@@ -1,67 +1,71 @@
 <template>
   <section id="club" class="section club" aria-labelledby="club-title">
-    <div class="wrap split">
-      <div class="section-head">
+    <div class="wrap club__grid">
+      <img
+        src="/brand/photos/club-utilisateurs.webp"
+        alt="Visuel du club utilisateurs myCarto avec Crédit Agricole Leasing & Factoring"
+        width="1056"
+        height="1080"
+      />
+      <div>
         <h2 id="club-title">Le club utilisateurs</h2>
-        <p>Trois fois par an, entre clients, pour choisir les prochaines fonctionnalités.</p>
-      </div>
-      <div class="frame club__frame">
-        <img
-          src="/brand/photos/club-utilisateurs.webp"
-          alt="Visuel du club utilisateurs myCarto avec Crédit Agricole Leasing & Factoring"
-          width="1056"
-          height="1080"
-        />
-        <div class="club__info">
-          <p class="club__date">19 novembre 2026</p>
-          <p>Avec le témoignage du Crédit Agricole Leasing &amp; Factoring.</p>
-          <p class="club__note">Réservé aux clients.</p>
-        </div>
+        <p class="club__lede">Trois fois par an, entre clients, pour choisir les prochaines fonctionnalités.</p>
+        <p class="club__date">Prochaine édition le 19 novembre 2026</p>
+        <p>Avec le témoignage du Crédit Agricole Leasing &amp; Factoring. Réservé aux clients.</p>
       </div>
     </div>
   </section>
 </template>
 
 <style scoped>
-.club {
-  padding-top: 0;
-}
-
-.club__frame {
+.club__grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: var(--space-6);
+  gap: var(--space-8);
   align-items: center;
-  padding: var(--space-5) var(--space-6);
 }
 
-.club__frame img {
+.club__grid img {
   width: 100%;
+  max-width: 34rem;
   height: auto;
-  max-width: 22rem;
+}
+
+.club h2 {
+  font-size: var(--fs-2xl);
+}
+
+.club__lede {
+  margin-top: var(--space-4);
+  font-size: var(--fs-l);
+  line-height: 1.45;
+  max-width: 28ch;
 }
 
 .club__date {
+  display: inline-block;
+  margin: var(--space-6) 0 var(--space-3);
+  padding: 0.55rem 1rem 0.45rem;
+  border-radius: var(--radius-pill);
+  background: var(--navy);
+  color: var(--on-navy);
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: var(--fs-xl);
-  color: var(--navy);
-  margin-bottom: var(--space-2);
 }
 
-.club__info p:not(.club__date) {
+.club__grid p:last-child {
   font-size: var(--fs-s);
+  max-width: 40ch;
 }
 
-.club__note {
-  margin-top: var(--space-2);
-  color: var(--grey);
-}
-
-@media (max-width: 720px) {
-  .club__frame {
+@media (max-width: 860px) {
+  .club__grid {
     grid-template-columns: 1fr;
-    padding: var(--space-4);
+    gap: var(--space-5);
+  }
+
+  .club__grid img {
+    max-width: 22rem;
   }
 }
 </style>

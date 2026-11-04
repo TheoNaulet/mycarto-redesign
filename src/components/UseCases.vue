@@ -3,41 +3,72 @@ import { directions } from '../data/content'
 </script>
 
 <template>
-  <section id="usages" class="section" aria-labelledby="usages-title">
-    <div class="wrap split">
-      <div class="section-head">
+  <section id="usages" class="section usages" aria-labelledby="usages-title">
+    <div class="wrap">
+      <div class="section-head usages__head">
         <h2 id="usages-title">Les DSI s’en servent pour</h2>
         <p>Un seul référentiel, trois façons de décider.</p>
       </div>
-      <dl class="frame">
-        <div v-for="d in directions" :key="d.id" class="frame-row">
-          <dt class="frame-row__title">
-            <img :src="`/brand/photos/${d.photo}.webp`" alt="" width="112" height="112" />
-            {{ d.name }}
-          </dt>
-          <dd class="frame-row__text">{{ d.line }}</dd>
-        </div>
-      </dl>
+      <ul class="usages__list">
+        <li v-for="d in directions" :key="d.id">
+          <img :src="`/brand/photos/${d.photo}.webp`" alt="" width="512" height="512" />
+          <h3>{{ d.name }}</h3>
+          <p>{{ d.line }}</p>
+        </li>
+      </ul>
     </div>
   </section>
 </template>
 
 <style scoped>
-img {
-  width: 7rem;
-  height: 7rem;
-  flex: none;
-  object-fit: contain;
+.usages {
+  background: var(--yellow-pale);
 }
 
-@media (max-width: 720px) {
-  img {
-    width: 5rem;
-    height: 5rem;
+.usages__head {
+  margin-inline: auto;
+  text-align: center;
+}
+
+.usages__head p {
+  margin-inline: auto;
+}
+
+.usages__list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-7);
+}
+
+.usages__list img {
+  width: 100%;
+  max-width: 20rem;
+  aspect-ratio: 1;
+  height: auto;
+  object-fit: contain;
+  margin: 0 auto var(--space-4);
+}
+
+.usages__list h3 {
+  font-size: var(--fs-xl);
+  text-align: center;
+}
+
+.usages__list p {
+  margin: var(--space-2) auto 0;
+  max-width: 30ch;
+  font-size: var(--fs-s);
+  text-align: center;
+}
+
+@media (max-width: 860px) {
+  .usages__list {
+    grid-template-columns: 1fr;
+    gap: var(--space-7);
   }
 
-  .frame-row__text {
-    padding-left: calc(5rem + var(--space-4));
+  .usages__list img {
+    max-width: 16rem;
   }
 }
 </style>
