@@ -25,17 +25,24 @@ const dashIcons = [
 
 <template>
   <div>
-    <header class="wrap page-head features-head">
-      <div>
-        <h1>5 fonctionnalités clés</h1>
-        <p>Pour une urbanisation du SI maîtrisée, sans une ligne de code.</p>
+    <header class="features-head">
+      <div class="wrap features-head__grid">
+        <div>
+          <h1><span class="nowrap">5 fonctionnalités</span> clés</h1>
+          <p>Pour une urbanisation du SI maîtrisée, sans une ligne de code.</p>
+          <div class="features-head__actions">
+            <RouterLink class="btn btn--primary btn--lg" to="/demo">Les voir en démo</RouterLink>
+          </div>
+        </div>
+        <nav class="jump" aria-label="Aller à une fonctionnalité">
+          <a v-for="d in featureDetails" :key="d.id" :href="`#${d.id}`">
+            <img :src="`/brand/features/${d.icon}.svg`" alt="" width="56" height="56" />
+            <span class="jump__name">{{ d.name }}</span>
+            <span class="jump__why">{{ d.why }}</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6" /></svg>
+          </a>
+        </nav>
       </div>
-      <nav class="jump" aria-label="Aller à une fonctionnalité">
-        <a v-for="d in featureDetails" :key="d.id" :href="`#${d.id}`">
-          <img :src="`/brand/features/${d.icon}.svg`" alt="" width="56" height="56" />
-          <span>{{ d.name }}</span>
-        </a>
-      </nav>
     </header>
 
     <!-- 1. Méta-modèle: navy, persona, quote -->
@@ -139,40 +146,109 @@ const dashIcons = [
 
 <style scoped>
 .features-head {
-  display: grid;
-  gap: var(--space-7);
+  display: flex;
+  align-items: center;
+  min-height: calc(100dvh - 6.8rem);
+  padding-block: var(--space-7);
 }
 
-.jump {
+.features-head > .wrap {
+  width: min(100% - 2 * var(--gutter), var(--max));
+}
+
+.features-head__grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: var(--space-3);
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.2fr);
+  gap: var(--space-8);
+  align-items: center;
+}
+
+.features-head h1 {
+  font-size: clamp(2.1rem, 0.9rem + 3.6vw, 4.1rem);
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.features-head p {
+  margin-top: var(--space-5);
+  font-size: var(--fs-l);
+  line-height: 1.45;
+  max-width: 28ch;
+}
+
+.features-head__actions {
+  margin-top: var(--space-6);
+}
+
+/* The five features as a framed key list, each row jumping to its section. */
+.jump {
+  border: var(--frame) solid var(--navy);
+  border-radius: var(--radius-panel);
+  padding: var(--space-2) var(--space-5);
 }
 
 .jump a {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--space-3);
-  padding: var(--space-4);
-  border: 2px solid var(--line);
-  border-radius: var(--radius-plate);
+  display: grid;
+  grid-template-columns: 3.5rem minmax(0, 1fr) auto;
+  grid-template-areas:
+    'icon name arrow'
+    'icon why arrow';
+  column-gap: var(--space-4);
+  align-items: center;
+  padding-block: var(--space-4);
   color: var(--navy);
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: var(--fs-s);
-  line-height: 1.25;
   text-decoration: none;
-  transition: border-color 0.2s var(--ease-out);
 }
 
-.jump a:hover {
-  border-color: var(--navy);
+.jump a + a {
+  border-top: 1px solid var(--line);
 }
 
 .jump img {
-  width: 3rem;
-  height: 3rem;
+  grid-area: icon;
+  width: 3.5rem;
+  height: 3.5rem;
+}
+
+.jump__name {
+  grid-area: name;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-l);
+  line-height: 1.2;
+}
+
+.jump__why {
+  grid-area: why;
+  font-size: var(--fs-s);
+  color: var(--text);
+}
+
+.jump svg {
+  grid-area: arrow;
+  width: 1.4rem;
+  height: 1.4rem;
+  fill: none;
+  stroke: var(--navy);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.25s var(--ease-out);
+}
+
+.jump a:hover .jump__name {
+  text-decoration: underline;
+  text-decoration-color: var(--yellow);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 0.2em;
+}
+
+.jump a:hover svg {
+  transform: translateY(3px);
 }
 
 /* Shared */
@@ -523,8 +599,13 @@ const dashIcons = [
 }
 
 @media (max-width: 1000px) {
-  .jump {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  .features-head {
+    min-height: 0;
+  }
+
+  .features-head__grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-7);
   }
 
   .feat {
@@ -562,7 +643,16 @@ const dashIcons = [
 
 @media (max-width: 560px) {
   .jump {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: var(--space-1) var(--space-4);
+  }
+
+  .jump a {
+    grid-template-columns: 2.75rem minmax(0, 1fr) auto;
+  }
+
+  .jump img {
+    width: 2.75rem;
+    height: 2.75rem;
   }
 
   .tiles {
