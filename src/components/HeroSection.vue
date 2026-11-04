@@ -28,7 +28,20 @@ import { site } from '../data/content'
 
 <style scoped>
 .hero {
-  padding-block: var(--space-7) var(--space-8);
+  display: flex;
+  align-items: center;
+  /* Fills the screen under the notice bar and header. */
+  min-height: calc(100dvh - 6.8rem);
+  padding-block: var(--space-6);
+}
+
+.hero > .wrap {
+  width: min(100% - 2 * var(--gutter), var(--max));
+}
+
+.hero__visual img {
+  max-height: calc(100dvh - 13rem);
+  object-fit: contain;
 }
 
 .hero__grid {
