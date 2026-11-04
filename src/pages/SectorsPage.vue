@@ -187,10 +187,13 @@ const clientName = (file: string) => clients.find((c) => c.file === file)?.name 
   background: var(--navy);
 }
 
+/* An explicit cap: a percentage max-height does not resolve inside this padded grid cell. */
 .others__logos img {
-  max-height: 100%;
+  max-height: 3.25rem;
   max-width: 100%;
   width: auto;
+  height: auto;
+  object-fit: contain;
 }
 
 @media (max-width: 1000px) {
