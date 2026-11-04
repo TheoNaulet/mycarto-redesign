@@ -5,11 +5,11 @@ import { candidate, site } from '../data/content'
 
 const open = ref(false)
 const nav = [
-  { href: '#plan', label: 'Le plan' },
   { href: '#usages', label: 'Usages' },
   { href: '#fonctionnalites', label: 'Fonctionnalités' },
   { href: '#temoignages', label: 'Témoignages' },
   { href: '#accompagnement', label: 'Accompagnement' },
+  { href: '#club', label: 'Club' },
 ]
 </script>
 
@@ -72,8 +72,15 @@ const nav = [
 }
 
 .header {
-  --logo-ink: #ffffff;
-  --logo-accent: #6fb4e6;
+  background: var(--paper);
+  color: var(--navy);
+  border-bottom: 1px solid var(--line);
+}
+
+.header__actions .btn--ghost:hover {
+  background: var(--navy);
+  border-color: var(--navy);
+  color: var(--on-navy);
 }
 
 .header__bar {
@@ -129,7 +136,7 @@ const nav = [
   margin-left: auto;
   width: 2.75rem;
   height: 2.75rem;
-  border: 2px solid var(--on-navy-line);
+  border: 2px solid var(--line);
   border-radius: 50%;
   background: transparent;
 }
@@ -168,8 +175,8 @@ const nav = [
     align-items: stretch;
     gap: var(--space-5);
     padding: var(--space-5) var(--gutter) var(--space-6);
-    background: var(--navy);
-    border-bottom: var(--frame) solid var(--on-navy);
+    background: var(--paper);
+    border-bottom: var(--frame) solid var(--navy);
   }
 
   .header__nav.is-open {

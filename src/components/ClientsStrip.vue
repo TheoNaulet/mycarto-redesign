@@ -1,75 +1,92 @@
 <script setup lang="ts">
 import { clients } from '../data/content'
+
+const shown = clients.filter((c) => c.file !== 'bouygues-construction').slice(0, 12)
 </script>
 
 <template>
-  <section class="clients" aria-labelledby="clients-title">
-    <div class="clients__head">
-      <h2 id="clients-title">Plus de 200 organisations s’y retrouvent déjà</h2>
-      <p>97 % de satisfaction, de la RATP au CHU de Lille.</p>
+  <section class="section clients" aria-labelledby="clients-title">
+    <div class="wrap split">
+      <div class="section-head">
+        <h2 id="clients-title">Plus de 200 organisations s’y retrouvent</h2>
+        <p>97 % de satisfaction.</p>
+      </div>
+      <ul class="frame clients__logos">
+        <li v-for="c in shown" :key="c.file">
+          <span
+            class="logo"
+            role="img"
+            :aria-label="c.name"
+            :style="{ '--logo': `url(/brand/clients/${c.file}.svg)` }"
+          />
+        </li>
+      </ul>
     </div>
-    <ul class="clients__logos">
-      <li v-for="c in clients" :key="c.file">
-        <img :src="`/brand/clients/${c.file}.svg`" :alt="c.name" />
-      </li>
-    </ul>
   </section>
 </template>
 
 <style scoped>
 .clients {
-  display: grid;
-  grid-template-columns: minmax(16rem, 22rem) minmax(0, 1fr);
-  gap: var(--space-7);
-  align-items: start;
-  padding-block: var(--space-6) var(--space-8);
-}
-
-.clients__head h2 {
-  font-size: var(--fs-xl);
-  line-height: 1.15;
-}
-
-.clients__head p {
-  margin-top: var(--space-3);
-  color: var(--on-navy-soft);
-  font-size: var(--fs-s);
+  padding-top: var(--space-2);
 }
 
 .clients__logos {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
-  gap: var(--space-5) var(--space-6);
-  align-items: center;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  padding: 0;
+  overflow: hidden;
 }
 
 .clients__logos li {
   display: grid;
   place-items: center;
-  height: 3.25rem;
+  height: 6.5rem;
+  padding: var(--space-4) var(--space-5);
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
 }
 
-.clients__logos img {
-  max-height: 100%;
-  max-width: 100%;
-  width: auto;
-  opacity: 0.86;
-  transition: opacity 0.2s var(--ease-out);
+.clients__logos li:nth-child(4n) {
+  border-right: 0;
 }
 
-.clients__logos li:hover img {
-  opacity: 1;
+.clients__logos li:nth-last-child(-n + 4) {
+  border-bottom: 0;
 }
 
-@media (max-width: 900px) {
-  .clients {
-    grid-template-columns: 1fr;
-    gap: var(--space-5);
+/* Their logos are white monochrome files: recolour them in navy. */
+.logo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--navy);
+  mask: var(--logo) center / contain no-repeat;
+}
+
+@media (max-width: 720px) {
+  .clients__logos {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  .clients__logos {
-    grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
-    gap: var(--space-4);
+  .clients__logos li {
+    height: 5rem;
+    padding: var(--space-3);
+  }
+
+  .clients__logos li:nth-child(4n) {
+    border-right: 1px solid var(--line);
+  }
+
+  .clients__logos li:nth-child(3n) {
+    border-right: 0;
+  }
+
+  .clients__logos li:nth-last-child(-n + 4) {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .clients__logos li:nth-last-child(-n + 3) {
+    border-bottom: 0;
   }
 }
 </style>

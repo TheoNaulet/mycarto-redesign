@@ -33,8 +33,7 @@ import { candidate, site } from '../data/content'
     <div class="wrap footer__concept">
       <p>
         Maquette de refonte réalisée par {{ candidate.name }}, {{ candidate.role.toLowerCase() }}, en Vue 3.
-        Ce n’est pas le site officiel. myCarto, son logo, ses textes et les logos clients appartiennent à leurs propriétaires.
-        Le plan « Groupe Exemple » est fictif.
+        Ce n’est pas le site officiel. myCarto, son logo, ses visuels, ses textes et les logos clients appartiennent à leurs propriétaires.
       </p>
     </div>
   </footer>

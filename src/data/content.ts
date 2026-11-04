@@ -51,29 +51,20 @@ export const directions = [
   {
     id: 'transformation',
     name: 'Transformation numérique',
-    points: [
-      'Aligner stratégie et feuille de route numérique',
-      "Mesurer l'impact d'une évolution avant de la lancer",
-      "Intégrer l'IA à votre stratégie IT",
-    ],
+    photo: 'dsi-manager-it',
+    line: 'Aligner stratégie et feuille de route, mesurer l’impact d’une évolution avant de la lancer.',
   },
   {
     id: 'technologies',
     name: 'Technologies du SI',
-    points: [
-      'Piloter projets, MCO et parc applicatif',
-      'Préparer un décommissionnement ou un PRA',
-      'Former les nouveaux arrivants et le support N2/N3',
-    ],
+    photo: 'manager-projet',
+    line: 'Piloter projets, MCO, décommissionnement et PRA sur une base commune.',
   },
   {
     id: 'securite',
     name: 'Sécurité du SI',
-    points: [
-      'Repérer chaque flux de données',
-      'Mesurer votre exposition et vos obsolescences',
-      'Tenir la crise si vous êtes attaqué',
-    ],
+    photo: 'manager-infrastructure',
+    line: 'Repérer chaque flux, mesurer votre exposition, tenir la crise si vous êtes attaqué.',
   },
 ]
 
@@ -167,6 +158,11 @@ export const route = [
   {
     id: 'faire-vivre',
     name: 'Faire vivre',
-    line: 'Support noté 4,75/5, trois versions par an, et un club utilisateurs trois fois par an où vous choisissez les prochaines fonctionnalités.',
+    line: 'Support noté 4,75/5 et trois nouvelles versions par an, mises à jour comprises.',
   },
+]
+
+export const hosting = [
+  { name: 'SaaS', line: 'Hébergé en Europe, conforme RGPD, sur abonnement.' },
+  { name: 'On Premise', line: 'Installé sur votre infrastructure, en investissement.' },
 ]
