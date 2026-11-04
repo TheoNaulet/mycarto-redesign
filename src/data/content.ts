@@ -145,24 +145,12 @@ export const voices = [
 ]
 
 export const route = [
-  {
-    id: 'choisir',
-    name: 'Choisir',
-    line: 'Nos avant-ventes vérifient avec vous la couverture, les conformités et le montage.',
-  },
-  {
-    id: 'deployer',
-    name: 'Déployer',
-    line: 'Paramétrage, reprise de vos données, interfaces ITSM et formation de chaque profil.',
-  },
-  {
-    id: 'faire-vivre',
-    name: 'Faire vivre',
-    line: 'Support noté 4,75/5 et trois nouvelles versions par an, mises à jour comprises.',
-  },
+  { id: 'choisir', name: 'Choisir', line: 'Nos avant-ventes vous aident à faire le bon choix, en toute transparence.' },
+  { id: 'deployer', name: 'Déployer', line: 'Paramétrage, reprise de vos données et formation de chaque profil.' },
+  { id: 'faire-vivre', name: 'Faire vivre', line: 'Support noté 4,75/5 et trois nouvelles versions par an.' },
 ]
 
 export const hosting = [
-  { name: 'SaaS', line: 'Hébergé en Europe, conforme RGPD, sur abonnement.' },
-  { name: 'On Premise', line: 'Installé sur votre infrastructure, en investissement.' },
+  { name: 'SaaS', line: 'hébergé en Europe, RGPD' },
+  { name: 'On Premise', line: 'sur votre infrastructure' },
 ]

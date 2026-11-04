@@ -5,25 +5,25 @@ import { hosting, route } from '../data/content'
 <template>
   <section id="accompagnement" class="section route-section" aria-labelledby="route-title">
     <div class="wrap">
-      <div class="section-head">
+      <div class="section-head route__head">
         <h2 id="route-title">Avec vous du choix à l’usage</h2>
         <p>Plus de 200 projets d’implémentation.</p>
       </div>
 
-      <ol class="route">
-        <li v-for="stop in route" :key="stop.id" class="stop">
-          <span class="stop__mark" aria-hidden="true" />
+      <ol class="steps">
+        <li v-for="stop in route" :key="stop.id" class="step">
+          <img :src="`/brand/steps/${stop.id}.svg`" alt="" width="96" height="96" />
           <h3>{{ stop.name }}</h3>
           <p>{{ stop.line }}</p>
         </li>
       </ol>
 
-      <dl class="hosting">
-        <div v-for="h in hosting" :key="h.name" class="plate">
-          <dt>{{ h.name }}</dt>
-          <dd>{{ h.line }}</dd>
-        </div>
-      </dl>
+      <ul class="hosting" aria-label="Modes d’hébergement">
+        <li v-for="h in hosting" :key="h.name">
+          <strong>{{ h.name }}</strong>
+          {{ h.line }}
+        </li>
+      </ul>
     </div>
   </section>
 </template>
@@ -33,113 +33,99 @@ import { hosting, route } from '../data/content'
   background: var(--yellow);
 }
 
-.route-section .section-head p {
+.route__head {
+  margin-inline: auto;
+  text-align: center;
+}
+
+.route__head p {
   color: var(--navy);
 }
 
-.route {
+.steps {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--space-6);
-  position: relative;
-  padding-top: 3.25rem;
+  gap: var(--space-7);
 }
 
-.route::before {
+.step {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  padding: var(--space-6) var(--space-5) var(--space-6);
+  border: var(--frame) solid var(--navy);
+  border-radius: var(--radius-panel);
+  background: var(--paper);
+  text-align: center;
+}
+
+/* A navy arrow joins each tile to the next. */
+.step + .step::before {
   content: '';
   position: absolute;
-  top: 1.05rem;
-  left: 0.9rem;
-  right: 0;
-  height: 0.5rem;
-  border-radius: 0.25rem;
+  left: calc(-1 * var(--space-7));
+  top: 50%;
+  width: var(--space-7);
+  height: 1.5rem;
+  transform: translateY(-50%);
   background: var(--navy);
+  mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 24"><path d="M6 12h34M31 4l9 8-9 8" fill="none" stroke="black" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>')
+    center / contain no-repeat;
 }
 
-.stop {
-  position: relative;
-  color: var(--navy);
+.step img {
+  width: 5.5rem;
+  height: 5.5rem;
+  margin-bottom: var(--space-4);
 }
 
-.stop__mark {
-  position: absolute;
-  top: -3.25rem;
-  left: 0;
-  width: 2.4rem;
-  height: 2.4rem;
-  border-radius: 50%;
-  background: var(--paper);
-  border: 0.45rem solid var(--navy);
-}
-
-.stop h3 {
+.step h3 {
   font-size: var(--fs-xl);
-  margin-bottom: var(--space-2);
 }
 
-.stop p {
-  max-width: 30ch;
+.step p {
+  margin-top: var(--space-2);
+  max-width: 26ch;
   font-size: var(--fs-s);
 }
 
 .hosting {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-4);
-  margin: var(--space-8) 0 0;
-}
-
-.plate {
   display: flex;
-  align-items: baseline;
-  gap: var(--space-4);
-  padding: var(--space-5) var(--space-6);
-  border-radius: var(--radius-panel);
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-top: var(--space-7);
+}
+
+.hosting li {
+  padding: 0.65rem 1.25rem 0.55rem;
+  border-radius: var(--radius-pill);
   background: var(--navy);
-  color: var(--on-navy);
-}
-
-.plate dt {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: var(--fs-l);
-  white-space: nowrap;
-}
-
-.plate dd {
-  margin: 0;
-  font-size: var(--fs-s);
   color: var(--on-navy-soft);
+  font-size: var(--fs-s);
+}
+
+.hosting strong {
+  font-family: var(--font-display);
+  color: var(--on-navy);
+  margin-right: 0.35em;
 }
 
 @media (max-width: 860px) {
-  .route {
+  .steps {
     grid-template-columns: 1fr;
-    padding-top: 0;
-    padding-left: 3.5rem;
+    gap: var(--space-6);
+    max-width: 26rem;
+    margin-inline: auto;
   }
 
-  .route::before {
-    top: 0.9rem;
-    bottom: 0.9rem;
-    left: 0.95rem;
-    right: auto;
-    width: 0.5rem;
-    height: auto;
-  }
-
-  .stop__mark {
-    top: 0;
-    left: -3.5rem;
-  }
-
-  .hosting {
-    grid-template-columns: 1fr;
-  }
-
-  .plate {
-    flex-direction: column;
-    gap: var(--space-1);
+  .step + .step::before {
+    left: 50%;
+    top: calc(-1 * var(--space-6));
+    width: var(--space-6);
+    height: 1.25rem;
+    transform: translate(-50%, 0) rotate(90deg);
   }
 }
 </style>
