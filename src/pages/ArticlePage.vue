@@ -95,14 +95,14 @@ time {
 }
 
 .article__body {
-  max-width: 44rem;
+  max-width: 52rem;
   padding-top: var(--space-7);
 }
 
 .article__body p,
 .article__body li {
-  font-size: 1.125rem;
-  line-height: 1.75;
+  font-size: var(--fs-l);
+  line-height: 1.7;
 }
 
 .article__body p + p {
@@ -110,19 +110,19 @@ time {
 }
 
 .article__body .lead {
-  font-size: var(--fs-l);
+  font-size: var(--fs-xl);
   line-height: 1.6;
   color: var(--navy);
 }
 
 .article__body h2 {
-  font-size: var(--fs-xl);
+  font-size: var(--fs-2xl);
   margin-top: var(--space-8);
   margin-bottom: var(--space-4);
 }
 
 .article__body h3 {
-  font-size: var(--fs-l);
+  font-size: var(--fs-xl);
   margin-top: var(--space-6);
   margin-bottom: var(--space-2);
 }
