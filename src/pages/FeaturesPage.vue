@@ -8,7 +8,13 @@ const dash = f['tableaux-de-bord']
 const interop = f['interoperabilite']
 const bpmn = f['bpmn']
 
-const systems = ['CMDB', 'ITSM', 'PPM', 'BI', 'SI Finances', 'Base de connaissances', 'LDAP']
+const systems = ['CMDB', 'ITSM', 'PPM', 'BI', 'SI Finances', 'Connaissances', 'LDAP']
+
+/** Position of tool i on the circle around myCarto, in % of the hub box. */
+function hubPos(i: number) {
+  const angle = (i / systems.length) * Math.PI * 2 - Math.PI / 2
+  return { x: 50 + Math.cos(angle) * 38, y: 50 + Math.sin(angle) * 38 }
+}
 
 // One small drawn pictogram per dashboard point, in the navy and yellow of their icon set.
 const dashIcons = [
@@ -106,39 +112,128 @@ const dashIcons = [
       </div>
     </section>
 
-    <!-- 4. Interopérabilité: yellow, myCarto at the centre of the tools it connects -->
+    <!-- 4. Interopérabilité: yellow, myCarto at the hub of the tools it connects -->
     <section :id="interop.id" class="feat feat--yellow" aria-labelledby="t-interop">
       <div class="wrap interop">
-        <span class="feat__icon"><img :src="`/brand/features/${interop.icon}.svg`" alt="" /></span>
-        <h2 id="t-interop">{{ interop.name }}</h2>
-        <p class="feat__why">{{ interop.why }}</p>
-        <div class="hub">
-          <ul class="hub__ring" aria-label="Outils connectés">
-            <li v-for="s in systems" :key="s">{{ s }}</li>
+        <div>
+          <span class="feat__icon"><img :src="`/brand/features/${interop.icon}.svg`" alt="" /></span>
+          <h2 id="t-interop">{{ interop.name }}</h2>
+          <p class="feat__why">{{ interop.why }}</p>
+          <ul class="ticks">
+            <li v-for="p in interop.points" :key="p">{{ p }}</li>
           </ul>
-          <div class="hub__core">
-            <img src="/brand/logo-mycarto.svg" alt="myCarto" width="164" height="50" />
-            <span>API REST</span>
-          </div>
         </div>
-        <p class="feat__case"><strong>Exemple :</strong> {{ interop.usecase }}</p>
+        <div class="hub" role="img" :aria-label="`myCarto relié à ${systems.join(', ')}`">
+          <svg class="hub__lines" viewBox="0 0 100 100" aria-hidden="true">
+            <line v-for="(s, i) in systems" :key="s" x1="50" y1="50" :x2="hubPos(i).x" :y2="hubPos(i).y" />
+          </svg>
+          <span
+            v-for="(s, i) in systems"
+            :key="s"
+            class="hub__node"
+            :style="{ left: `${hubPos(i).x}%`, top: `${hubPos(i).y}%` }"
+            aria-hidden="true"
+          >{{ s }}</span>
+          <span class="hub__core" aria-hidden="true">
+            <img src="/brand/logo-mycarto.svg" alt="" width="164" height="50" />
+            <span>API REST</span>
+          </span>
+        </div>
       </div>
     </section>
 
-    <!-- 5. BPMN: white, the points drawn as a small process -->
+    <!-- 5. BPMN: a real BPMN diagram across three lanes -->
     <section :id="bpmn.id" class="feat" aria-labelledby="t-bpmn">
       <div class="wrap bpmn">
-        <div>
+        <div class="bpmn__head">
           <span class="feat__icon"><img :src="`/brand/features/${bpmn.icon}.svg`" alt="" /></span>
           <h2 id="t-bpmn">{{ bpmn.name }}</h2>
           <p class="feat__why">{{ bpmn.why }}</p>
-          <p class="feat__case"><strong>Exemple :</strong> {{ bpmn.usecase }}</p>
         </div>
-        <ol class="flow">
-          <li class="flow__start" aria-hidden="true" />
-          <li v-for="p in bpmn.points" :key="p" class="flow__task">{{ p }}</li>
-          <li class="flow__end" aria-hidden="true" />
-        </ol>
+
+        <figure class="diagram">
+          <div class="diagram__scroll">
+            <svg viewBox="0 0 1000 390" role="img" aria-labelledby="bpmn-desc">
+              <desc id="bpmn-desc">
+                Exemple de processus Commande client sur trois couloirs. Métier : recevoir la commande, puis selon que le
+                client est connu ou nouveau. Application : créer la fiche dans le CRM, puis facturer dans l’ERP.
+                Infrastructure : le CRM tourne sur le Cloud EU, l’ERP sur le serveur srv-app-01.
+              </desc>
+              <defs>
+                <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                  <path d="M0 0 10 5 0 10z" fill="#262e6f" />
+                </marker>
+              </defs>
+              <!-- lanes -->
+              <g class="lanes">
+                <rect x="0" y="0" width="1000" height="390" rx="14" class="lanes__frame" />
+                <rect x="0" y="0" width="120" height="390" class="lanes__labels" />
+                <line x1="0" y1="130" x2="1000" y2="130" />
+                <line x1="0" y1="260" x2="1000" y2="260" />
+                <line x1="120" y1="0" x2="120" y2="390" />
+                <text x="60" y="70">Métier</text>
+                <text x="60" y="200">Application</text>
+                <text x="60" y="330">Infrastructure</text>
+              </g>
+              <!-- sequence flows -->
+              <g class="flows">
+                <path d="M198 65H214" marker-end="url(#arrow)" />
+                <path d="M412 65H442" marker-end="url(#arrow)" />
+                <path d="M470 93V195H518" marker-end="url(#arrow)" />
+                <path d="M498 65H815V163" marker-end="url(#arrow)" />
+                <path d="M690 195H738" marker-end="url(#arrow)" />
+                <path d="M890 195H940V87" marker-end="url(#arrow)" />
+              </g>
+              <g class="flow-labels">
+                <text x="478" y="150">Nouveau</text>
+                <text x="640" y="56">Connu</text>
+              </g>
+              <!-- associations to infrastructure -->
+              <g class="assoc">
+                <path d="M605 225V292" />
+                <path d="M815 225V292" />
+              </g>
+              <!-- events -->
+              <circle class="ev-start" cx="180" cy="65" r="18" />
+              <circle class="ev-end" cx="940" cy="65" r="18" />
+              <!-- tasks -->
+              <g class="task">
+                <rect x="216" y="35" width="196" height="60" rx="10" />
+                <text x="314" y="70">Recevoir la commande</text>
+              </g>
+              <g class="gateway">
+                <path d="M470 37 498 65 470 93 442 65z" />
+                <path class="gateway__x" d="M461 56 479 74M479 56 461 74" />
+              </g>
+              <g class="task">
+                <rect x="520" y="165" width="170" height="60" rx="10" />
+                <text x="605" y="192">CRM Ventes</text>
+                <text x="605" y="212" class="task__sub">créer la fiche</text>
+              </g>
+              <g class="task">
+                <rect x="740" y="165" width="150" height="60" rx="10" />
+                <text x="815" y="192">ERP Finance</text>
+                <text x="815" y="212" class="task__sub">facturer</text>
+              </g>
+              <!-- systems -->
+              <g class="system">
+                <path d="M555 300a50 10 0 0 1 100 0v40a50 10 0 0 1-100 0z" />
+                <path d="M555 300a50 10 0 0 0 100 0" />
+                <text x="605" y="336">Cloud EU</text>
+              </g>
+              <g class="system">
+                <path d="M765 300a50 10 0 0 1 100 0v40a50 10 0 0 1-100 0z" />
+                <path d="M765 300a50 10 0 0 0 100 0" />
+                <text x="815" y="336">srv-app-01</text>
+              </g>
+            </svg>
+          </div>
+          <figcaption>Exemple de processus fictif : une commande client, du métier au serveur.</figcaption>
+        </figure>
+
+        <ul class="bpmn__points">
+          <li v-for="p in bpmn.points" :key="p">{{ p }}</li>
+        </ul>
       </div>
     </section>
   </div>
@@ -330,6 +425,10 @@ const dashIcons = [
     center / 70% no-repeat;
 }
 
+.feat--yellow .ticks li::before {
+  background-color: var(--paper);
+}
+
 .ticks--light li {
   color: var(--on-navy);
 }
@@ -473,34 +572,64 @@ const dashIcons = [
 
 .interop {
   display: grid;
-  justify-items: center;
-  text-align: center;
-}
-
-.interop .feat__why {
-  margin-inline: auto;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: var(--space-8);
+  align-items: center;
 }
 
 .hub {
-  display: grid;
-  justify-items: center;
-  gap: var(--space-6);
-  margin-top: var(--space-8);
+  position: relative;
+  width: 100%;
+  max-width: 34rem;
+  aspect-ratio: 1;
+  justify-self: center;
+}
+
+.hub__lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.hub__lines line {
+  stroke: var(--navy);
+  stroke-width: 0.6;
+  stroke-dasharray: 1.6 1.2;
+}
+
+.hub__node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  padding: 0.7rem 1.15rem 0.6rem;
+  border-radius: var(--radius-pill);
+  background: var(--navy);
+  color: var(--on-navy);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-m);
+  white-space: nowrap;
 }
 
 .hub__core {
-  order: -1;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   display: grid;
   justify-items: center;
   gap: var(--space-2);
-  padding: var(--space-5) var(--space-7);
+  width: 42%;
+  aspect-ratio: 1;
+  align-content: center;
   border: var(--frame) solid var(--navy);
-  border-radius: var(--radius-panel);
+  border-radius: 50%;
   background: var(--paper);
 }
 
 .hub__core img {
-  width: 11rem;
+  width: 72%;
   height: auto;
 }
 
@@ -510,95 +639,174 @@ const dashIcons = [
   font-size: var(--fs-s);
 }
 
-.hub__ring {
-  position: relative;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: var(--space-3);
-  max-width: 52rem;
-  padding-top: var(--space-6);
-}
-
-/* The link from myCarto down to the tools it feeds. */
-.hub__ring::before {
-  content: '';
-  position: absolute;
-  top: calc(-1 * var(--space-6));
-  left: 50%;
-  width: 4px;
-  height: calc(var(--space-6) * 2);
-  transform: translateX(-50%);
-  border-radius: 2px;
-  background: var(--navy);
-}
-
-.hub__ring li {
-  padding: 0.85rem 1.4rem 0.75rem;
-  border-radius: var(--radius-pill);
-  background: var(--navy);
-  color: var(--on-navy);
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: var(--fs-l);
-}
-
 /* 5. BPMN */
-.bpmn {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: var(--space-8);
-  align-items: center;
-}
-
-.flow {
-  position: relative;
+.bpmn__head {
   display: grid;
   justify-items: center;
-  gap: var(--space-5);
-}
-
-/* The sequence flow line behind the tasks */
-.flow::before {
-  content: '';
-  position: absolute;
-  top: 1rem;
-  bottom: 1rem;
-  left: 50%;
-  width: 3px;
-  transform: translateX(-50%);
-  background: var(--navy);
-}
-
-.flow__start,
-.flow__end {
-  position: relative;
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
-  background: var(--paper);
-  border: 3px solid var(--navy);
-}
-
-.flow__end {
-  border-width: 7px;
-}
-
-.flow__task {
-  position: relative;
-  width: min(100%, 26rem);
-  padding: var(--space-4) var(--space-5);
-  border: var(--frame) solid var(--navy);
-  border-radius: var(--radius-plate);
-  background: var(--yellow);
   text-align: center;
+}
+
+.bpmn__head .feat__why {
+  margin-inline: auto;
+}
+
+.diagram {
+  margin: var(--space-8) 0 0;
+}
+
+.diagram__scroll {
+  overflow-x: auto;
+}
+
+.diagram svg {
+  display: block;
+  width: 100%;
+  min-width: 44rem;
+  height: auto;
+  font-family: var(--font-display);
+}
+
+.lanes__frame {
+  fill: var(--paper);
+  stroke: var(--navy);
+  stroke-width: 3;
+}
+
+.lanes__labels {
+  fill: var(--paper-cool);
+}
+
+.lanes line {
+  stroke: var(--line-strong);
+  stroke-width: 1.5;
+}
+
+.lanes text {
+  fill: var(--navy);
+  font-weight: 700;
+  font-size: 15px;
+  text-anchor: middle;
+}
+
+.flows path {
+  fill: none;
+  stroke: var(--navy);
+  stroke-width: 2.5;
+}
+
+.flow-labels text {
+  fill: var(--text-muted);
+  font-family: var(--font-text);
+  font-size: 14px;
+}
+
+.assoc path {
+  fill: none;
+  stroke: var(--navy);
+  stroke-width: 2;
+  stroke-dasharray: 5 5;
+}
+
+.ev-start {
+  fill: var(--paper);
+  stroke: var(--navy);
+  stroke-width: 3;
+}
+
+.ev-end {
+  fill: var(--paper);
+  stroke: var(--navy);
+  stroke-width: 7;
+}
+
+.task rect {
+  fill: var(--paper);
+  stroke: var(--navy);
+  stroke-width: 3;
+}
+
+.task text,
+.system text {
+  fill: var(--navy);
+  font-weight: 700;
+  font-size: 16px;
+  text-anchor: middle;
+}
+
+.task .task__sub {
+  font-family: var(--font-text);
+  font-weight: 400;
+  font-size: 14px;
+}
+
+.gateway path:first-child {
+  fill: var(--yellow);
+  stroke: var(--navy);
+  stroke-width: 3;
+}
+
+.gateway__x {
+  fill: none;
+  stroke: var(--navy);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.system path {
+  fill: var(--yellow-soft);
+  stroke: var(--navy);
+  stroke-width: 2.5;
+}
+
+.system path:nth-child(2) {
+  fill: none;
+}
+
+.system text {
+  font-size: 14px;
+}
+
+.diagram figcaption {
+  margin-top: var(--space-3);
+  font-size: var(--fs-s);
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.bpmn__points {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-5);
+  margin-top: var(--space-7);
+}
+
+.bpmn__points li {
+  display: grid;
+  align-content: start;
+  gap: var(--space-3);
+  justify-items: start;
   font-family: var(--font-display);
   font-weight: 700;
   font-size: var(--fs-m);
+  line-height: 1.3;
   color: var(--navy);
 }
 
+.bpmn__points li::before {
+  content: '';
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background: var(--yellow)
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m6.5 12.5 3.5 3.5 7.5-8" fill="none" stroke="%23262e6f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>')
+    center / 70% no-repeat;
+}
+
 @media (max-width: 1000px) {
+  .bpmn__points {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .features-head {
     min-height: 0;
   }
@@ -616,7 +824,7 @@ const dashIcons = [
   .meta,
   .cartes,
   .dash,
-  .bpmn {
+  .interop {
     grid-template-columns: 1fr;
     gap: var(--space-7);
   }
@@ -663,9 +871,17 @@ const dashIcons = [
     min-height: 0;
   }
 
-  .ticks li,
-  .hub__ring li {
+  .ticks li {
     font-size: var(--fs-m);
+  }
+
+  .hub__node {
+    padding: 0.45rem 0.7rem 0.4rem;
+    font-size: var(--fs-xs);
+  }
+
+  .bpmn__points {
+    grid-template-columns: 1fr;
   }
 
   .cartes__visual {
