@@ -343,7 +343,7 @@ async function submit() {
 
 .optional {
   font-weight: 400;
-  color: #5d6066;
+  color: var(--text-muted);
 }
 
 .field input,
@@ -364,12 +364,12 @@ async function submit() {
 
 .field input::placeholder,
 .field textarea::placeholder {
-  color: #6f737a;
+  color: var(--placeholder);
 }
 
 .field input:hover,
 .field textarea:hover {
-  border-color: #b7bcc2;
+  border-color: var(--line-strong);
 }
 
 .field input:focus-visible,
@@ -380,7 +380,7 @@ async function submit() {
 }
 
 .field input[aria-invalid='true'] {
-  border-color: #c4302b;
+  border-color: var(--danger);
 }
 
 .field__error {
@@ -388,7 +388,7 @@ async function submit() {
   padding-top: 0.2rem;
   font-size: var(--fs-xs);
   font-weight: 600;
-  color: #b3261e;
+  color: var(--danger);
 }
 
 .consent {
@@ -466,7 +466,7 @@ async function submit() {
 
 .sent__note {
   font-size: var(--fs-s);
-  color: #5d6066;
+  color: var(--text-muted);
 }
 
 /* Aside */

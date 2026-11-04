@@ -75,7 +75,7 @@ const article = articles[0]
 time {
   font-size: var(--fs-s);
   font-weight: 600;
-  color: #5d6066;
+  color: var(--text-muted);
 }
 
 .article__head h1 {
@@ -154,6 +154,6 @@ time {
   padding-top: var(--space-5);
   border-top: 1px solid var(--line);
   font-size: var(--fs-s) !important;
-  color: #5d6066;
+  color: var(--text-muted);
 }
 </style>

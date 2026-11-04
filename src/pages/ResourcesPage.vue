@@ -74,7 +74,7 @@ const [featured, ...rest] = articles
 time {
   font-size: var(--fs-xs);
   font-weight: 600;
-  color: #5d6066;
+  color: var(--text-muted);
 }
 
 .featured__title {
@@ -153,7 +153,7 @@ time {
 .more__note {
   margin-top: var(--space-7);
   font-size: var(--fs-s);
-  color: #5d6066;
+  color: var(--text-muted);
 }
 
 @media (max-width: 1000px) {
