@@ -9,6 +9,18 @@ const interop = f['interoperabilite']
 const bpmn = f['bpmn']
 
 const systems = ['CMDB', 'ITSM', 'PPM', 'BI', 'SI Finances', 'Base de connaissances', 'LDAP']
+
+// One small drawn pictogram per dashboard point, in the navy and yellow of their icon set.
+const dashIcons = [
+  // library of dashboards
+  '<rect x="6" y="8" width="7" height="32" rx="2"/><rect x="16" y="8" width="7" height="32" rx="2"/><path class="y" d="m27 12 6.5-1.7 7.8 29-6.5 1.7z"/>',
+  // clickable chart
+  '<path d="M7 40V8M7 40h34"/><rect class="y" x="13" y="24" width="6" height="16"/><rect x="23" y="16" width="6" height="24"/><path class="y" d="m32 26 9 3.5-4 1.5 4 4-2 2-4-4-1.5 4z"/>',
+  // query designer
+  '<path d="M7 9h34l-13 15v12l-8 4V24z"/><circle class="y" cx="37" cy="37" r="5"/>',
+  // unlimited
+  '<path d="M24 24c-4-5-7-8-11-8a8 8 0 0 0 0 16c4 0 7-3 11-8s7-8 11-8a8 8 0 0 1 0 16c-4 0-7-3-11-8z"/>',
+]
 </script>
 
 <template>
@@ -75,7 +87,11 @@ const systems = ['CMDB', 'ITSM', 'PPM', 'BI', 'SI Finances', 'Base de connaissan
         </div>
         <div class="dash">
           <ul class="tiles">
-            <li v-for="p in dash.points" :key="p">{{ p }}</li>
+            <li v-for="(p, i) in dash.points" :key="p">
+              <!-- eslint-disable-next-line vue/no-v-html -->
+              <svg viewBox="0 0 48 48" aria-hidden="true" v-html="dashIcons[i]" />
+              {{ p }}
+            </li>
           </ul>
           <img class="dash__photo" src="/brand/photos/manager-infrastructure.webp" alt="" width="512" height="513" />
         </div>
@@ -332,7 +348,9 @@ const systems = ['CMDB', 'ITSM', 'PPM', 'BI', 'SI Finances', 'Base de connaissan
 
 .tiles li {
   display: flex;
-  align-items: flex-end;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-5);
   min-height: 10rem;
   padding: var(--space-5);
   border: var(--frame) solid var(--navy);
@@ -343,6 +361,20 @@ const systems = ['CMDB', 'ITSM', 'PPM', 'BI', 'SI Finances', 'Base de connaissan
   font-size: var(--fs-l);
   line-height: 1.25;
   color: var(--navy);
+}
+
+.tiles svg {
+  width: 3rem;
+  height: 3rem;
+  fill: none;
+  stroke: var(--navy);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.tiles svg :deep(.y) {
+  fill: var(--yellow);
 }
 
 .dash__photo {
@@ -509,7 +541,21 @@ const systems = ['CMDB', 'ITSM', 'PPM', 'BI', 'SI Finances', 'Base de connaissan
   }
 
   .meta__photo,
-  .dash__photo {
+  .tiles svg {
+  width: 3rem;
+  height: 3rem;
+  fill: none;
+  stroke: var(--navy);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.tiles svg :deep(.y) {
+  fill: var(--yellow);
+}
+
+.dash__photo {
     max-width: 20rem;
   }
 }
