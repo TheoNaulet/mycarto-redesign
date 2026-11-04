@@ -10,6 +10,7 @@ export const site = {
   email: 'contact@my-carto.com',
   phone: '04 67 50 56 11',
   phoneHref: 'tel:+33467505611',
+  address: ['AB+ Software', '137 rue Claude Balbastre', '34000 Montpellier'],
 }
 
 // Shown in the notice bar and footer. Check the spelling before sending.

@@ -12,6 +12,7 @@ export const router = createRouter({
       meta: { title: 'Fonctionnalités' },
     },
     { path: '/demo', name: 'demo', component: () => import('./pages/DemoPage.vue'), meta: { title: 'Demander une démo' } },
+    { path: '/contact', name: 'contact', component: () => import('./pages/ContactPage.vue'), meta: { title: 'Contact commercial' } },
     { path: '/clients', name: 'clients', component: () => import('./pages/ClientsPage.vue'), meta: { title: 'Nos clients' } },
     {
       path: '/ressources',

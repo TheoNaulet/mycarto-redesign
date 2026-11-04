@@ -1,0 +1,153 @@
+/* Form fields, shared by the demo and contact pages. */
+.fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-1) var(--space-4);
+}
+
+.field--wide {
+  grid-column: 1 / -1;
+}
+
+.field label {
+  display: block;
+  margin-bottom: var(--space-1);
+  font-weight: 600;
+  font-size: var(--fs-s);
+  color: var(--navy);
+}
+
+.optional {
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.65rem 0.9rem;
+  border: 2px solid var(--line);
+  border-radius: var(--radius-plate);
+  background: var(--paper);
+  font-size: var(--fs-m);
+  transition: border-color 0.2s var(--ease-out);
+}
+
+.field textarea {
+  resize: vertical;
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+  color: var(--placeholder);
+}
+
+.field input:hover,
+.field textarea:hover {
+  border-color: var(--line-strong);
+}
+
+.field input:focus-visible,
+.field textarea:focus-visible {
+  outline: none;
+  border-color: var(--navy);
+  box-shadow: 0 0 0 3px rgb(38 46 111 / 0.18);
+}
+
+.field input[aria-invalid='true'] {
+  border-color: var(--danger);
+}
+
+.field__error {
+  min-height: 1.5rem;
+  padding-top: 0.2rem;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--danger);
+}
+
+.consent {
+  margin-top: var(--space-3);
+}
+
+.consent label {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  font-size: var(--fs-s);
+  cursor: pointer;
+}
+
+.consent input {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: 0.15rem;
+  flex: none;
+  accent-color: var(--navy);
+}
+
+.submit {
+  margin-top: var(--space-4);
+}
+
+.submit:disabled {
+  opacity: 0.75;
+  cursor: progress;
+}
+
+.spinner {
+  width: 1.1rem;
+  height: 1.1rem;
+  border: 2.5px solid var(--navy);
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Sent */
+.sent {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-3);
+  padding-block: var(--space-6);
+}
+
+.sent svg {
+  width: 3.5rem;
+  height: 3.5rem;
+  padding: 0.6rem;
+  border-radius: 50%;
+  background: var(--yellow);
+  fill: none;
+  stroke: var(--navy);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.sent h2 {
+  font-size: var(--fs-2xl);
+}
+
+.sent p {
+  max-width: 46ch;
+}
+
+.sent__note {
+  font-size: var(--fs-s);
+  color: var(--text-muted);
+}
+
+
+@media (max-width: 640px) {
+  .fields {
+    grid-template-columns: 1fr;
+  }
+}

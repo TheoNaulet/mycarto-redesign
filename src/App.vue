@@ -13,7 +13,7 @@ const route = useRoute()
   <main id="main">
     <RouterView />
   </main>
-  <FinalCall v-if="route.name !== 'demo'" />
+  <FinalCall v-if="route.name !== 'demo' && route.name !== 'contact'" />
   <SiteFooter />
 </template>
 

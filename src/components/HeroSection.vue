@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { site } from '../data/content'
 </script>
 
 <template>
@@ -10,7 +9,7 @@ import { site } from '../data/content'
         <p>Le logiciel de cartographie du SI : vos référentiels deviennent des cartes, toujours à jour.</p>
         <div class="hero__actions">
           <RouterLink class="btn btn--primary btn--lg" to="/demo">Demander une démo</RouterLink>
-          <a class="btn btn--ghost btn--lg" :href="site.contact">Contact commercial</a>
+          <RouterLink class="btn btn--ghost btn--lg" to="/contact">Contact commercial</RouterLink>
         </div>
       </div>
       <figure class="hero__visual">

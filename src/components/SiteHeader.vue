@@ -43,7 +43,7 @@ const nav = [
           </li>
         </ul>
         <div class="header__actions">
-          <a class="btn btn--ghost" :href="site.contact">Contact commercial</a>
+          <RouterLink class="btn btn--ghost" to="/contact" @click="open = false">Contact commercial</RouterLink>
           <RouterLink class="btn btn--primary" to="/demo" @click="open = false">Demander une démo</RouterLink>
         </div>
       </nav>

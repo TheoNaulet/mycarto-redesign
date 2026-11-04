@@ -9,7 +9,7 @@ import { site } from '../data/content'
       <p>Demandez une démo, l’équipe myCarto vous recontacte.</p>
       <div class="final__actions">
         <RouterLink class="btn btn--primary btn--lg" to="/demo">Demander une démo</RouterLink>
-        <a class="btn btn--ghost btn--lg" :href="site.contact">Contact commercial</a>
+        <RouterLink class="btn btn--ghost btn--lg" to="/contact">Contact commercial</RouterLink>
       </div>
       <p class="final__direct">
         Ou directement : <a :href="site.phoneHref">{{ site.phone }}</a>, <a :href="`mailto:${site.email}`">{{ site.email }}</a>
