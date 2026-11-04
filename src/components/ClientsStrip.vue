@@ -19,13 +19,25 @@ const shown = clients.slice(0, 14)
 
 <style scoped>
 .clients {
+  display: flex;
+  align-items: center;
+  min-height: 100dvh;
   background: var(--navy);
-  padding-block: var(--space-7);
+  padding-block: var(--space-9);
+}
+
+.clients > .wrap {
+  width: min(100% - 2 * var(--gutter), var(--max));
 }
 
 .clients h2 {
-  font-size: var(--fs-xl);
-  line-height: 1.2;
+  font-size: var(--fs-2xl);
+  line-height: 1.1;
+  max-width: 22ch;
+}
+
+.clients h2 span {
+  display: block;
 }
 
 .clients h2 span {
@@ -35,14 +47,14 @@ const shown = clients.slice(0, 14)
 .clients__logos {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: var(--space-5) var(--space-6);
-  margin-top: var(--space-6);
+  gap: var(--space-7) var(--space-6);
+  margin-top: var(--space-8);
 }
 
 .clients__logos li {
   display: grid;
   place-items: center;
-  height: 3.5rem;
+  height: 4.5rem;
 }
 
 .clients__logos img {
@@ -58,6 +70,14 @@ const shown = clients.slice(0, 14)
 }
 
 @media (max-width: 520px) {
+  .clients {
+    padding-block: var(--space-8);
+  }
+
+  .clients__logos li {
+    height: 3.5rem;
+  }
+
   .clients__logos {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--space-4);
