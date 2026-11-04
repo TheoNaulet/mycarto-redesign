@@ -17,17 +17,12 @@
 :root {
   /* Brand palette, from the myCarto Elementor kit */
   --navy: #262e6f;
-  --navy-plan: #2e3780;
   --navy-deep: #1f2660;
   --yellow: #fac130;
-  --yellow-pale: #fbf1c6;
   --blue: #398acb;
-  --blue-deep: #295c98;
   --text: #363637;
   --line: #dee2e4;
-  --grey: #6b6e72;
   --paper: #ffffff;
-  --paper-soft: #f9fafb;
   --paper-cool: #eef1f5;
 
   /* Ink on navy */
@@ -232,14 +227,6 @@ button {
   color: var(--navy);
 }
 
-.btn--navy {
-  background: var(--navy);
-  color: var(--on-navy);
-}
-
-.btn--navy:hover {
-  background: var(--blue-deep);
-}
 
 .btn--lg {
   min-height: 3.5rem;
@@ -292,43 +279,6 @@ button {
   margin-bottom: 0;
 }
 
-.frame {
-  margin: 0;
-  border: var(--frame) solid var(--navy);
-  border-radius: var(--radius-panel);
-  padding: var(--space-2) var(--space-6);
-}
-
-.frame-row {
-  display: grid;
-  grid-template-columns: minmax(15rem, 1fr) minmax(0, 1.3fr);
-  gap: var(--space-5);
-  align-items: center;
-  padding-block: var(--space-4);
-}
-
-.frame-row + .frame-row {
-  border-top: 1px solid var(--line);
-}
-
-.frame-row__title {
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
-  margin: 0;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: var(--fs-l);
-  line-height: 1.2;
-  color: var(--navy);
-}
-
-.frame-row__text {
-  margin: 0;
-  font-size: var(--fs-s);
-  line-height: 1.5;
-}
-
 @media (max-width: 1100px) {
   .split {
     grid-template-columns: 1fr;
@@ -340,13 +290,3 @@ button {
   }
 }
 
-@media (max-width: 720px) {
-  .frame {
-    padding: var(--space-1) var(--space-4);
-  }
-
-  .frame-row {
-    grid-template-columns: 1fr;
-    gap: var(--space-2);
-  }
-}
