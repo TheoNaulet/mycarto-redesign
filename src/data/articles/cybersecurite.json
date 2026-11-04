@@ -1,0 +1,281 @@
+[
+ {
+  "type": "p",
+  "text": "Pour les DSI, la question n’est plus de savoir si une attaque du système d’information aura lieu, mais quand ? La première question que pose l’ANSSI quand elle intervient sur un SI attaqué : disposez-vous d’une cartographie de votre système d’information ? Car sans cartographie du SI, difficile de mettre en place un plan d’action ou une stratégie de cybersécurité. Il faut connaitre son territoire numérique, pour poser une réflexion de gestion des risques, développer la résilience du SI, se mettre en conformité avec les exigences et les normes de sécurité. La cartographie du SI s’impose comme un incontournable des outils de cybersécurité. Pourtant, elle reste trop souvent sous-utilisée ou limitée à des inventaires sommaires. Et si on admet que le SI sera un jour attaqué, il faut d’ores et déjà se préparer à gérer la crise et la reprise de l’activité."
+ },
+ {
+  "type": "p",
+  "text": "Cet article explore les apports concrets de la cartographie SI à chaque étape critique : avant, pendant et après une cyberattaque."
+ },
+ {
+  "type": "p",
+  "text": "Cet article fait suite à l’intervention d’AB+ Software lors de la Journée de la Cybersécurité organisée par le SESAN."
+ },
+ {
+  "type": "h2",
+  "text": "Pourquoi la cartographie du SI est un indispensable en cybersécurité ?"
+ },
+ {
+  "type": "h3",
+  "text": "Quand l’ANSSI met la cartographie en prérequis"
+ },
+ {
+  "type": "p",
+  "text": "La cartographie du SI fournit une représentation visuelle, technique et fonctionnelle des actifs informatiques : applications, serveurs, réseaux, flux, utilisateurs. Elle est au cœur des bonnes pratiques recommandées par l’ANSSI, en raison de ses apports essentiels :"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "Identification des zones critiques et obsolètes ;",
+   "Analyse des interdépendances pour anticiper les effets de cascade ;",
+   "Visibilité des flux réels, souvent divergents des schémas théoriques ;",
+   "Support à la documentation de sécurité, à la gouvernance et aux audits."
+  ]
+ },
+ {
+  "type": "p",
+  "text": "Guide de cartographie du SI édité par l’ANSSI La cartographie du SI permet également aux RSSI de quitter une approche purement technique de la sécurité. En mettant en perspective les processus métiers avec les applications associées, les flux de données, il gagnera en visibilité sur les implications métiers."
+ },
+ {
+  "type": "p",
+  "text": "Connaissez-vous bien votre parc informatique et vos actifs métier ? 1ère des 13 recommandations du guide de la CYBERSÉCURITÉ"
+ },
+ {
+  "type": "h3",
+  "text": "Se mettre en conformité avec les normes et exigences de son secteur."
+ },
+ {
+  "type": "p",
+  "text": "Selon votre secteur d’activité ou votre stratégie de certification, la cartographie sera indispensable pour votre mise en conformité, produire les livrables exigés et auditer votre SI."
+ },
+ {
+  "type": "p",
+  "text": "La cartographie du SI joue un rôle clé dans les audits de conformité aux réglementations comme ISO 27001, NIS2 ou le RGPD. Ces normes exigent toutes une connaissance précise des actifs informatiques et des flux de données. En centralisant cette information, la cartographie facilite la documentation des risques, des traitements de données personnelles et des mesures de sécurité mises en place. Elle devient ainsi un support concret pour démontrer sa conformité, structurer son SMSI, ou encore établir son registre des traitements de données."
+ },
+ {
+  "type": "h3",
+  "text": "La cartographie avant, pendant et après une cyberattaque"
+ },
+ {
+  "type": "p",
+  "text": "La cybersécurité est un enjeu qui ne dort jamais… Que cela soit pour se prémunir, pour gérer une situation de crise ou pour reconstruire votre SI, la cartographie vient au soutien de chaque temps… Car n’oublions pas que la question est « quand »… et non pas « si… » vous allez vous faire cyber-attaquer."
+ },
+ {
+  "type": "h2",
+  "text": "Avant l’attaque : anticiper les risques, réduire la surface d’attaque et se mettre en conformité"
+ },
+ {
+  "type": "h3",
+  "text": "Auditer et visualiser les actifs critiques"
+ },
+ {
+  "type": "p",
+  "text": "Une cartographie dynamique et actualisée permet d’avoir une vision exhaustive du patrimoine IT. Du moins c’est ce qu’elle ambitionne. Car le défi de l’exhaustivité est un challenge tout comme celui de la qualité des données. Il en va de la maîtrise de son patrimoine IT. Même partielle la cartographie du SI révèle les actifs sensibles, les systèmes en fin de vie, les interconnexions à risque et les zones d’ombre."
+ },
+ {
+  "type": "p",
+  "text": "Une cartographie bien renseignée va fournir des informations capitales pour développer la résilience du SI."
+ },
+ {
+  "type": "p",
+  "text": "Cas concret : une entreprise de services financiers a découvert, grâce à sa cartographie, que plusieurs de ses flux applicatifs sensibles étaient encore exposés sans chiffrement via des canaux non documentés. Cette prise de conscience a permis de fermer des portes d’entrée exploitables par des cybercriminels."
+ },
+ {
+  "type": "h3",
+  "text": "Réduire la dette technique"
+ },
+ {
+  "type": "p",
+  "text": "En identifiant les composants obsolètes, les flux non chiffrés ou les applications isolées, la cartographie aide à prioriser les actions de remédiation. Elle met en lumière la dette technique qui constitue un vecteur d’attaque fréquent. La cartographie permet un suivi précis et dynamique des versions, des dates d’obsolescence des logiciels socles comme les SGBD et OS. Avec un code couleur élémentaire, la dette technique apparait sur vos cartes. A noter que le logiciel de cartographie du SI gagnera à s’interfacer avec des encyclopédies SI pour suivre les versions de ses solutions."
+ },
+ {
+  "type": "p",
+  "text": "Cas concret : lors d’une revue des risques Cybersécurité, les cartes ont mis en évidence des vulnérabilités critiques concernant des composants que les équipes pensaient décommissionnés."
+ },
+ {
+  "type": "h3",
+  "text": "Rationaliser votre Système d’Information"
+ },
+ {
+  "type": "p",
+  "text": "Une évidence qui n’est pas sans conséquence : les systèmes d’information ne cessent de grandir et de se complexifier. Ce n’est pas pour autant une fatalité. La cartographie du SI permet un inventaire précis de votre patrimoine applicatif et de supprimer les redondances ou chevauchement. Plus on réduit le nombre d’applications, plus on augmente la résilience de son Système d’information."
+ },
+ {
+  "type": "p",
+  "text": "Dans cette logique de rationalisation, la cartographie permet d’aligner la criticité des applications et de l’infrastructure avec la criticité métier. Cela permet également de réaliser des économies."
+ },
+ {
+  "type": "p",
+  "text": "« Grâce à la démarche d’architecture d’entreprise et la solution myCarto, nous optimisons le fonctionnement de notre SI. Un exemple parmi d’autres : en alignant les niveaux de service de notre infrastructure avec la criticité des applications, nous réalisons +40 k€ d’économie sur nos abonnements clouds. »"
+ },
+ {
+  "type": "h2",
+  "text": "Pendant l’attaque : réagir rapidement et efficacement"
+ },
+ {
+  "type": "h3",
+  "text": "Se préparer avec des scénarios d’impact"
+ },
+ {
+  "type": "p",
+  "text": "La cartographie permet de modéliser des scénarios de crise : attaque sur une application critique, compromission d’une infrastructure centrale, rupture de flux inter-applicatifs… Elle sert de support à la construction des PCA (Plans de Continuité d’Activité)."
+ },
+ {
+  "type": "p",
+  "text": "Certaines organisations intègrent la cartographie dans des exercices de cyber range, simulant des attaques pour entraîner leurs équipes à réagir."
+ },
+ {
+  "type": "h3",
+  "text": "Isoler, contenir, décider avec des cartes."
+ },
+ {
+  "type": "p",
+  "text": "Lors d’une attaque, chaque minute compte. La cartographie offre une vision opérationnelle des interconnexions et flux en cours. Elle aide à isoler les systèmes compromis, contenir la propagation et piloter les décisions critiques."
+ },
+ {
+  "type": "p",
+  "text": "L’une des premières questions posées par les équipes de l’ANSSI quand elles interviennent dans une structure victime d’une cyberattaque est : « Disposez-vous d’une cartographie de votre système d’information ? »"
+ },
+ {
+  "type": "h3",
+  "text": "Un outil toujours disponible en cas d’incident"
+ },
+ {
+  "type": "p",
+  "text": "Il est crucial que la solution de cartographie elle-même reste disponible pendant l’attaque. Cela impose des choix techniques robustes :"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "Déploiement On Premise sur infrastructure résiliente,",
+   "Ou solution SaaS avec garantie d’accès aux restitutions, même en dégradé."
+  ]
+ },
+ {
+  "type": "p",
+  "text": "« Trop d’entreprises perdent leurs outils de pilotage au moment où elles en ont le plus besoin » – Observatoire de la Continuité Numérique"
+ },
+ {
+  "type": "h3",
+  "text": "Mieux communiquer en temps de crise"
+ },
+ {
+  "type": "p",
+  "text": "Qui est impacté par la défaillance de telle application ? Quelles sont les données compromises à annoncer à la CNIL au titre du RGPD ? Quelles directions sont impactées ? Qui faut-il prévenir en interne ? Quels clients sont concernés ?"
+ },
+ {
+  "type": "p",
+  "text": "Autant de question auxquelles il faudra rapidement répondre pour élaborer vos différentes communications. La bonne nouvelle, c’est que la cartographie de votre SI pourra y répondre très simplement. En identifiant les points d’attaque, vous remontez très rapidement aux acteurs métiers, aux flux de données touchés…"
+ },
+ {
+  "type": "p",
+  "text": "La cartographie facilite la communication de crise entre DSI, RSSI, direction générale, direction métier et tout votre écosystème. La cartographie vous fournira des supports de communication intelligible par tous les acteurs de votre cellule de crise, même ceux qui ne sont rompus à la technicité de votre système d’information."
+ },
+ {
+  "type": "h2",
+  "text": "Après l’attaque : reconstruire et renforcer"
+ },
+ {
+  "type": "h3",
+  "text": "Piloter le Plan de Reprise d’Activité (PRA)"
+ },
+ {
+  "type": "p",
+  "text": "La cartographie fournit une feuille de route pour planifier les restaurations selon la criticité et les dépendances. Elle permet de reprendre l’activité par paliers structurés."
+ },
+ {
+  "type": "h3",
+  "text": "Capitaliser pour renforcer la résilience"
+ },
+ {
+  "type": "p",
+  "text": "Post-incident, la cartographie permet de documenter les causes, ajuster les processus, et améliorer la gouvernance. Elle sert de base au retour d’expérience (REX) et aux audits."
+ },
+ {
+  "type": "p",
+  "text": "« Moins de 30 % des entreprises ayant subi une attaque en tirent un plan d’amélioration formalisé » – PwC France"
+ },
+ {
+  "type": "h3",
+  "text": "Valoriser la mémoire organisationnelle"
+ },
+ {
+  "type": "p",
+  "text": "Une cartographie bien gérée contribue à créer une mémoire du SI, facilitant l’intégration de nouveaux collaborateurs, la transmission des connaissances, et la continuité opérationnelle en cas de départ d’experts."
+ },
+ {
+  "type": "h2",
+  "text": "Comment choisir un outil de cartographie SI adapté à la cybersécurité ?"
+ },
+ {
+  "type": "p",
+  "text": "La mise en place d’une cartographie du SI est une démarche qui améliorera globalement la gouvernance du SI. Elle servira tout aussi bien les enjeux de cybersécurité, que de transformation numérique, de rationalisation du SI, de gouvernance de la DSI, de gestion de projet et plus globalement d’architecture d’entreprise."
+ },
+ {
+  "type": "p",
+  "text": "Plus la cartographie du SI sera intégrée aux différents métiers, plus l’exhaustivité et la qualité des données sera garantie. La cartographie du SI est un processus collectif et collaboratif. Voici des points clé pour son choix afin d’adresse les enjeux de cybersécurité :"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "Souplesse : les SI évoluent sans cesse, votre outil qui le cartographie doit pouvoir évoluer au même rythme. Le méta-modèle de myCarto est un atout décisif.",
+   "Automatisation : connecteurs natifs aux outils IT (CMDB, annuaires, supervision…).",
+   "Restitutions métiers et techniques : vues adaptées à chaque profil (RSSI, urbaniste, responsable métier).",
+   "Disponibilité en cas de crise : solution on premise sécurisée ou SaaS tolérant aux pannes, avec accès permanent aux données critiques.",
+   "Facilité de mise à jour : agilité dans le maintien en condition opérationnelle de la cartographie.",
+   "Simplicité d’usage : interfaces intuitives, exportables, partageables."
+  ]
+ },
+ {
+  "type": "p",
+  "text": "myCarto est conçu pour répondre à ces exigences, en offrant un équilibre entre performance, accessibilité et résilience."
+ },
+ {
+  "type": "h2",
+  "text": "FAQ : Cartographie & cybersécurité"
+ },
+ {
+  "type": "p",
+  "text": "Non, mais elle permet de limiter les failles et réduit les impacts en facilitant la réaction et la reconstruction."
+ },
+ {
+  "type": "p",
+  "text": "Au minimum à chaque changement majeur du SI. Idéalement, en continu via automatisation."
+ },
+ {
+  "type": "p",
+  "text": "Idéalement l’intégralité du SI doit être cartographié. Il est préconisé d’à minima répertorier les domaines critiques pour l’activité. Et il faudra adapter le niveau de détail selon la criticité des périmètres."
+ },
+ {
+  "type": "p",
+  "text": "Non, elle la complète avec une vision plus visuelle, dynamique et métier. Elle permet de plus une visualisation des interactions au sein du SI. Il est préconisé d’interfacer votre cartographie avec toutes les ressources décrivant votre SI."
+ },
+ {
+  "type": "p",
+  "text": "Découvrir notre démarche d’intégration"
+ },
+ {
+  "type": "p",
+  "text": "Une meilleure réactivité, une diminution des temps d’arrêt, et une gouvernance éclairée en situation critique."
+ },
+ {
+  "type": "h2",
+  "text": "En conclusion"
+ },
+ {
+  "type": "p",
+  "text": "La cartographie du SI n’est plus une option : c’est un outil opérationnel clé pour toute stratégie de cybersécurité. En amont, elle révèle les failles. En crise, elle oriente les décisions. Après l’attaque, elle structure la reconstruction."
+ },
+ {
+  "type": "p",
+  "text": "Avec myCarto, adoptez une cartographie évolutive, toujours disponible, et conçue pour servir la résilience de votre système d’information."
+ },
+ {
+  "type": "p",
+  "text": "En offrant une vue complète et dynamique de votre architecture IT, la cartographie du SI vous permet d’identifier rapidement les redondances, d’optimiser les ressources, et de mieux planifier la transformation numérique de votre entreprise. En suivant les étapes pratiques que nous avons décrites – de l’audit initial à l’optimisation continue – vous pouvez réduire la complexité, améliorer la performance de vos systèmes, et diminuer vos coûts d’exploitation."
+ },
+ {
+  "type": "p",
+  "text": "Simplifier votre infrastructure IT n’est pas seulement une nécessité technique, c’est un levier stratégique pour garantir la croissance et la compétitivité de votre entreprise. Avec les bons outils et une approche structurée, vous pouvez transformer la gestion de votre infrastructure en un atout majeur pour votre performance."
+ }
+]

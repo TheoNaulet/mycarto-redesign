@@ -1,0 +1,225 @@
+[
+ {
+  "type": "p",
+  "text": "Votre système d’information compte des dizaines, souvent des centaines d’applications. Qui les utilise ? Quelles données échangent-elles ? Que se passe-t-il si l’une d’elles tombe en panne ou doit être remplacée ? Sans vue d’ensemble, chaque projet, chaque audit et chaque incident commence par une enquête."
+ },
+ {
+  "type": "p",
+  "text": "La cartographie applicative répond à ces questions. Longtemps réduite à un inventaire, elle est devenue la colonne vertébrale du pilotage du SI : elle aide à maîtriser la complexité, à sécuriser les flux et à préparer les transformations."
+ },
+ {
+  "type": "p",
+  "text": "Ce guide explique ce qu’est une cartographie applicative, ce qu’elle contient, comment la réaliser en six étapes et quelles erreurs éviter, avec un exemple concret."
+ },
+ {
+  "type": "h2",
+  "text": "Qu’est-ce que la cartographie applicative ?"
+ },
+ {
+  "type": "p",
+  "text": "La cartographie applicative est la représentation de l’ensemble des applications d’un système d’information, de leurs échanges de données et de leurs dépendances, rattachées aux processus métiers qu’elles servent. Elle montre non seulement ce qui existe, mais aussi comment tout cela fonctionne ensemble."
+ },
+ {
+  "type": "p",
+  "text": "C’est ce qui la distingue d’un simple inventaire. Un inventaire liste les applications ; une cartographie décrit leurs relations. C’est cette vue des liens qui permet d’anticiper l’effet d’un changement avant de le subir."
+ },
+ {
+  "type": "p",
+  "text": "Une cartographie applicative complète décrit quatre types d’informations :"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "Les applications : nom, éditeur, version, mode d’hébergement (sur site, cloud, SaaS), responsables métier et technique, niveau de criticité, étape du cycle de vie.",
+   "Les flux et interfaces : quelles données circulent, dans quel sens, à quelle fréquence et par quel moyen (API, transfert de fichiers, bus d’échanges).",
+   "Le rattachement au métier : les fonctions et processus que chaque application soutient, et les utilisateurs concernés.",
+   "Les dépendances techniques : serveurs, bases de données et services cloud sur lesquels repose chaque application."
+  ]
+ },
+ {
+  "type": "h2",
+  "text": "Les quatre couches d’une cartographie du SI"
+ },
+ {
+  "type": "p",
+  "text": "La cartographie applicative est une des quatre couches qui décrivent un système d’information. Elle est la plus utile quand elle est reliée aux trois autres :"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "La couche métier décrit les processus, les activités et les acteurs de l’organisation.",
+   "La couche fonctionnelle décrit les fonctions dont le métier a besoin (facturer, gérer un dossier patient, suivre un stock), indépendamment des logiciels.",
+   "La couche applicative décrit les applications qui réalisent ces fonctions et les flux entre elles.",
+   "La couche technique décrit l’infrastructure qui héberge les applications : serveurs, réseaux, bases de données, services cloud."
+  ]
+ },
+ {
+  "type": "p",
+  "text": "La couche applicative fait le pont entre le métier et la technique. C’est elle qui permet de répondre à une question comme « si ce serveur s’arrête, quels processus métiers sont touchés ? »."
+ },
+ {
+  "type": "p",
+  "text": "Chaque couche s’appuie sur celle du dessous : c’est en les reliant qu’on suit l’impact d’un changement technique jusqu’au processus métier."
+ },
+ {
+  "type": "h2",
+  "text": "Pourquoi la cartographie applicative est indispensable aux DSI et RSSI"
+ },
+ {
+  "type": "h3",
+  "text": "1. Maîtriser la complexité du SI"
+ },
+ {
+  "type": "p",
+  "text": "Au fil des projets, les applications s’empilent : outils achetés par les métiers, logiciels hérités d’une fusion, solutions SaaS adoptées sans passer par la DSI. La cartographie rend ces chevauchements visibles. Deux applications qui couvrent la même fonction, une licence que plus personne n’utilise, un outil critique sans responsable identifié : autant de pistes pour simplifier le portefeuille et réduire les coûts."
+ },
+ {
+  "type": "h3",
+  "text": "2. Sécuriser les flux et renforcer la cybersécurité"
+ },
+ {
+  "type": "p",
+  "text": "On ne protège bien que ce que l’on connaît. La cartographie identifie les applications critiques, les flux qui transportent des données sensibles et les points d’exposition vers l’extérieur. C’est pourquoi l’ANSSI en fait un préalable à toute démarche de sécurité (voir notre article sur la cartographie selon l’ANSSI), et pourquoi elle est au cœur de la mise en conformité à la directive NIS2. En cas d’incident, elle permet aussi de mesurer tout de suite ce qui est touché."
+ },
+ {
+  "type": "h3",
+  "text": "3. Piloter la transformation et réduire la dette technique"
+ },
+ {
+  "type": "p",
+  "text": "Migration vers le cloud, remplacement d’un ERP, fin de support d’un logiciel : chaque transformation a des effets en chaîne. La cartographie montre à l’avance quelles applications, quels flux et quels utilisateurs seront concernés. Elle aide aussi à repérer les applications vieillissantes qui alimentent la dette technique et à prioriser les chantiers."
+ },
+ {
+  "type": "h3",
+  "text": "4. Urbaniser le système d’information"
+ },
+ {
+  "type": "p",
+  "text": "L’urbanisation consiste à organiser le SI en zones cohérentes, comme on organise une ville en quartiers. La cartographie applicative en est le point de départ : elle donne la photo de l’existant à partir de laquelle on dessine la cible, et un référentiel commun aux DSI, architectes, RSSI et métiers. Notre article sur le plan d’occupation des sols détaille cette démarche."
+ },
+ {
+  "type": "h2",
+  "text": "Comment réaliser une cartographie applicative en 6 étapes"
+ },
+ {
+  "type": "p",
+  "text": "Une cartographie utile ne se construit pas en une fois. Elle se bâtit par étapes, en commençant par ce qui sert le plus vite."
+ },
+ {
+  "type": "ul",
+  "items": [
+   "Définir l’objectif et le périmètre. Préparer un audit de sécurité, rationaliser le portefeuille, préparer une migration : l’objectif décide des informations à collecter. Commencez par un domaine (les ressources humaines, la production, un site) plutôt que par tout le SI.",
+   "Inventorier les applications. Croisez plusieurs sources : CMDB, contrats et factures de licences, annuaires, outils de supervision, entretiens avec les référents métiers. Les applications SaaS achetées directement par les métiers sont souvent les grandes oubliées.",
+   "Qualifier chaque application. Pour chacune : un responsable métier, un responsable technique, un niveau de criticité (par exemple selon les critères de disponibilité, intégrité, confidentialité et traçabilité) et une étape de cycle de vie (en service, à remplacer, à retirer).",
+   "Décrire les flux et les interfaces. Pour chaque échange : l’application source, l’application cible, les données transportées, le mode d’échange et la fréquence. C’est l’étape la plus longue, mais c’est elle qui donne sa valeur à la cartographie.",
+   "Relier au métier et à l’infrastructure. Rattachez chaque application aux fonctions et processus qu’elle soutient, puis aux serveurs et services qui l’hébergent. Vous pouvez alors suivre un impact du serveur jusqu’au processus métier.",
+   "Faire vivre la cartographie. Nommez un responsable par domaine, intégrez la mise à jour aux projets (toute mise en production modifie la carte) et planifiez une revue régulière. Une cartographie qui n’est plus à jour perd vite la confiance de ceux qui l’utilisent."
+  ]
+ },
+ {
+  "type": "h2",
+  "text": "Les vues clés d’une cartographie applicative"
+ },
+ {
+  "type": "p",
+  "text": "Une même base d’informations produit plusieurs vues, chacune répondant à une question précise :"
+ },
+ {
+  "type": "h2",
+  "text": "Exemple : préparer le remplacement d’un logiciel"
+ },
+ {
+  "type": "p",
+  "text": "Prenons un cas courant : une organisation doit remplacer son logiciel de paie, dont le support s’arrête. Sans cartographie, l’équipe projet découvre les interfaces au fil des tests, et les retards s’accumulent."
+ },
+ {
+  "type": "p",
+  "text": "Avec une cartographie applicative à jour, l’analyse d’impact donne la liste complète avant le lancement : les flux entrants depuis le logiciel RH et l’outil de gestion des temps, les flux sortants vers la comptabilité et la banque, les processus métiers concernés et les responsables à associer. Le cahier des charges du nouveau logiciel intègre ces interfaces dès le départ."
+ },
+ {
+  "type": "p",
+  "text": "C’est la même logique, à grande échelle, qu’applique le CHU de Lille, qui pilote 525 applications avec sa cartographie du SI. Lire le témoignage du CHU de Lille."
+ },
+ {
+  "type": "h2",
+  "text": "5 erreurs à éviter"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "Vouloir tout cartographier d’un coup. Le projet s’enlise avant de produire quoi que ce soit. Mieux vaut un premier domaine complet et utilisé qu’un SI entier à moitié décrit.",
+   "Oublier les flux. Une liste d’applications sans leurs échanges ne permet aucune analyse d’impact.",
+   "Travailler sans les métiers. Ce sont eux qui savent à quoi sert réellement chaque application, et qui utilisent les outils achetés hors DSI.",
+   "Ne pas prévoir la mise à jour. Une cartographie figée est obsolète en quelques mois. La maintenance doit faire partie des projets, pas venir après.",
+   "Choisir un format qui ne passe pas à l’échelle. Au-delà de quelques dizaines d’applications, les tableurs et les schémas dessinés à la main deviennent impossibles à tenir à jour."
+  ]
+ },
+ {
+  "type": "h2",
+  "text": "Excel, Visio ou outil de cartographie applicative ?"
+ },
+ {
+  "type": "p",
+  "text": "Pour démarrer sur un petit périmètre, un tableur et quelques schémas suffisent. Leurs limites apparaissent vite : informations dupliquées d’un fichier à l’autre, schémas à redessiner à chaque changement, aucune analyse d’impact automatique, aucun historique de qui a modifié quoi."
+ },
+ {
+  "type": "p",
+  "text": "Un outil de cartographie applicative centralise les informations dans un référentiel unique. Chaque information est saisie une fois, toutes les vues se mettent à jour d’elles-mêmes, et chacun (DSI, architectes, RSSI, métiers) consulte la même version."
+ },
+ {
+  "type": "p",
+  "text": "C’est l’approche de myCarto : un référentiel collaboratif qui relie les quatre couches du SI, produit les vues décrites plus haut et transforme la cartographie en outil de pilotage. Découvrir les fonctionnalités de myCarto."
+ },
+ {
+  "type": "h2",
+  "text": "Questions fréquentes sur la cartographie applicative"
+ },
+ {
+  "type": "h3",
+  "text": "Quelle est la différence entre cartographie applicative et cartographie fonctionnelle ?"
+ },
+ {
+  "type": "p",
+  "text": "La cartographie fonctionnelle décrit ce dont le métier a besoin (les fonctions), indépendamment des logiciels. La cartographie applicative décrit les applications qui réalisent ces fonctions et leurs échanges. Relier les deux montre quelles fonctions sont couvertes deux fois ou pas du tout."
+ },
+ {
+  "type": "h3",
+  "text": "Qui doit piloter la cartographie applicative ?"
+ },
+ {
+  "type": "p",
+  "text": "En général la DSI, souvent via un architecte ou un urbaniste du SI. Mais elle n’est fiable que si les responsables d’applications et les référents métiers contribuent à sa mise à jour."
+ },
+ {
+  "type": "h3",
+  "text": "Combien de temps faut-il pour cartographier ses applications ?"
+ },
+ {
+  "type": "p",
+  "text": "Cela dépend de la taille du SI et du niveau de détail visé. En commençant par un domaine prioritaire, on obtient une première cartographie exploitable bien avant d’avoir couvert tout le SI."
+ },
+ {
+  "type": "h3",
+  "text": "Une CMDB suffit-elle ?"
+ },
+ {
+  "type": "p",
+  "text": "Une CMDB recense surtout les composants techniques et leurs configurations, pour l’exploitation. Elle décrit rarement les fonctions métiers et les flux de données. Elle est une bonne source pour la couche technique, mais ne remplace pas une cartographie applicative."
+ },
+ {
+  "type": "h3",
+  "text": "À quelle fréquence mettre à jour la cartographie ?"
+ },
+ {
+  "type": "p",
+  "text": "À chaque mise en production qui ajoute, modifie ou retire une application ou un flux, complétée par une revue générale au moins une fois par an."
+ },
+ {
+  "type": "h2",
+  "text": "En conclusion"
+ },
+ {
+  "type": "p",
+  "text": "La cartographie applicative n’est pas un livrable à produire une fois pour un audit : c’est un référentiel vivant qui sert chaque jour la DSI, le RSSI et les métiers. Commencez par un périmètre utile, décrivez les flux, reliez-les au métier et organisez la mise à jour : vous disposerez d’une vue fiable pour simplifier, sécuriser et transformer votre SI."
+ }
+]

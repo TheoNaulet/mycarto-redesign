@@ -24,6 +24,9 @@ import { hosting, route } from '../data/content'
           {{ h.line }}
         </li>
       </ul>
+      <p class="route__more">
+        <RouterLink class="link-more" to="/integration">Notre méthode de déploiement</RouterLink>
+      </p>
     </div>
   </section>
 </template>
@@ -110,6 +113,21 @@ import { hosting, route } from '../data/content'
   font-family: var(--font-display);
   color: var(--on-navy);
   margin-right: 0.35em;
+}
+
+.route__more {
+  margin-top: var(--space-6);
+  text-align: center;
+}
+
+/* On the yellow ground the link underline turns navy. */
+.route__more .link-more {
+  color: var(--navy);
+  text-decoration-color: var(--navy);
+}
+
+.route__more .link-more:hover {
+  text-decoration-thickness: 1px;
 }
 
 @media (max-width: 860px) {

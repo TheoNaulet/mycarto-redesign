@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { clients } from '../data/content'
-import { cases } from '../data/pages'
+import { caseStudies } from '../data/cases'
 import VoicesBoard from '../components/VoicesBoard.vue'
 import ClubSection from '../components/ClubSection.vue'
 </script>
@@ -26,19 +26,18 @@ import ClubSection from '../components/ClubSection.vue'
           <p>Dix cas clients, du CHU au ministère.</p>
         </div>
         <ul class="cases">
-          <li v-for="c in cases" :key="c.org">
-            <a class="case" :href="c.href">
+          <li v-for="c in caseStudies" :key="c.slug">
+            <RouterLink class="case" :to="`/clients/${c.slug}`">
               <span class="case__logo">
-                <img v-if="c.logo" :src="c.logo" alt="" />
-                <span v-else class="case__initial" aria-hidden="true">{{ c.org.charAt(0) }}</span>
+                <img :src="c.logo" alt="" />
               </span>
               <span class="case__body">
                 <span class="case__org">{{ c.org }}</span>
-                <span class="case__figure">{{ c.figure }}</span>
-                <span class="case__line">{{ c.line }}</span>
+                <span class="case__figure">{{ c.card.figure }}</span>
+                <span class="case__line">{{ c.card.line }}</span>
               </span>
               <span class="case__go">Lire le cas client</span>
-            </a>
+            </RouterLink>
           </li>
         </ul>
       </div>
@@ -128,13 +127,6 @@ import ClubSection from '../components/ClubSection.vue'
   max-width: 85%;
   max-height: 85%;
   object-fit: contain;
-}
-
-.case__initial {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 2.5rem;
-  color: var(--navy);
 }
 
 .case__body {

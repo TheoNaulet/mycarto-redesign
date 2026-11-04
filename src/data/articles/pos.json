@@ -1,0 +1,368 @@
+[
+ {
+  "type": "h2",
+  "text": "Plan d’Occupation des Sols (POS) : comprendre et structurer son système d’information"
+ },
+ {
+  "type": "p",
+  "text": "Dans une démarche d’urbanisation du système d’information, il est essentiel de disposer d’une représentation claire de l’organisation du SI. Le Plan d’Occupation des Sols (POS) permet justement de structurer cette représentation en organisant le système d’information selon différents niveaux de granularité."
+ },
+ {
+  "type": "p",
+  "text": "Inspiré du vocabulaire de l’urbanisme, le POS permet de représenter les grandes fonctions du système d’information et leur organisation à travers une structure composée de zones, quartiers et îlots."
+ },
+ {
+  "type": "p",
+  "text": "Mais concrètement, qu’est-ce qu’un POS ? Comment est-il structuré ? Et comment un outil comme myCarto permet-il de construire et de faire évoluer cette représentation ?"
+ },
+ {
+  "type": "h2",
+  "text": "Qu’est-ce qu’un Plan d’Occupation des Sols (POS) ?"
+ },
+ {
+  "type": "p",
+  "text": "Le Plan d’Occupation des Sols (POS) est une représentation structurée du système d’information."
+ },
+ {
+  "type": "p",
+  "text": "Il permet d’organiser les différentes fonctions du SI selon plusieurs niveaux : zones, quartiers et îlots."
+ },
+ {
+  "type": "p",
+  "text": "L’objectif est de disposer d’une vision structurée du système d’information, depuis les grands domaines fonctionnels jusqu’à des niveaux de détail plus précis."
+ },
+ {
+  "type": "p",
+  "text": "Le POS constitue ainsi une représentation permettant de situer et organiser les différentes fonctions du SI, puis de les mettre en relation avec les autres éléments qui composent le patrimoine numérique de l’organisation."
+ },
+ {
+  "type": "p",
+  "text": "Dans myCarto, cette organisation peut être représentée directement dans la cartographie du système d’information afin de disposer d’une vision structurée et exploitable du SI."
+ },
+ {
+  "type": "h2",
+  "text": "Comment est structuré un POS ?"
+ },
+ {
+  "type": "p",
+  "text": "Le POS repose sur une organisation en plusieurs niveaux : zones, quartiers et îlots."
+ },
+ {
+  "type": "p",
+  "text": "Cette structure permet de passer progressivement d’une vision globale du système d’information à une représentation plus détaillée de ses différentes fonctions."
+ },
+ {
+  "type": "h2",
+  "text": "1. Les zones"
+ },
+ {
+  "type": "p",
+  "text": "Les zones constituent le niveau le plus large du POS."
+ },
+ {
+  "type": "p",
+  "text": "Elles permettent de regrouper les grandes fonctions du système d’information. Dans myCarto, elles peuvent notamment être structurées autour des domaines suivants :"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "Piloter et contrôler",
+   "Opérer",
+   "Échanger",
+   "Ressources & Support"
+  ]
+ },
+ {
+  "type": "p",
+  "text": "Ces différentes zones permettent ainsi de disposer d’une première lecture de l’organisation fonctionnelle du système d’information."
+ },
+ {
+  "type": "p",
+  "text": "Elles constituent le premier niveau de structuration avant de descendre dans des niveaux de détail plus précis."
+ },
+ {
+  "type": "h2",
+  "text": "2. Les quartiers"
+ },
+ {
+  "type": "p",
+  "text": "Les quartiers permettent ensuite de détailler les différentes zones."
+ },
+ {
+  "type": "p",
+  "text": "Ils regroupent des fonctions appartenant à un même ensemble et permettent de préciser progressivement l’organisation du système d’information."
+ },
+ {
+  "type": "p",
+  "text": "Cette organisation intermédiaire facilite la lecture du SI en permettant de passer d’un domaine global à des ensembles fonctionnels plus précis."
+ },
+ {
+  "type": "h2",
+  "text": "3. Les îlots"
+ },
+ {
+  "type": "p",
+  "text": "Les îlots constituent un niveau de granularité supplémentaire."
+ },
+ {
+  "type": "p",
+  "text": "Ils permettent d’affiner la représentation des fonctions du système d’information et de disposer d’une vision plus détaillée de son organisation."
+ },
+ {
+  "type": "p",
+  "text": "La structure zones → quartiers → îlots permet ainsi d’adapter la représentation du SI au niveau de détail recherché."
+ },
+ {
+  "type": "h2",
+  "text": "À quoi sert un Plan d’Occupation des Sols ?"
+ },
+ {
+  "type": "p",
+  "text": "Le POS permet avant tout de structurer la représentation du système d’information."
+ },
+ {
+  "type": "p",
+  "text": "Dans un SI qui rassemble de nombreuses applications, processus, données, infrastructures et autres composants, disposer d’une organisation commune facilite la compréhension de l’ensemble."
+ },
+ {
+  "type": "h3",
+  "text": "Donner une vision structurée du système d’information"
+ },
+ {
+  "type": "p",
+  "text": "Le POS permet de représenter le SI selon une organisation commune et hiérarchisée."
+ },
+ {
+  "type": "p",
+  "text": "Les différents niveaux de zones, quartiers et îlots permettent de passer d’une vision globale à une représentation plus détaillée des fonctions du système d’information."
+ },
+ {
+  "type": "p",
+  "text": "Cette organisation facilite ainsi la lecture du SI, aussi bien pour avoir une vision d’ensemble que pour explorer un domaine particulier."
+ },
+ {
+  "type": "h3",
+  "text": "Organiser les fonctions du SI"
+ },
+ {
+  "type": "p",
+  "text": "Le POS permet de structurer les différentes fonctions du système d’information au sein d’une organisation cohérente."
+ },
+ {
+  "type": "p",
+  "text": "Les grandes zones constituent un premier niveau de lecture, tandis que les quartiers et les îlots permettent d’affiner progressivement cette représentation."
+ },
+ {
+  "type": "h3",
+  "text": "Identifier les recouvrements et les fonctions insuffisamment outillées"
+ },
+ {
+  "type": "p",
+  "text": "En mettant en relation les fonctions du système d’information avec les applications qui les couvrent, le POS permet également de mettre en évidence différents types de situations."
+ },
+ {
+  "type": "p",
+  "text": "Il peut notamment faire apparaître des recouvrements fonctionnels, lorsque plusieurs applications répondent à une même fonction. Cette visibilité peut contribuer à identifier des possibilités de rationalisation du parc applicatif."
+ },
+ {
+  "type": "p",
+  "text": "À l’inverse, le POS peut également révéler des fonctions insuffisamment ou pas du tout outillées, qui peuvent constituer des opportunités d’évolution ou d’informatisation du système d’information."
+ },
+ {
+  "type": "h3",
+  "text": "Faciliter l’exploration du système d’information"
+ },
+ {
+  "type": "p",
+  "text": "Une fois les différentes fonctions organisées dans le POS, elles peuvent être mises en relation avec les autres éléments du SI."
+ },
+ {
+  "type": "p",
+  "text": "Il devient alors possible de replacer une application, un processus, une donnée ou une infrastructure dans son environnement et de mieux comprendre les relations entre ces différents éléments."
+ },
+ {
+  "type": "h3",
+  "text": "Disposer d’un langage commun"
+ },
+ {
+  "type": "p",
+  "text": "Le POS fournit également une représentation commune du système d’information."
+ },
+ {
+  "type": "p",
+  "text": "Il peut ainsi faciliter les échanges entre les différentes parties prenantes qui interviennent sur le SI, en proposant une organisation partagée de ses différentes fonctions."
+ },
+ {
+  "type": "h2",
+  "text": "POS et cartographie du système d’information"
+ },
+ {
+  "type": "p",
+  "text": "Le POS constitue une composante de la cartographie du système d’information."
+ },
+ {
+  "type": "p",
+  "text": "Il permet d’organiser les fonctions du SI en zones, quartiers et îlots, puis de mettre cette structure en relation avec les différents éléments du patrimoine numérique."
+ },
+ {
+  "type": "p",
+  "text": "Le POS ne se limite donc pas à une représentation graphique isolée."
+ },
+ {
+  "type": "p",
+  "text": "Une fois intégré dans une cartographie du SI, il peut servir de point de lecture pour explorer les différents composants du système d’information et leurs relations."
+ },
+ {
+  "type": "p",
+  "text": "Par exemple, une fonction représentée dans un îlot peut être mise en relation avec les applications, processus, données ou infrastructures qui lui sont associés."
+ },
+ {
+  "type": "p",
+  "text": "On obtient ainsi une vision plus globale du SI, dans laquelle les différents éléments peuvent être replacés dans leur contexte."
+ },
+ {
+  "type": "h2",
+  "text": "Comment construire un Plan d’Occupation des Sols ? Méthode en 4 étapes"
+ },
+ {
+  "type": "p",
+  "text": "La construction d’un POS consiste à structurer progressivement la représentation du système d’information."
+ },
+ {
+  "type": "h2",
+  "text": "Étape 1 : définir les grandes zones"
+ },
+ {
+  "type": "p",
+  "text": "La première étape consiste à identifier les grandes zones permettant d’organiser le système d’information."
+ },
+ {
+  "type": "p",
+  "text": "Dans myCarto, cette organisation peut notamment s’appuyer sur les grandes catégories :"
+ },
+ {
+  "type": "p",
+  "text": "Piloter et contrôler → Opérer → Échanger → Ressources → Support"
+ },
+ {
+  "type": "p",
+  "text": "Ces zones constituent le premier niveau de représentation du POS."
+ },
+ {
+  "type": "h2",
+  "text": "Étape 2 : organiser les quartiers"
+ },
+ {
+  "type": "p",
+  "text": "Chaque zone peut ensuite être détaillée en différents quartiers."
+ },
+ {
+  "type": "p",
+  "text": "Cette étape permet de structurer plus précisément les fonctions du SI et de regrouper les éléments qui appartiennent à un même ensemble."
+ },
+ {
+  "type": "h2",
+  "text": "Étape 3 : détailler les îlots"
+ },
+ {
+  "type": "p",
+  "text": "Les îlots permettent ensuite d’aller plus loin dans la granularité de la représentation."
+ },
+ {
+  "type": "p",
+  "text": "Ils permettent de préciser l’organisation des fonctions du SI et d’obtenir une vision plus détaillée de chaque quartier."
+ },
+ {
+  "type": "h2",
+  "text": "Étape 4 : enrichir le POS avec les éléments du SI"
+ },
+ {
+  "type": "p",
+  "text": "Le POS peut ensuite être mis en relation avec les différents éléments du système d’information."
+ },
+ {
+  "type": "p",
+  "text": "Applications, processus, données, infrastructures et autres objets du référentiel peuvent ainsi être associés à la structure du POS."
+ },
+ {
+  "type": "p",
+  "text": "Cette mise en relation permet de passer d’une simple organisation fonctionnelle à une cartographie exploitable du système d’information."
+ },
+ {
+  "type": "h2",
+  "text": "Le POS dans les référentiels d’architecture d’entreprise"
+ },
+ {
+  "type": "p",
+  "text": "Le concept de Plan d’Occupation des Sols (POS) s’inscrit dans les démarches d’urbanisation et d’architecture du système d’information. Bien que la terminologie soit notamment utilisée dans les approches françaises de l’urbanisation du SI, on retrouve des principes proches dans différents référentiels d’architecture d’entreprise."
+ },
+ {
+  "type": "ul",
+  "items": [
+   "TOGAF propose notamment des vues permettant de représenter l’architecture métier et ses relations avec les autres dimensions du SI.",
+   "Praxeme propose une approche structurée du système d’entreprise et de ses différents objets, dans une logique qui peut être rapprochée de celle d’une représentation fonctionnelle du SI.",
+   "Le Business Capability Model, largement utilisé dans les approches d’architecture d’entreprise, permet de représenter les capacités d’une organisation indépendamment des solutions qui les mettent en œuvre."
+  ]
+ },
+ {
+  "type": "p",
+  "text": "Ces différentes approches ne sont pas équivalentes au POS, mais elles partagent une même volonté : structurer la compréhension du système d’information et de l’organisation indépendamment d’une vision limitée aux seules applications."
+ },
+ {
+  "type": "p",
+  "text": "Les outils de cartographie du SI peuvent ainsi s’appuyer sur différents méta-modèles et approches, selon les besoins et le contexte de chaque organisation."
+ },
+ {
+  "type": "h2",
+  "text": "Les erreurs fréquentes dans la construction d’un POS"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "Confondre découpage fonctionnel et organigramme : le POS doit refléter les fonctions du SI, pas la structure hiérarchique de l’entreprise, qui elle évolue souvent plus vite.",
+   "Vouloir un niveau de détail trop fin dès le départ : un POS trop granulaire dès sa première version devient vite ingérable et décourage son adoption par les équipes.",
+   "Le figer une fois pour toutes : un POS doit rester un référentiel vivant, challengé à chaque évolution stratégique majeure (nouvelle offre, acquisition, transformation digitale).",
+   "Le construire sans les équipes métier : un POS élaboré uniquement par la DSI, sans validation des directions métier, perd rapidement sa légitimité et son usage opérationnel."
+  ]
+ },
+ {
+  "type": "h2",
+  "text": "FAQ : Plan d’Occupation des Sols et urbanisation du SI"
+ },
+ {
+  "type": "p",
+  "text": "Le Plan d’Occupation des Sols est une représentation structurée du système d’information. Il organise les fonctions du SI selon plusieurs niveaux de granularité : zones, quartiers et îlots."
+ },
+ {
+  "type": "p",
+  "text": "Dans myCarto, les zones peuvent notamment être structurées autour de cinq grandes catégories : Piloter et contrôler, Opérer, Échanger, Ressources et Support."
+ },
+ {
+  "type": "p",
+  "text": "Le POS permet de structurer la représentation du système d’information, de faciliter sa lecture et de mettre ses différentes fonctions en relation avec les éléments qui composent le SI."
+ },
+ {
+  "type": "p",
+  "text": "Oui. Le système d’information évoluant au fil du temps, sa représentation peut elle aussi être amenée à évoluer. Un outil de cartographie permet de maintenir cette représentation et les relations entre les différents éléments du SI."
+ },
+ {
+  "type": "p",
+  "text": "La construction d’un POS consiste notamment à organiser les grandes zones, puis à les détailler en quartiers et en îlots. Cette structure peut ensuite être enrichie avec les différents éléments du système d’information."
+ },
+ {
+  "type": "p",
+  "text": "myCarto permet de structurer le système d’information selon une organisation en zones, quartiers et îlots, puis de mettre cette structure en relation avec les différents objets du SI afin de disposer d’une cartographie exploitable."
+ },
+ {
+  "type": "h2",
+  "text": "En conclusion"
+ },
+ {
+  "type": "p",
+  "text": "Le Plan d’Occupation des Sols reste, encore aujourd’hui, l’un des livrables les plus sous-estimés de l’urbanisation du système d’information. Trop souvent relégué à un exercice ponctuel réalisé lors d’un audit ou d’un projet de refonte, il constitue pourtant le référentiel le plus stable et le plus stratégique dont dispose une DSI pour piloter durablement son SI, bien au-delà des effets de mode technologiques."
+ },
+ {
+  "type": "p",
+  "text": "Construire un POS, c’est se donner les moyens de répondre à des questions essentielles avant qu’elles ne deviennent des urgences : où implanter un nouveau besoin métier, quelles applications rationaliser, quelles zones du SI concentrent la dette technique. Mais un POS figé dans une slide perd rapidement sa valeur. Pour qu’il reste un véritable outil de pilotage, il doit être confronté en continu à la réalité applicative, c’est précisément ce que permet une solution de cartographie dynamique comme myCarto."
+ }
+]

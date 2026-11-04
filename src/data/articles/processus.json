@@ -1,0 +1,292 @@
+[
+ {
+  "type": "p",
+  "text": "Dans un contexte où les entreprises recherchent plus d’agilité, d’efficacité et de conformité, la cartographie des processus – ou Business Process Mapping (BPM) – s’impose comme un pilier de la transformation organisationnelle."
+ },
+ {
+  "type": "p",
+  "text": "Souvent associée à la modélisation BPMN (Business Process Model and Notation), elle permet de représenter de façon claire et normalisée le fonctionnement réel d’une organisation."
+ },
+ {
+  "type": "p",
+  "text": "Loin d’être un exercice théorique, la cartographie des processus offre une vision partagée du « qui fait quoi, quand et avec quoi »."
+ },
+ {
+  "type": "p",
+  "text": "Elle aide à identifier les redondances, les dépendances critiques et les leviers d’optimisation."
+ },
+ {
+  "type": "p",
+  "text": "Commençons par comprendre ce qu’elle recouvre, avant de voir comment l’aborder efficacement."
+ },
+ {
+  "type": "h2",
+  "text": "Qu’est-ce que la cartographie des processus ?"
+ },
+ {
+  "type": "p",
+  "text": "La cartographie des processus consiste à représenter visuellement la succession d’activités, d’acteurs et de flux d’informations qui composent un processus métier ou support."
+ },
+ {
+  "type": "p",
+  "text": "Exemples : traitement d’une commande, gestion d’un recrutement, suivi d’un incident IT."
+ },
+ {
+  "type": "p",
+  "text": "Contrairement à un simple organigramme, la modélisation BPMN permet :"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "De structurer les étapes selon une logique métier ;",
+   "De visualiser les acteurs impliqués ;",
+   "De faire apparaître les interactions entre les applications et les données du système d’information."
+  ]
+ },
+ {
+  "type": "p",
+  "text": "Cette approche transforme une vision abstraite en une représentation opérationnelle, actionnable et alignée sur l’architecture d’entreprise."
+ },
+ {
+  "type": "p",
+  "text": "Avec myCarto, la modélisation dépasse la simple vue 2D."
+ },
+ {
+  "type": "p",
+  "text": "Le logiciel de cartographie de processus relie les dimensions métier, applicative, technique et données."
+ },
+ {
+  "type": "p",
+  "text": "Vous obtenez une vision multidimensionnelle de votre organisation : chaque processus s’inscrit dans un ensemble cohérent de dépendances et d’usages."
+ },
+ {
+  "type": "h2",
+  "text": "Pourquoi cartographier ses processus est essentiel ?"
+ },
+ {
+  "type": "p",
+  "text": "Cartographier ses processus, c’est avant tout mieux comprendre, mieux piloter et mieux anticiper."
+ },
+ {
+  "type": "ul",
+  "items": [
+   "Un outil d’efficacité opérationnelle"
+  ]
+ },
+ {
+  "type": "p",
+  "text": "La visualisation des processus met en évidence les tâches manuelles, doublons, goulots d’étranglement et points de blocage."
+ },
+ {
+  "type": "ul",
+  "items": [
+   "Un support de communication interne"
+  ]
+ },
+ {
+  "type": "p",
+  "text": "Les équipes partagent une compréhension commune."
+ },
+ {
+  "type": "p",
+  "text": "Un nouveau collaborateur peut rapidement saisir les étapes d’un processus, les rôles et les outils associés."
+ },
+ {
+  "type": "ul",
+  "items": [
+   "Un levier de conformité et de gouvernance"
+  ]
+ },
+ {
+  "type": "p",
+  "text": "Les réglementations (ISO 9001, RGPD, DORA, NIS2…) exigent une vision claire des processus et des flux de données."
+ },
+ {
+  "type": "p",
+  "text": "La cartographie permet de démontrer les mesures de maîtrise et de traçabilité."
+ },
+ {
+  "type": "ul",
+  "items": [
+   "Un outil de simulation d’impact"
+  ]
+ },
+ {
+  "type": "p",
+  "text": "Avant de modifier un système ou une application, la cartographie permet d’anticiper les impacts organisationnels, techniques et métiers."
+ },
+ {
+  "type": "p",
+  "text": "Un atout clé pour la gestion du changement et la continuité d’activité."
+ },
+ {
+  "type": "p",
+  "text": "Chez myCarto, la modélisation des processus s’inscrit dans une approche de référentiel global (alignée sur le CIGREF ou ArchiMate)."
+ },
+ {
+  "type": "p",
+  "text": "Elle relie les processus aux applications, aux données et aux infrastructures, révélant les liens d’usage entre métier et DSI."
+ },
+ {
+  "type": "h2",
+  "text": "Exemples de cartographie des processus :"
+ },
+ {
+  "type": "h3",
+  "text": "Exemple 1 : le processus de recrutement"
+ },
+ {
+  "type": "p",
+  "text": "Sur le papier, le processus semble simple : réception d’un CV → entretien → décision → intégration."
+ },
+ {
+  "type": "p",
+  "text": "Mais la cartographie révèle une réalité plus fine :"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "Validation du besoin par le manager,",
+   "Échanges RH / service métier,",
+   "Saisie du poste dans l’outil RH,",
+   "Contrôle administratif et contractualisation."
+  ]
+ },
+ {
+  "type": "p",
+  "text": "Une modélisation BPMN dans myCarto permet de visualiser chaque étape, les acteurs concernés et les applications utilisées."
+ },
+ {
+  "type": "p",
+  "text": "Apports concrets de la cartographie :"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "Identifier les redondances ou points de friction.",
+   "Préparer un projet de nouvel outil RH (ex : ATS).",
+   "Évaluer l’impact d’une mise à jour du site carrière.",
+   "Former rapidement un nouveau collaborateur RH.",
+   "Piloter le processus via des indicateurs."
+  ]
+ },
+ {
+  "type": "p",
+  "text": "Exemple de cartographie BPMN du processus de recrutement, illustrant les interactions entre services et outils RH."
+ },
+ {
+  "type": "h3",
+  "text": "Exemple 2 : le traitement d’une commande client"
+ },
+ {
+  "type": "p",
+  "text": "Sous un schéma simple (commande → préparation → livraison), la cartographie révèle :"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "Les échanges entre le site e-commerce, le CRM, l’ERP et la facturation,",
+   "Les dépendances entre applications,",
+   "Les risques en cas de défaillance d’un maillon."
+  ]
+ },
+ {
+  "type": "p",
+  "text": "Avec myCarto, ces éléments sont interconnectés."
+ },
+ {
+  "type": "p",
+  "text": "Chaque processus est relié aux données, applications et composants techniques, permettant une analyse d’impact immédiate en cas d’évolution ou d’incident."
+ },
+ {
+  "type": "h2",
+  "text": "Comment réussir sa cartographie des processus ?"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "Identifier les processus clés : ceux à fort impact sur la performance ou la conformité.",
+   "Définir les acteurs et les flux : qui intervient, quand, et via quel outil.",
+   "Modéliser selon une méthode reconnue, comme le BPMN, pour garantir la lisibilité et la pérennité.",
+   "Relier les processus au reste du SI : applications, données, infrastructures.",
+   "Faire vivre la cartographie : la mettre à jour à chaque évolution."
+  ]
+ },
+ {
+  "type": "h2",
+  "text": "Qui sont les acteurs de la cartographie des processus ?"
+ },
+ {
+  "type": "p",
+  "text": "La cartographie des processus n’est pas qu’un exercice technique : c’est une démarche collective. Elle mobilise différents profils qui, chacun à leur manière, en tirent une véritable valeur."
+ },
+ {
+  "type": "p",
+  "text": "Les Business Owners définissent le cap. Ils traduisent les objectifs stratégiques de l’entreprise en processus opérationnels clairs et mesurables."
+ },
+ {
+  "type": "p",
+  "text": "Les Process Owners orchestrent la modélisation. Ce sont eux qui veillent à la cohérence, à la clarté et à la mise à jour continue des processus."
+ },
+ {
+  "type": "p",
+  "text": "Les Chefs de projet s’appuient sur la cartographie pour anticiper les impacts, cadrer les besoins et suivre les dépendances entre services."
+ },
+ {
+  "type": "p",
+  "text": "Les Architectes fonctionnels et d’entreprise assurent le lien entre processus, applications, données et infrastructures. Ils transforment la cartographie en véritable outil de gouvernance du système d’information."
+ },
+ {
+  "type": "p",
+  "text": "La DSI bénéficie d’une vision transversale du système d’information. Elle comprend mieux comment les outils soutiennent les usages et peut piloter les évolutions en toute maîtrise."
+ },
+ {
+  "type": "p",
+  "text": "Les Auditeurs et Responsables qualité utilisent la cartographie pour vérifier la conformité, la traçabilité et la cohérence des flux."
+ },
+ {
+  "type": "p",
+  "text": "Les Équipes support et exploitation exploitent ces cartographies pour diagnostiquer rapidement les incidents et maintenir la continuité des services."
+ },
+ {
+  "type": "p",
+  "text": "En somme, la cartographie des processus fédère l’ensemble des acteurs autour d’une vision commune du fonctionnement de l’entreprise : un langage partagé entre les métiers et la DSI."
+ },
+ {
+  "type": "h2",
+  "text": "Pourquoi choisir myCarto pour vos cartographies de processus ?"
+ },
+ {
+  "type": "p",
+  "text": "Contrairement aux outils de modélisation de processus traditionnels, myCarto est un logiciel de cartographie des processus intégré au référentiel global du SI. Chaque processus est relié aux différentes couches de l’architecture d’entreprise : métier, fonctionnel, applicative et technique, pour offrir une vision complète et contextualisée des interactions du système d’information."
+ },
+ {
+  "type": "p",
+  "text": "Les bénéfices clés :"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "Vision multidimensionnelle : modélisez les processus et leurs dépendances réelles dans un environnement connecté aux applications, données et infrastructures.",
+   "Approche collaborative : métiers et DSI travaillent sur une base commune et partagée.",
+   "Simulation d’impact : identifiez en un clic les processus, activités et acteurs directement ou indirectement impactés par une modification. À titre d’exemple, il est possible de simuler l’impact métier d’un arrêt serveur : si une machine devient inopérante, myCarto restitue immédiatement les processus, activités et acteurs concernés, permettant d’anticiper les conséquences opérationnelles.",
+   "Interopérabilité : conforme aux standards (BPMN, ArchiMate, CIGREF)."
+  ]
+ },
+ {
+  "type": "p",
+  "text": "Avec myCarto, la cartographie des processus dépasse la simple documentation : elle devient un outil stratégique de gouvernance et de pilotage du SI, au service de la performance et de la maîtrise des risques."
+ },
+ {
+  "type": "h2",
+  "text": "En conclusion"
+ },
+ {
+  "type": "p",
+  "text": "La cartographie des processus est aujourd’hui un indispensable pour comprendre, maîtriser et transformer son organisation."
+ },
+ {
+  "type": "p",
+  "text": "Mais pour qu’elle soit utile et vivante, elle doit s’inscrire dans une approche intégrée et collaborative."
+ }
+]

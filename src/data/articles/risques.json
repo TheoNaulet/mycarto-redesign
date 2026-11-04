@@ -1,0 +1,230 @@
+[
+ {
+  "type": "p",
+  "text": "La sécurité du système d’information (SI) est aujourd’hui un enjeu stratégique pour toutes les organisations. Cyberattaques, fuites de données, défaillances techniques ou erreurs humaines : les menaces sont nombreuses et leurs impacts peuvent être considérables. Ils vont d’une simple perturbation opérationnelle à une atteinte durable à l’image de l’entreprise."
+ },
+ {
+  "type": "p",
+  "text": "Dans ce contexte, la cartographie des risques IT, aussi appelée cartographie des risques du système d’information, s’impose comme une démarche essentielle. Elle permet de visualiser, analyser et hiérarchiser les menaces afin de mettre en place des mesures de prévention adaptées."
+ },
+ {
+  "type": "p",
+  "text": "Dans cet article, nous expliquons pourquoi la cartographie des risques IT est indispensable, comment identifier et prioriser les risques du SI, et comment un outil comme myCarto permet de piloter cette démarche de manière simple et efficace."
+ },
+ {
+  "type": "h2",
+  "text": "Pourquoi la cartographie des risques IT est indispensable pour le SI"
+ },
+ {
+  "type": "p",
+  "text": "La cartographie des risques IT consiste à représenter de façon claire et structurée les menaces susceptibles d’affecter le système d’information. Elle joue un rôle clé dans l’anticipation des cybermenaces, qu’il s’agisse de phishing, de ransomware ou d’attaques ciblées."
+ },
+ {
+  "type": "p",
+  "text": "De plus, cette approche contribue directement à la continuité d’activité. En effet, une panne serveur ou une cyberattaque réussie peut paralyser un service entier, voire l’ensemble de l’organisation."
+ },
+ {
+  "type": "h3",
+  "text": "Cartographie des risques IT et gouvernance du SI"
+ },
+ {
+  "type": "p",
+  "text": "Au-delà de la sécurité, la cartographie des risques IT est aussi un levier de gouvernance. Elle facilite la conformité aux exigences réglementaires telles que le RGPD, la norme ISO 27001 ou encore les directives NIS2 et DORA."
+ },
+ {
+  "type": "p",
+  "text": "En identifiant les points faibles du SI, la cartographie renforce la résilience globale de l’entreprise. Elle permet également d’impliquer la direction, la DSI et les métiers autour d’une vision partagée des risques."
+ },
+ {
+  "type": "p",
+  "text": "Bon à savoir :"
+ },
+ {
+  "type": "p",
+  "text": "L’ANSSI recommande de réaliser une cartographie du système d’information comme préalable à toute démarche de cybersécurité structurée, notamment dans les méthodes d’analyse de risques comme EBIOS Risk Manager."
+ },
+ {
+  "type": "h2",
+  "text": "Identifier les risques potentiels du système d’information"
+ },
+ {
+  "type": "p",
+  "text": "La première étape d’une cartographie des risques IT consiste à identifier les menaces et vulnérabilités. Cette phase est déterminante pour obtenir une vision exhaustive du SI."
+ },
+ {
+  "type": "h3",
+  "text": "Recenser les actifs critiques"
+ },
+ {
+  "type": "p",
+  "text": "Il s’agit tout d’abord d’identifier les éléments essentiels au fonctionnement de l’organisation, notamment :"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "les applications métiers stratégiques,",
+   "les bases de données sensibles (clients, RH, finances),",
+   "les infrastructures réseaux, serveurs et équipements critiques."
+  ]
+ },
+ {
+  "type": "h3",
+  "text": "Analyser les points d’entrée et vecteurs d’attaque"
+ },
+ {
+  "type": "p",
+  "text": "Ensuite, il faut analyser les failles potentielles, par exemple :"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "des configurations incorrectes,",
+   "des postes de travail insuffisamment sécurisés,",
+   "des accès distants mal maîtrisés,",
+   "des dépendances fortes à des prestataires externes."
+  ]
+ },
+ {
+  "type": "h3",
+  "text": "Évaluer les scénarios de risques IT"
+ },
+ {
+  "type": "p",
+  "text": "Enfin, la cartographie des risques du SI doit intégrer différents scénarios, tels que :"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "une cyberattaque ciblée avec exfiltration de données,",
+   "la propagation d’un malware sur le réseau,",
+   "une défaillance matérielle critique,",
+   "une erreur humaine, comme la suppression accidentelle de données"
+  ]
+ },
+ {
+  "type": "p",
+  "text": "L’objectif est d’identifier à la fois les risques techniques, organisationnels et humains."
+ },
+ {
+  "type": "h2",
+  "text": "Hiérarchiser les risques IT : méthodes et visualisations"
+ },
+ {
+  "type": "p",
+  "text": "Une fois identifiés, les risques doivent être classés et hiérarchisés selon deux critères principaux :"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "La probabilité d’occurrence (rare, possible, fréquente)",
+   "L’impact sur l’organisation (mineur, significatif, critique)"
+  ]
+ },
+ {
+  "type": "p",
+  "text": "Cette étape permet de distinguer :"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "Les risques majeurs qui nécessitent des actions immédiates,",
+   "Les risques modérés qui doivent être surveillés,",
+   "Les risques acceptables qui peuvent être tolérés dans un certain cadre."
+  ]
+ },
+ {
+  "type": "p",
+  "text": "Un outil de cartographie des risques IT permet de représenter ces informations sous forme de dashboard de risques. Ce type de visualisation facilite la prise de décision et le dialogue entre la DSI, la direction et les métiers."
+ },
+ {
+  "type": "h2",
+  "text": "Mettre en place des mesures de prévention efficaces"
+ },
+ {
+  "type": "p",
+  "text": "La cartographie des risques IT n’a de valeur que si elle débouche sur des actions concrètes. Les mesures de prévention peuvent être techniques, organisationnelles ou réglementaires."
+ },
+ {
+  "type": "p",
+  "text": "Sur le plan technique, il peut s’agir de :"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "segmenter le réseau,",
+   "appliquer régulièrement les correctifs de sécurité,",
+   "mettre en place une authentification forte,",
+   "automatiser les sauvegardes."
+  ]
+ },
+ {
+  "type": "p",
+  "text": "Sur le plan organisationnel, la prévention passe aussi par la sensibilisation des utilisateurs et la définition de procédures de gestion d’incident. Par ailleurs, la cartographie facilite la préparation aux audits et aux exigences de conformité, notamment pour ISO 27001, le RGPD ou NIS2."
+ },
+ {
+  "type": "p",
+  "text": "Enfin, cette démarche doit s’inscrire dans la durée. La cartographie des risques IT doit être mise à jour régulièrement afin de suivre l’évolution du système d’information et l’apparition de nouvelles menaces."
+ },
+ {
+  "type": "h2",
+  "text": "Comment myCarto facilite la cartographie des risques IT"
+ },
+ {
+  "type": "p",
+  "text": "Mettre en place une cartographie des risques IT peut sembler complexe, surtout dans des organisations où le SI est vaste et en constante évolution. C’est là qu’un logiciel dédié comme myCarto fait la différence."
+ },
+ {
+  "type": "p",
+  "text": "Avec myCarto, vous bénéficiez de :"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "Connecteurs automatiques pour intégrer vos données (CMDB, annuaires, supervision, outils métiers).",
+   "Visualisations dynamiques qui permettent de représenter votre SI et ses risques en temps réel.",
+   "Mise à jour continue : la cartographie évolue automatiquement avec vos systèmes.",
+   "Une vision partagée entre RSSI, urbanistes SI et métiers pour un langage commun autour des risques.",
+   "Aide à la conformité : appui dans les démarches ISO 27001, RGPD ou NIS2 grâce à une meilleure traçabilité des actifs et des risques."
+  ]
+ },
+ {
+  "type": "p",
+  "text": "En d’autres termes, myCarto transforme la cartographie des risques IT en un outil opérationnel et stratégique, simple à maintenir et directement exploitable par la gouvernance."
+ },
+ {
+  "type": "h2",
+  "text": "FAQ : Cartographie des risques IT"
+ },
+ {
+  "type": "p",
+  "text": "C’est une représentation visuelle des menaces qui pèsent sur le système d’information, permettant d’analyser et de prioriser les risques."
+ },
+ {
+  "type": "p",
+  "text": "Elle aide à anticiper les cyberattaques, à renforcer la résilience et à répondre aux obligations réglementaires."
+ },
+ {
+  "type": "p",
+  "text": "En recensant les actifs critiques, en analysant les vulnérabilités et en définissant des scénarios d’attaque."
+ },
+ {
+  "type": "p",
+  "text": "En croisant leur probabilité et leur impact, souvent représentés dans une matrice de risques."
+ },
+ {
+  "type": "p",
+  "text": "Un logiciel comme myCarto, qui automatise la collecte des données et génère des cartographies visuelles et dynamiques."
+ },
+ {
+  "type": "h2",
+  "text": "En résumé : un levier clé pour sécuriser le système d’information"
+ },
+ {
+  "type": "p",
+  "text": "La cartographie des risques IT est aujourd’hui un pilier de la cybersécurité et de la gouvernance du système d’information. Elle permet d’anticiper les menaces, de prioriser les actions et de renforcer la résilience de l’organisation."
+ },
+ {
+  "type": "p",
+  "text": "En s’appuyant sur un outil de cartographie du SI comme myCarto, les entreprises passent d’une approche réactive à une démarche proactive. Elles disposent alors d’une vision claire, partagée et actualisée de leurs risques IT."
+ }
+]

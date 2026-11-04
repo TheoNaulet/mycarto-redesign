@@ -12,6 +12,7 @@
         <p class="club__lede">Trois fois par an, entre clients, pour choisir les prochaines fonctionnalités.</p>
         <p class="club__date">Prochaine édition le 19 novembre 2026</p>
         <p>Avec le témoignage du Crédit Agricole Leasing &amp; Factoring. Réservé aux clients.</p>
+        <RouterLink class="link-more club__more" to="/club-utilisateurs">Découvrir le club</RouterLink>
       </div>
     </div>
   </section>
@@ -53,9 +54,14 @@
   font-weight: 700;
 }
 
-.club__grid p:last-child {
+.club__grid p:last-of-type {
   font-size: var(--fs-s);
   max-width: 40ch;
+}
+
+.club__more {
+  margin-top: var(--space-5);
+  color: var(--navy);
 }
 
 @media (max-width: 860px) {

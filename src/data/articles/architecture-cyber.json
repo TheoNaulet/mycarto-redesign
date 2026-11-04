@@ -1,0 +1,202 @@
+[
+ {
+  "type": "p",
+  "text": "L’architecture d’entreprise et la cybersécurité sont désormais indissociables. La cybersécurité n’est plus un sujet réservé à la DSI : ses impacts financiers, juridiques et business en font une préoccupation stratégique pour toute l’entreprise. Pour y répondre, la connaissance du SI et des architectures doit être partagée, vivante et intégrée dans les processus métiers."
+ },
+ {
+  "type": "p",
+  "text": "Dans cet article, nous croisons les regards de deux experts engagés : Charly Pierrat, consultant en architecture d’entreprise chez Projexion, et Samuel Fourreau, Product Owner chez AB+Software, éditeur de myCarto. Ensemble, ils partagent leurs convictions et retours d’expérience sur la façon dont la cartographie et l’architecture deviennent des socles de la cybersécurité."
+ },
+ {
+  "type": "h2",
+  "text": "Pourquoi la cybersécurité et la conformité légale sont-elles devenues des sujets critiques pour les organisations, au-delà du seul périmètre de la DSI ?"
+ },
+ {
+  "type": "p",
+  "text": "Samuel Fourreau : Il y a deux notions intéressantes dans la question : l’évolution de la criticité, et du périmètre dans l’organisation."
+ },
+ {
+  "type": "p",
+  "text": "Pour moi, deux raisons majeures expliquent cette criticité : l’évolution technologique et le contexte sociétal. Aujourd’hui, la majorité des systèmes sont interconnectés et hébergés dans le Cloud. Résultat : plus d’applications, plus de services exposés, donc plus d’interconnexions entre les systèmes et plus de surfaces d’attaque. Ajoutez à cela le recours important au télétravail et un contexte géopolitique tendu : vous comprenez pourquoi la cyber n’a jamais été aussi stratégique ! Dans de nombreux cas, il ne s’agit plus de hackers isolés mais d’organisations structurées avec des moyens considérables."
+ },
+ {
+  "type": "p",
+  "text": "Au niveau du périmètre dans l’organisation, ce qui change aujourd’hui, c’est que la cybersécurité n’est plus une affaire uniquement technique. Elle touche directement la continuité d’activité, la performance financière et même la réputation. Les réglementations comme le RGPD ou la directive NIS2 imposent des obligations fortes, assorties de sanctions qui peuvent être colossales. Si le pilotage reste souvent au niveau de la DSI, les impacts concernent – et donc impliquent dans la démarche – toute l’entreprise !"
+ },
+ {
+  "type": "p",
+  "text": "A cela s’ajoute que la donnée est au cœur de tout. Une fuite ou une altération ne se limite pas à un problème IT : elle impacte les clients, les usagers, parfois même l’écosystème complet. Lorsqu’un prestataire subit une attaque, vous pouvez certes invoquer des clauses contractuelles, mais le mal est fait : perte de confiance, atteinte à l’image, voire arrêt d’activité."
+ },
+ {
+  "type": "p",
+  "text": "Charly Pierrat : La digitalisation massive a fait exploser les points d’entrée, et la majorité des attaques exploitent l’humain : phishing, ingénierie sociale… Il ne suffit plus de sécuriser les serveurs, il faut sensibiliser les équipes. Chez certains clients, nous simulons par exemple des campagnes de phishing pour mesurer la maturité cyber. La cybersécurité est une culture à insuffler dans toute l’entreprise !"
+ },
+ {
+  "type": "p",
+  "text": "Dans notre rôle d’architecte d’entreprise , cela se traduit concrètement par des exigences fortes aussi bien en termes d’acculturation, de conception que de processus. Par exemple, avant d’intégrer une solution, il faut que l’éditeur fournisse des garanties précises : conformité aux normes, résultats d’audits de sécurité, protocoles d’accès, capacités de mise à jour… On ne parle pas que de fonctionnalités, mais de posture sécuritaire globale. C’est ce type de réflexe qui réduit les angles morts."
+ },
+ {
+  "type": "h2",
+  "text": "Que signifie concrètement « architecture maîtrisée et connue » dans une organisation ? Et pourquoi est-ce un préalable ?"
+ },
+ {
+  "type": "p",
+  "text": "Charly : C’est simple : on ne sécurise pas ce qu’on ne connaît pas. Une architecture maîtrisée, c’est une architecture documentée, partagée, et mise à jour en temps réel. Cela veut dire savoir quels sont les actifs critiques, où sont hébergées les applications, quels sont les flux entre elles, qui en est responsable, et quel est le plan en cas d’incident. Sans cette visibilité, impossible d’évaluer les risques ou de préparer un plan de reprise."
+ },
+ {
+  "type": "p",
+  "text": "Je compare souvent ça à une maison : si vous ignorez où sont les portes et les fenêtres, vous ne pouvez pas sécuriser les accès. Et si vous n’avez pas les plans, vous ne savez pas jusqu’où un voleur peut aller en un temps imparti ! »"
+ },
+ {
+  "type": "p",
+  "text": "Charly Pierrat – Consultant en architecture d’entreprise chez Projexion"
+ },
+ {
+  "type": "p",
+  "text": "Sur cette notion de « maîtrisée » si nous faisons référence à l’architecture, il y a également l’enjeu d’industrialisation de la démarche et de s’assurer qu’elle correspond aux normes et contexte de l’entreprise. Cela va également de pair avec son exploitation et l’adaptation de la communication à tous les niveaux, en jouant avec la granularité de ce qui est modélisé."
+ },
+ {
+  "type": "p",
+  "text": "Samuel : Je partage la définition de Charly, et j’y ajouterais deux notions : la visibilité et la clarté. La mise en place d’une cartographie révèle souvent l’importance de mettre en place un langage commun. Prenons un exemple concret : dans une entreprise peu mature sur le sujet, demandez à quatre interlocuteurs ce qu’est une “application”, vous obtiendrez quatre définitions différentes !"
+ },
+ {
+  "type": "p",
+  "text": "La cartographie est donc une opportunité pour normaliser : mettre les acteurs autour de la table, définir une nomenclature claire, une granularité homogène et un vocabulaire partagé par tous. C’est indispensable car la cybersécurité implique toute l’organisation et cela repose aussi sur une documentation compréhensible par tous. Avec l’essor du phishing et des attaques d’ingénierie sociale, chaque collaborateur devient un acteur de la sécurité. Pour qu’ils jouent leur rôle, il faut qu’ils comprennent tous la même chose. Cela fait aussi écho aux enjeux de conformité : il faut pouvoir la démontrer et convaincre ses interlocuteurs !"
+ },
+ {
+  "type": "p",
+  "text": "Enfin, au-delà de l’IT, la cartographie doit être pensée comme un médium de cette maîtrise. Chez AB+Software, nous défendons l’idée qu’elle doit être au cœur des processus, pas cantonnée aux angles applicatifs. Elle doit relier les processus, les métiers et la vision globale de l’entreprise, et produire des restitutions utiles à tous : directions métiers, équipes projets, nouveaux arrivants."
+ },
+ {
+  "type": "p",
+  "text": "Plus la cartographie crée de la valeur pour chaque acteur, plus elle sera mise à jour et maintenue vivante ! »"
+ },
+ {
+  "type": "p",
+  "text": "Samuel Fourreau – Product owner chez AB+ Software"
+ },
+ {
+  "type": "h2",
+  "text": "Quels sont les principaux bénéfices concrets d’une architecture maîtrisée pour la cybersécurité ?"
+ },
+ {
+  "type": "p",
+  "text": "Charly : Le premier bénéfice, c’est l’identification de la surface d’attaque et des risques. Une cartographie bien construite permet d’analyser rapidement les points sensibles et d’y associer des mesures adaptées."
+ },
+ {
+  "type": "p",
+  "text": "Le deuxième, c’est l’anticipation. En architecture, on prend souvent des décisions entre plusieurs scénarios. Grâce à la cartographie, on visualise l’impact de ces choix, y compris leurs risques. Cela aide à arbitrer en connaissance de cause et à justifier les décisions devant la direction ou les auditeurs. C’est ainsi aussi un moyen en cas d’audit pour justifier des mesures prises pour sécuriser le SI."
+ },
+ {
+  "type": "p",
+  "text": "Samuel : Une architecture sans risque, ça n’existe pas. L’enjeu, c’est en effet de les connaître, de les qualifier, et de pouvoir expliquer comment on les contrôle. La cartographie aide à structurer cette analyse : elle permet d’industrialiser, d’identifier les vulnérabilités actuelles mais aussi futures, par exemple celles qui apparaîtront après une mise à jour."
+ },
+ {
+  "type": "p",
+  "text": "« Plus on standardise, plus on réduit les angles morts ! »"
+ },
+ {
+  "type": "p",
+  "text": "Chaque architecture possède ses propres points faibles ; isolés, ils sont gérables, mais combinés à d’autres, ils peuvent créer des failles inattendues. La juxtaposition d’architectures hétérogènes, sans règles communes, augmente considérablement le risque. En définissant des standards, on limite ces effets de bord, on simplifie la gestion, on contrôle les dépendances et réduit l’exposition liée à l’interconnexion des systèmes."
+ },
+ {
+  "type": "h2",
+  "text": "Comment intégrer les principes de « security by design » dès les premières étapes d’architecture ?"
+ },
+ {
+  "type": "p",
+  "text": "Samuel : Notre vision, c’est d’encourager nos clients à aborder leurs projets d’architecture et de cartographie sous un angle collaboratif et pluridisciplinaire. Cela signifie croiser les points de vue dès le départ, car chacun a un rôle clé : métiers, IT, RSSI, architectes. Les équipes en charge de la cybersécurité doivent être sollicitées dès les premières étapes pour exprimer leurs attentes en termes de documentation et d’architecture."
+ },
+ {
+  "type": "p",
+  "text": "Ce travail collectif permet non seulement d’impliquer toutes les parties prenantes, mais aussi de clarifier les exigences : savoir définir ce qui est attendu, comment le documenter (dossier d’exploitation, dossier d’architecture…), et comment faire évoluer ces normes dans le temps."
+ },
+ {
+  "type": "p",
+  "text": "Il ne s’agit pas de réinventer la roue : il existe des méthodes et des référentiels éprouvés pour structurer ces démarches. Les utiliser, c’est se donner les moyens d’éviter les erreurs classiques. Enfin, ce processus doit s’inscrire dans une logique vivante, avec des revues régulières, pour que la sécurité ne soit pas un contrôle bloquant en fin de projet, mais un principe intégré dès le design et tout au long du cycle de vie."
+ },
+ {
+  "type": "p",
+  "text": "Charly : Pour moi, l’anticipation est clé. Dès la conception, nous devons poser des principes d’architecture clairs et partagés par tous. Ces principes deviennent des garde-fous : par exemple, exiger la double authentification et le SSO sur toutes les applications. Cela paraît évident… mais si ce n’est pas formalisé et diffusé, ça ne sera pas systématique."
+ },
+ {
+  "type": "p",
+  "text": "En tant qu’architecte d’entreprise, mon rôle est aussi d’embarquer l’ensemble des métiers autour de ces exigences, y compris le DPO. Je rejoins Samuel sur la collaboration entre tous les acteurs."
+ },
+ {
+  "type": "p",
+  "text": "C’est justement dès la construction d’un modèle ou d’une architecture type que nous devons identifier les failles potentielles et réduire leur impact. Comment ? En étudiant les vecteurs d’attaque les plus fréquents et en intégrant cette connaissance dans le design. Et cela suppose aussi de vérifier que les technologies choisies ne seront pas dépréciées à court terme."
+ },
+ {
+  "type": "p",
+  "text": "« Concevoir un système qui sera obsolète dans deux ans, c’est créer une faille par avance ! »"
+ },
+ {
+  "type": "p",
+  "text": "Il n’existe pas d’outil miracle, ni de référentiel unique pour la cybersécurité : c’est un sujet multifactoriel. En revanche, on peut enrichir nos métamodèles avec des attributs critiques, par exemple pour signaler qu’une technologie donnée présente un risque identifié dans sa version actuelle. Pour outiller cette démarche, Projexion met à disposition une boîte à outils dédiée à la modélisation d’architectures intégrant plusieurs ressources pratiques à adapter selon vos contextes."
+ },
+ {
+  "type": "h2",
+  "text": "Quels outils ou méthodes recommandez-vous pour garder une architecture à jour tout en intégrant la sécurité ?"
+ },
+ {
+  "type": "p",
+  "text": "Samuel : La cartographie est bien sûr un outil central. Cependant, une documentation fausse est pire que pas de documentation du tout. Chez AB+ Software, pour faciliter son actualisation, nous insistons sur deux points : l’embarquement des acteurs et l’intégration dans les processus."
+ },
+ {
+  "type": "p",
+  "text": "Nous conseillons de placer la cartographie au cœur de l’organisation de la DSI. Concrètement, nous préconisons d’adapter les processus pour imposer la mise à jour comme un passage obligé : par exemple, pas de mise en production sans garantir l’étape de documentation. Sur le second point, quand la mise à jour dépend d’une seule personne, le risque est plus important. À l’inverse, en mode collaboratif, si 10 personnes accèdent à l’information, il y en a toujours une ou deux qui signaleront une anomalie."
+ },
+ {
+  "type": "p",
+  "text": "Bien sûr, il faut limiter la dépendance exclusive à l’humain. D’où l’intérêt des outils de découverte automatique et de supervision, qui permettent de détecter des écarts sans attendre un contrôle manuel."
+ },
+ {
+  "type": "p",
+  "text": "« Nous avons une autre conviction : une donnée dont on n’est pas sûr doit être considérée comme un “moins” et non comme un “plus”. On ne construit pas un modèle fiable avec des hypothèses fragiles ! »"
+ },
+ {
+  "type": "p",
+  "text": "Ensuite, dans notre méthodologie projet, notre approche repose sur la progressivité : démarrer par ce qui est récupérable automatiquement, sans effort humain, pour établir un socle solide. Ensuite, enrichir par étapes avec des informations apportées par les intervenants : dossiers applicatifs, architectures, interactions. Ces flux et dépendances sont ce qui apporte le plus de valeur… et motivent les équipes à contribuer, car elles y voient leur intérêt !"
+ },
+ {
+  "type": "p",
+  "text": "Enfin, il faut être pragmatique : mieux vaut commencer par les périmètres critiques, ceux qui génèrent le plus d’interactions et de risques. Profitez aussi des opportunités : si un SI RH est en refonte, c’est le moment idéal pour modéliser ! Et souvenez-vous : une cartographie est vivante, elle s’enrichit dans le temps."
+ },
+ {
+  "type": "p",
+  "text": "Charly : Je rejoins les idées partagées par Samuel. Longtemps, les architectes ont gardé la main sur la modélisation. Cependant, de plus en plus, déléguer une partie de la mise à jour facilite la réactivité et l’appropriation. C’est pour cela que nous mettons en place des instances de gouvernance : définir qui met à jour, quand, avec quel contrôle."
+ },
+ {
+  "type": "p",
+  "text": "La granularité est un autre sujet clé : plus on va dans le détail, plus c’est lourd à maintenir. Il faut trouver le bon niveau, et s’appuyer sur les outils pour automatiser ce qui peut l’être : détection des vulnérabilités, identification des versions obsolètes. Tout le monde n’a pas le temps de se renseigner manuellement sur les vulnérabilités dans toutes les bibliothèques: pouvoir les identifier automatiquement est nécessaire."
+ },
+ {
+  "type": "p",
+  "text": "Pour finir, ce qui est dans le modèle est souvent considéré comme la vérité. On ne peut donc pas se permettre d’y mettre des informations incertaines ! Mieux vaut une cartographie partielle mais fiable qu’un modèle complet mais partiellement faux. Commencez par un périmètre restreint, maîtrisé, et une fois la preuve faite, élargissez progressivement à d’autres directions."
+ },
+ {
+  "type": "h2",
+  "text": "Comment voyez-vous évoluer le rôle des architectes vis-à-vis des enjeux cyber dans les prochaines années ?"
+ },
+ {
+  "type": "p",
+  "text": "Charly : Les architectes deviennent des chefs d’orchestre et des sensibilisateurs. Leur rôle n’est pas seulement technique : c’est aussi de faire le lien entre la stratégie, la sécurité et les opérations. Aujourd’hui, on ne peut plus imaginer un RSSI travailler en silo. Les décisions d’architecture ont un impact direct sur la posture cyber, et inversement."
+ },
+ {
+  "type": "p",
+  "text": "Notre valeur, c’est ainsi de documenter, d’expliquer, de mettre en lumière les risques et les dépendances. Et également de faire intervenir les bons acteurs au bon moment !"
+ },
+ {
+  "type": "p",
+  "text": "Une des batailles des profils cybersécurité dans l’organisation, c’est aussi de réussir à communiquer auprès des dirigeants pour cadrer les projets et récupérer les budgets adaptés ! »"
+ },
+ {
+  "type": "p",
+  "text": "Samuel : Il y a encore quelques années, le RSSI était seul à porter la voix de la sécurité. Aujourd’hui, la cyber est devenue un sujet de direction générale, parce que le risque business est évident. Les architectes ont donc un rôle clé : traduire les exigences de sécurité en choix concrets, tout en parlant le langage des métiers et des dirigeants."
+ },
+ {
+  "type": "p",
+  "text": "Et cette tendance va s’amplifier. Les cyberattaques ne vont pas diminuer, les réglementations vont se renforcer. Les architectes devront être des facilitateurs et des garants, en travaillant main dans la main avec les équipes cyber et les décideurs !"
+ }
+]

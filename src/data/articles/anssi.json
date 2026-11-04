@@ -1,0 +1,208 @@
+[
+ {
+  "type": "p",
+  "text": "Dans un contexte où les cybermenaces se multiplient et où les systèmes d’information deviennent toujours plus complexes, interconnectés et évolutifs, la cartographie du système d’information s’impose comme un pilier fondamental de la cybersécurité."
+ },
+ {
+  "type": "p",
+  "text": "L’ANSSI (Agence nationale de la sécurité des systèmes d’information), autorité française de référence en matière de sécurité numérique, insiste sur la nécessité de disposer d’une cartographie SI rigoureuse, structurée et maintenue dans le temps. En effet, celle-ci permet d’identifier les risques, de sécuriser les flux, de prioriser les actions de protection et de renforcer durablement la résilience des organisations, qu’elles soient publiques ou privées."
+ },
+ {
+  "type": "p",
+  "text": "Par conséquent, cet article a pour objectif de vous guider pas à pas dans la compréhension des préconisations de l’ANSSI en matière de cartographie du SI, tout en illustrant comment myCarto apporte une réponse opérationnelle, concrète et parfaitement alignée avec ces exigences, au cœur d’une démarche de cybersécurité structurée et pérenne."
+ },
+ {
+  "type": "h2",
+  "text": "Pourquoi la cartographie du SI est-elle un prérequis en cybersécurité selon l’ANSSI ?"
+ },
+ {
+  "type": "p",
+  "text": "Cartographier son système d’information ne consiste pas à produire un simple schéma figé ou un document de synthèse. Il s’agit de construire une représentation vivante, exhaustive et partagée de l’ensemble des composants du SI : applications, infrastructures, serveurs, bases de données, flux, processus métier et interconnexions internes ou externes."
+ },
+ {
+  "type": "p",
+  "text": "En effet, cette vision globale est indispensable pour :"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "identifier les vulnérabilités techniques et organisationnelles ;",
+   "anticiper les menaces cyber et scénarios d’attaque ;",
+   "mettre en œuvre des mesures de segmentation, cloisonnement et contrôle des accès ;",
+   "réagir efficacement en cas d’incident, de crise cyber ou de non-conformité réglementaire."
+  ]
+ },
+ {
+  "type": "p",
+  "text": "Comme le rappelle explicitement l’ANSSI dans son guide de cartographie du système d’information :"
+ },
+ {
+  "type": "p",
+  "text": "Une cartographie pertinente du système d’information constitue un préalable nécessaire à toute démarche de sécurisation. »"
+ },
+ {
+  "type": "p",
+  "text": "ANSSI – Agence Nationale de la Sécurité des Systèmes d’Information"
+ },
+ {
+  "type": "p",
+  "text": "Sans cartographie fiable du SI, toute démarche de sécurité repose sur des hypothèses incomplètes, voire erronées."
+ },
+ {
+  "type": "h2",
+  "text": "Les préconisations de l’ANSSI pour la cartographie du système d’information"
+ },
+ {
+  "type": "h3",
+  "text": "Une cartographie progressive et structurée"
+ },
+ {
+  "type": "p",
+  "text": "Le guide de l’ANSSI recommande une approche en quatre étapes :"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "Définir finement le périmètre de cartographie : L’ANSSI recommande de commencer par un périmètre limité à un domaine critique (par exemple un service stratégique, une zone confiée ou un processus métier sensible), afin d’éviter la dispersion et de garantir une gouvernance claire dès le démarrage.",
+   "Modéliser les données avec une approche multi-vues :Il est essentiel de structurer la cartographie en couches distinctes, chacune ayant sa propre finalité. En effet, la vue métier permet de représenter les processus et leur propriétaire ; la vue applicative détaille les logiciels, les bases de données et les flux de données ; la vue technique couvre l’infrastructure, les zones réseau et les équipements ; la vue flux rend visibles les communications et les accès externes. Ensemble, ces vues créent une image cohérente et complète du SI.",
+   "Consolider les données avec transparence et collaboration :Toute cartographie viable nécessite une consolidation active des informations à travers différents services (informatique, métiers, sécurité) pour valider les représentations, corriger les erreurs et obtenir une vue fiable et partagée.",
+   "Maintenir la cartographie vivante dans le temps :L’ANSSI souligne qu’une cartographie devient rapidement obsolète si elle est figée dans un fichier PowerPoint ou Excel. Par conséquent, l’effort doit porter sur la mise en place d’un processus formel de mise à jour à chaque changement significatif du SI, afin qu’elle reste réellement opérationnelle."
+  ]
+ },
+ {
+  "type": "h3",
+  "text": "Un langage commun, pour un référentiel partagé"
+ },
+ {
+  "type": "p",
+  "text": "L’un des points fondamentaux soulignés par l’ANSSI est que la cartographie ne doit pas rester réservée à un groupe isolé : elle doit être comprise de tous, de la DSI au RSSI, interfacée avec les acteurs métiers et exploitants. Pour cela, définir un référentiel de termes, de définitions, de niveaux de granularité, favorise une compréhension collective et sert de socle pour la gouvernance, la documentation et la standardisation."
+ },
+ {
+  "type": "h3",
+  "text": "Des outils pérennes et interopérables, loin des supports bureautiques obsolètes"
+ },
+ {
+  "type": "p",
+  "text": "Les méthodes manuelles, comme les cartographies sur Excel, PowerPoint ou Visio, ne garantissent ni la fiabilité, ni la mise à jour, ni la collaboration nécessaire à l’animation du SI. De plus, l’ANSSI recommande l’usage de solutions logicielles spécialisées, offrant modélisation, interconnexion avec d’autres outils (CMDB, GRC, SIEM), filtres dynamiques, historisation des modifications et exports automatisés, pour garantir la pérennité et l’exploitabilité de la cartographie."
+ },
+ {
+  "type": "h2",
+  "text": "Comment myCarto répond aux préconisations de l’ANSSI en matière de cartographie SI"
+ },
+ {
+  "type": "p",
+  "text": "myCarto a été conçu pour aligner parfaitement la pratique de la cartographie SI sur les exigences de l’ANSSI, à travers quatre axes essentiels :"
+ },
+ {
+  "type": "h3",
+  "text": "Une modélisation multi-vues, conforme à la méthode ANSSI"
+ },
+ {
+  "type": "p",
+  "text": "myCarto permet de représenter :"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "des vues métiers (processus, entités fonctionnelles)",
+   "des vues applicatives (logiciels, interconnexions)",
+   "des vues techniques (infrastructures, serveurs, zones)",
+   "des vues flux (données, communications)"
+  ]
+ },
+ {
+  "type": "p",
+  "text": "Chaque objet est structuré et typé selon un métamodèle configurable, pour s’adapter à votre organisation et vos référentiels."
+ },
+ {
+  "type": "h3",
+  "text": "Collaboration, traçabilité, gouvernance"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "Travail à plusieurs sur un même référentiel",
+   "Historique des modifications",
+   "Gestion des droits utilisateurs",
+   "Export de rapports de conformité"
+  ]
+ },
+ {
+  "type": "h3",
+  "text": "Une solution sécurisée et souveraine"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "Hébergement en France",
+   "Connexion SSO, chiffrement des données",
+   "Conforme au RGPD et aux exigences de la CNIL",
+   "Prête à être intégrée dans un SIEM, un outil de GRC ou une CMDB"
+  ]
+ },
+ {
+  "type": "h2",
+  "text": "Bonnes pratiques pour une cartographie conforme aux recommandations de l’ANSSI"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "Commencer par un périmètre critique, validé avec la direction SSI (ex : un processus métier sensible, une zone réseau à sécuriser).",
+   "Associer dès le départ les bons acteurs (RSSI, urbanistes SI, métiers, infrastructure) pour garantir la cohérence.",
+   "S’appuyer sur l’existant (CMBD, projets antérieurs, documentations existantes) pour accélérer le déploiement initial.",
+   "Prévoir des mises à jour régulières, à la suite d’évolutions du SI ou dans le cadre d’une revue annuelle.",
+   "Intégrer la cartographie dans un cycle de gouvernance, en lien avec les démarches de risque ou de conformité (ISO 27001, NIS2…)"
+  ]
+ },
+ {
+  "type": "h2",
+  "text": "FAQ : Cartographie & cybersécurité"
+ },
+ {
+  "type": "p",
+  "text": "La cartographie du SI ne permet pas d’empêcher une attaque à elle seule, mais elle joue un rôle clé dans la réduction des failles et la limitation des impacts. En offrant une vision claire des actifs, des flux et des dépendances, elle facilite la détection des zones sensibles, la priorisation des actions de sécurité et la réaction rapide en cas d’incident."
+ },
+ {
+  "type": "p",
+  "text": "Selon les bonnes pratiques en cybersécurité et les recommandations de l’ANSSI, la cartographie du système d’information doit être mise à jour à chaque évolution significative du SI. Idéalement, elle s’inscrit dans une démarche continue, appuyée par des outils permettant l’automatisation et la mise à jour collaborative."
+ },
+ {
+  "type": "p",
+  "text": "À terme, l’objectif est de disposer d’une cartographie globale du SI. Toutefois, il est recommandé de démarrer par les périmètres critiques pour l’activité, puis d’étendre progressivement la couverture. Le niveau de détail doit être adapté à la criticité des domaines cartographiés."
+ },
+ {
+  "type": "p",
+  "text": "Non, la cartographie du système d’information ne remplace pas une CMDB, elle la complète. La CMDB fournit une base de données structurée des actifs, tandis que la cartographie offre une vision visuelle, transverse et exploitable, notamment pour analyser les interactions, les flux et les dépendances. Il est recommandé d’interfacer la cartographie avec les outils décrivant le SI."
+ },
+ {
+  "type": "p",
+  "text": "Découvrir notre démarche d’intégration"
+ },
+ {
+  "type": "p",
+  "text": "Une cartographie SI structurée permet une meilleure réactivité en cas d’incident, une réduction des temps d’arrêt, une priorisation plus efficace des actions de sécurité et une prise de décision éclairée dans les situations critiques ou réglementaires."
+ },
+ {
+  "type": "h2",
+  "text": "En conclusion"
+ },
+ {
+  "type": "p",
+  "text": "La cartographie du système d’information est une brique essentielle de toute stratégie de cybersécurité. L’ANSSI pose un cadre de référence solide pour la cartographie du SI, mais sa mise en œuvre opérationnelle nécessite un outil adapté, capable de traduire ces principes en actions concrètes."
+ },
+ {
+  "type": "p",
+  "text": "myCarto s’inscrit pleinement dans cette approche, en proposant une cartographie SI alignée avec les préconisations de l’ANSSI, collaborative, pérenne et sécurisée."
+ },
+ {
+  "type": "p",
+  "text": "Ressources ANSSI citées :"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "Guide de cartographie du système d’information (page)",
+   "Guide de cartographie du système d’information (PDF)"
+  ]
+ }
+]

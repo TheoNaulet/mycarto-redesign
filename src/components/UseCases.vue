@@ -16,6 +16,9 @@ import { directions } from '../data/content'
           <p>{{ d.line }}</p>
         </li>
       </ul>
+      <p class="usages__more">
+        <RouterLink class="link-more" to="/metiers">Voir myCarto métier par métier</RouterLink>
+      </p>
     </div>
   </section>
 </template>
@@ -59,6 +62,12 @@ import { directions } from '../data/content'
   max-width: 30ch;
   font-size: var(--fs-s);
   text-align: center;
+}
+
+.usages__more {
+  margin-top: var(--space-7);
+  text-align: center;
+  color: var(--navy);
 }
 
 @media (max-width: 860px) {

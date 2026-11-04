@@ -1,50 +1,93 @@
 <script setup lang="ts">
-import { articles, formatDate } from '../data/pages'
+import { computed, ref } from 'vue'
+import PageHero from '../components/ui/PageHero.vue'
+import { articles, formatDate, topics, type Topic } from '../data/articles'
 
 const [featured, ...rest] = articles
+const filter = ref<Topic | 'all'>('all')
+
+const chips = computed(() => [
+  { id: 'all' as const, label: 'Tous', count: rest.length },
+  ...topics.map((t) => ({ ...t, count: rest.filter((a) => a.topic === t.id).length })),
+])
+const shown = computed(() => (filter.value === 'all' ? rest : rest.filter((a) => a.topic === filter.value)))
+const topicLabel = (id: Topic) => topics.find((t) => t.id === id)?.label
 </script>
 
 <template>
   <div>
-    <header class="wrap page-head">
-      <h1>Articles et guides</h1>
-      <p>Pour piloter votre SI : méthode, réglementation, retours terrain.</p>
-    </header>
+    <PageHero :full="false">
+      <template #title>Articles et guides</template>
+      <template #lede>Pour piloter votre SI : méthode, réglementation, retours terrain.</template>
+      <template #actions>
+        <a class="btn btn--primary btn--lg" href="#tous">Parcourir les {{ articles.length }} articles</a>
+      </template>
+      <template #aside>
+        <img
+          class="hero-visual"
+          src="/brand/resources/ressources.webp"
+          alt="Un utilisateur de myCarto, un livre ouvert à la main"
+          width="1100"
+          height="1191"
+        />
+      </template>
+    </PageHero>
 
-    <section class="wrap featured" aria-label="À la une">
-      <RouterLink class="featured__link" to="/ressources/nis2">
-        <img :src="`/brand/articles/${featured.image}.webp`" alt="" width="1200" height="700" />
+    <section class="featured on-navy" aria-label="Le dernier article">
+      <RouterLink class="wrap featured__link" :to="`/ressources/${featured.slug}`">
+        <img :src="`/brand/articles/${featured.slug}.webp`" alt="" width="1200" height="700" />
         <span class="featured__body">
-          <time :datetime="featured.date">{{ formatDate(featured.date) }}</time>
+          <span class="featured__meta">Le dernier article · {{ formatDate(featured.date) }}</span>
           <span class="featured__title">{{ featured.title }}</span>
           <span class="featured__excerpt">{{ featured.excerpt }}</span>
-          <span class="link-more">Lire l’article</span>
+          <span class="featured__go">Lire l’article, {{ featured.minutes }} min</span>
         </span>
       </RouterLink>
     </section>
 
-    <section class="section ground-cool more" aria-labelledby="more-title">
+    <section id="tous" class="section ground-cool" aria-labelledby="all-title">
       <div class="wrap">
-        <h2 id="more-title" class="more__title">Tous les articles</h2>
-        <ul class="grid">
-          <li v-for="a in rest" :key="a.slug">
-            <a class="card" :href="a.href">
-              <img :src="`/brand/articles/${a.image}.webp`" alt="" width="1200" height="690" loading="lazy" />
-              <time :datetime="a.date">{{ formatDate(a.date) }}</time>
+        <div class="all__head">
+          <h2 id="all-title">Tous les articles</h2>
+          <div class="chips" role="group" aria-label="Filtrer par thème">
+            <button
+              v-for="c in chips"
+              :key="c.id"
+              type="button"
+              class="chip"
+              :aria-pressed="filter === c.id"
+              @click="filter = c.id"
+            >
+              {{ c.label }} <span class="chip__count">{{ c.count }}</span>
+            </button>
+          </div>
+        </div>
+        <TransitionGroup tag="ul" name="cards" class="grid">
+          <li v-for="a in shown" :key="a.slug">
+            <RouterLink class="card" :to="`/ressources/${a.slug}`">
+              <img :src="`/brand/articles/${a.slug}.webp`" alt="" width="1200" height="690" loading="lazy" />
+              <span class="card__meta">{{ topicLabel(a.topic) }} · {{ a.minutes }} min</span>
               <span class="card__title">{{ a.title }}</span>
               <span class="card__excerpt">{{ a.excerpt }}</span>
-            </a>
+            </RouterLink>
           </li>
-        </ul>
-        <p class="more__note">Ces articles s’ouvrent sur my-carto.com.</p>
+        </TransitionGroup>
       </div>
     </section>
   </div>
 </template>
 
 <style scoped>
+.hero-visual {
+  width: 100%;
+  max-width: 26rem;
+  height: auto;
+  margin-inline: auto;
+}
+
 .featured {
-  padding-bottom: var(--space-8);
+  background: var(--navy);
+  padding-block: var(--space-8);
 }
 
 .featured__link {
@@ -52,7 +95,7 @@ const [featured, ...rest] = articles
   grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
   gap: var(--space-7);
   align-items: center;
-  color: var(--text);
+  color: var(--on-navy);
   text-decoration: none;
 }
 
@@ -61,7 +104,7 @@ const [featured, ...rest] = articles
   height: auto;
   aspect-ratio: 12 / 7;
   object-fit: cover;
-  border: var(--frame) solid var(--navy);
+  border: var(--frame) solid var(--on-navy);
   border-radius: var(--radius-panel);
 }
 
@@ -71,10 +114,10 @@ const [featured, ...rest] = articles
   gap: var(--space-3);
 }
 
-time {
-  font-size: var(--fs-xs);
+.featured__meta {
+  font-size: var(--fs-s);
   font-weight: 600;
-  color: var(--text-muted);
+  color: var(--on-navy-soft);
 }
 
 .featured__title {
@@ -82,25 +125,80 @@ time {
   font-weight: 700;
   font-size: var(--fs-2xl);
   line-height: 1.08;
-  color: var(--navy);
   text-wrap: balance;
 }
 
 .featured__excerpt {
   font-size: var(--fs-l);
   line-height: 1.45;
+  color: var(--on-navy-soft);
 }
 
-.featured__link:hover .featured__title {
+.featured__go {
+  margin-top: var(--space-3);
+  font-family: var(--font-display);
+  font-weight: 700;
   text-decoration: underline;
   text-decoration-color: var(--yellow);
   text-decoration-thickness: 3px;
-  text-underline-offset: 0.15em;
+  text-underline-offset: 0.3em;
 }
 
-.more__title {
-  font-size: var(--fs-xl);
-  margin-bottom: var(--space-6);
+.featured__link:hover .featured__title {
+  color: var(--yellow);
+}
+
+.all__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4) var(--space-6);
+  margin-bottom: var(--space-7);
+}
+
+.all__head h2 {
+  font-size: var(--fs-2xl);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 2.75rem;
+  padding: 0.55rem 1.1rem 0.5rem;
+  border: 2px solid var(--navy);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-s);
+  line-height: 1;
+  color: var(--navy);
+  transition:
+    background-color 0.2s var(--ease-out),
+    color 0.2s var(--ease-out);
+}
+
+.chip:hover {
+  background: var(--paper);
+}
+
+.chip[aria-pressed='true'] {
+  background: var(--navy);
+  color: var(--on-navy);
+}
+
+.chip__count {
+  font-family: var(--font-text);
+  font-weight: 600;
+  opacity: 0.7;
 }
 
 .grid {
@@ -130,6 +228,12 @@ time {
   transform: scale(1.02);
 }
 
+.card__meta {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
 .card__title {
   font-family: var(--font-display);
   font-weight: 700;
@@ -150,13 +254,22 @@ time {
   font-size: var(--fs-s);
 }
 
-.more__note {
-  margin-top: var(--space-7);
-  font-size: var(--fs-s);
-  color: var(--text-muted);
+.cards-enter-active {
+  transition:
+    opacity 0.3s var(--ease-out),
+    transform 0.3s var(--ease-out);
+}
+
+.cards-enter-from {
+  opacity: 0;
+  transform: translateY(12px);
 }
 
 @media (max-width: 1000px) {
+  .hero-visual {
+    max-width: 15rem;
+  }
+
   .featured__link {
     grid-template-columns: 1fr;
     gap: var(--space-5);

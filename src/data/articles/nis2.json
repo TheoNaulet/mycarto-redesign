@@ -1,0 +1,309 @@
+[
+ {
+  "type": "p",
+  "text": "Alors que les cyberattaques se multiplient et que les exigences réglementaires se durcissent, la cybersécurité est devenue un enjeu stratégique pour toutes les organisations, publiques comme privées."
+ },
+ {
+  "type": "p",
+  "text": "Avec l’entrée en vigueur de la directive européenne NIS2, la donne change radicalement : les entreprises et organismes doivent désormais disposer d’une gouvernance cyber robuste, d’une maîtrise complète de leurs actifs numériques et d’une capacité à réagir efficacement en cas d’incident."
+ },
+ {
+  "type": "p",
+  "text": "Mais comment être conforme sans connaître précisément son système d’information ? Comment identifier les liens entre applications, serveurs, données et prestataires ?"
+ },
+ {
+  "type": "p",
+  "text": "C’est ici qu’intervient un outil de cartographie du SI, devenu indispensable pour la conformité NIS2. Un simple inventaire ou schéma statique ne suffit plus : il faut une vision dynamique, interconnectée et actualisée du système d’information."
+ },
+ {
+  "type": "h2",
+  "text": "Comprendre NIS2 : un cadre plus strict, un périmètre élargi"
+ },
+ {
+  "type": "p",
+  "text": "Adoptée fin 2022 et entrée en application en octobre 2024, la directive NIS2 (Network and Information Systems) vise à renforcer la résilience cyber de l’Union européenne."
+ },
+ {
+  "type": "p",
+  "text": "Elle remplace la première directive NIS de 2016 et élargit considérablement son champ d’application. Désormais, de nombreux secteurs sont concernés : santé, énergie, transport, administration publique, services numériques, gestion des déchets, infrastructures critiques, et bien d’autres."
+ },
+ {
+  "type": "p",
+  "text": "Concrètement, NIS2 impose plusieurs mesures de cybersécurité. Celles-ci concernent la prévention, la détection, la réponse aux incidents et la résilience des organisations."
+ },
+ {
+  "type": "p",
+  "text": "Les organisations doivent notamment mettre en œuvre plusieurs actions. En particulier, elles doivent :"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "Réaliser une analyse de risques documentée et continue, en identifiant toutes les vulnérabilités, les points de défaillance et les scénarios d’incident possibles.",
+   "Assurer la sécurisation des chaînes d’approvisionnement et des prestataires, car un tiers mal sécurisé peut compromettre l’ensemble du SI.",
+   "Notifier rapidement les incidents significatifs aux autorités compétentes, en France à l’ANSSI, avec une documentation précise et traçable.",
+   "Démontrer l’implication de la direction dans la gouvernance cyber, avec des décisions validées, des plans d’action suivis et des preuves de conformité."
+  ]
+ },
+ {
+  "type": "p",
+  "text": "Ces obligations montrent qu’une cartographie claire et à jour du système d’information est indispensable pour maîtriser les risques et se préparer aux audits."
+ },
+ {
+  "type": "h2",
+  "text": "Pourquoi la cartographie du SI est au cœur de la conformité NIS2"
+ },
+ {
+  "type": "h3",
+  "text": "Identifier les actifs critiques"
+ },
+ {
+  "type": "p",
+  "text": "Même si la directive NIS2 ne mentionne pas explicitement la cartographie du SI, elle rend cette démarche indispensable. En effet, chaque organisation doit connaître précisément ses actifs critiques."
+ },
+ {
+  "type": "p",
+  "text": "Applications, infrastructures, processus métiers et données sensibles doivent être identifiés et documentés."
+ },
+ {
+  "type": "p",
+  "text": "Par exemple, un hôpital doit recenser tous les systèmes qui gèrent les données patients, les prescriptions électroniques et les bases médicales."
+ },
+ {
+  "type": "h3",
+  "text": "Comprendre les dépendances et les flux"
+ },
+ {
+  "type": "p",
+  "text": "Les organisations doivent également comprendre comment leurs actifs interagissent."
+ },
+ {
+  "type": "p",
+  "text": "Les échanges internes, les connexions avec des tiers et les dépendances techniques doivent être clairement visualisés."
+ },
+ {
+  "type": "p",
+  "text": "Ainsi, une panne chez un fournisseur cloud peut rapidement affecter la facturation ou la prise de rendez-vous. Une cartographie à jour permet d’anticiper ces impacts."
+ },
+ {
+  "type": "h3",
+  "text": "Évaluer les risques et les prestataires"
+ },
+ {
+  "type": "p",
+  "text": "Enfin, chaque composant du SI doit être associé à ses risques potentiels."
+ },
+ {
+  "type": "p",
+  "text": "Un logiciel obsolète ou exposé à des vulnérabilités connues doit être identifié rapidement. De même, les prestataires critiques doivent être recensés et évalués."
+ },
+ {
+  "type": "p",
+  "text": "Cette visibilité constitue le socle d’une stratégie de cybersécurité conforme à NIS2."
+ },
+ {
+  "type": "h2",
+  "text": "Les limites d’une cartographie manuelle"
+ },
+ {
+  "type": "p",
+  "text": "De nombreuses organisations disposent encore d’un inventaire ou de schémas techniques réalisés “à la main”, souvent dans Excel, PowerPoint ou Visio. Ces supports ont le mérite d’exister, mais présentent rapidement plusieurs limites :"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "Obsolescence rapide : Les documents manuels sont rarement mis à jour en temps réel. Dès qu’une application change, un serveur est ajouté ou un prestataire modifie son environnement, le schéma devient incomplet ou erroné.",
+   "Manque de vision globale : Les outils statiques ne permettent pas de relier les différentes couches du SI (métier, application, infrastructure) et de comprendre les dépendances entre elles.",
+   "Difficulté de collaboration : Plusieurs équipes ne peuvent pas travailler simultanément sur le même document, ce qui entraîne des incohérences et des doublons.",
+   "Complexité pour les audits : Lors d’un contrôle de conformité NIS2, il est difficile de prouver la maîtrise du SI avec des documents dispersés, obsolètes ou non traçables."
+  ]
+ },
+ {
+  "type": "p",
+  "text": "En pratique, ces limites compliquent fortement les audits. Les responsables peinent alors à démontrer la criticité des actifs ou les impacts d’un incident. La conformité NIS2 s’en trouve fragilisée."
+ },
+ {
+  "type": "h2",
+  "text": "Pourquoi un outil de cartographie SI dédié est indispensable"
+ },
+ {
+  "type": "p",
+  "text": "En revanche, un outil de cartographie SI dynamique et centralisé offre une solution efficace aux limites des méthodes manuelles. Il permet :"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "Une vision multi-niveaux complète : Le logiciel modélise les processus métiers, applications, flux de données, infrastructures et prestataires, en montrant leurs interactions et dépendances.",
+   "Une traçabilité et historisation : Chaque modification est enregistrée, chaque actif documenté avec ses attributs (criticité, propriétaire, localisation, prestataire, niveau de risque, etc.), ce qui est essentiel pour NIS2.",
+   "Une analyse de risques facilitée : Les dépendances et vulnérabilités sont visibles, ce qui permet de prioriser les mesures de sécurité et d’anticiper les incidents.",
+   "Des rapports et vues personnalisées : Pour les audits, les réunions de gouvernance ou les plans de continuité, le référentiel peut produire des tableaux de bord, PDF ou exports exploitables.",
+   "Une collaboration renforcée : Les équipes techniques, métiers et sécurité peuvent travailler simultanément sur le même référentiel, garantissant la fiabilité et l’actualisation des données."
+  ]
+ },
+ {
+  "type": "p",
+  "text": "En résumé, un outil dédié transforme la cartographie du SI en référentiel vivant, clé pour une conformité NIS2 fiable et pérenne."
+ },
+ {
+  "type": "h2",
+  "text": "Ce que doit offrir un bon outil de cartographie SI pour être \"NIS2-ready\""
+ },
+ {
+  "type": "p",
+  "text": "Pour être réellement efficace et NIS2-ready, un logiciel de cartographie SI ne doit pas se limiter à produire de jolis diagrammes. Il doit répondre à des exigences fonctionnelles et stratégiques :"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "Modélisation multi-couches et exhaustive : Le logiciel doit représenter le SI sous plusieurs angles : métiers, applications, flux de données, infrastructures, prestataires, dépendances externes.",
+   "Identification des impacts d’incidents : La cartographie doit permettre de simuler différents scénarios et d’évaluer rapidement les conséquences d’une panne ou d’une cyberattaque.",
+   "Documentation complète des actifs : Chaque élément doit être enrichi d’attributs pertinents : criticité, propriétaire, localisation, prestataire, risques associés.",
+   "Vues personnalisées et reporting : Il doit être possible de générer des tableaux de bord adaptés aux audits, à la direction ou aux plans de continuité.",
+   "Historisation et traçabilité : Chaque modification doit être documentée, garantissant une piste d’audit complète et conforme à NIS2.",
+   "Collaboration multi-équipes : L’outil doit permettre aux équipes IT, sécurité et métiers de travailler ensemble en temps réel sur le même référentiel.",
+   "Rapports exploitables : Exports Excel ou dashboards interactifs pour simplifier les audits et les prises de décision."
+  ]
+ },
+ {
+  "type": "p",
+  "text": "L’objectif est de passer d’une vision fragmentée à une vision unifiée, actualisée et pilotable du SI, condition sine qua non pour la conformité NIS2."
+ },
+ {
+  "type": "h2",
+  "text": "myCarto : une solution adaptée aux exigences de la directive NIS2"
+ },
+ {
+  "type": "p",
+  "text": "Conçu par AB+ Software, myCarto est un logiciel de cartographie du système d’information complet et agile. Il aide les organisations à structurer, analyser et piloter leur patrimoine numérique."
+ },
+ {
+  "type": "h3",
+  "text": "Une vision complète et dynamique du SI"
+ },
+ {
+  "type": "p",
+  "text": "myCarto permet de modéliser l’ensemble des composantes du SI, incluant processus métiers, applications, infrastructures, flux, acteurs et données. Chaque élément est relié aux autres, offrant une vue cohérente et navigable du système."
+ },
+ {
+  "type": "p",
+  "text": "Exemple : un service hospitalier peut visualiser instantanément les dépendances entre logiciels de gestion des patients, bases de données critiques et prestataires cloud."
+ },
+ {
+  "type": "h3",
+  "text": "Une gouvernance collaborative"
+ },
+ {
+  "type": "p",
+  "text": "myCarto facilite la collaboration entre équipes techniques, métiers et sécurité. Chaque utilisateur peut enrichir, commenter, valider ou visualiser le référentiel selon ses droits. Ainsi, cette approche garantit la fiabilité et la mise à jour continue des données."
+ },
+ {
+  "type": "h3",
+  "text": "Une aide précieuse pour la conformité NIS2"
+ },
+ {
+  "type": "p",
+  "text": "Grâce à ses vues dynamiques et capacités de reporting, myCarto permet de :"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "Identifier les actifs essentiels et flux critiques",
+   "Cartographier les prestataires IT et dépendances externes",
+   "Documenter les scénarios d’impact en cas d’incident",
+   "Générer des rapports ou tableaux de bord à présenter lors d’audits ou de revues de conformité"
+  ]
+ },
+ {
+  "type": "p",
+  "text": "En d’autres termes, myCarto devient le socle documentaire et décisionnel sur lequel peut s’appuyer votre démarche de conformité NIS2."
+ },
+ {
+  "type": "h2",
+  "text": "Bénéfices concrets pour votre organisation"
+ },
+ {
+  "type": "p",
+  "text": "S’équiper d’un outil de cartographie SI comme myCarto, c’est :"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "Gagner en visibilité : vous disposez d’une vue claire et actualisée de votre patrimoine applicatif, de vos flux et de vos dépendances.",
+   "Renforcer la maîtrise des risques : les zones critiques sont identifiées et hiérarchisées, facilitant la mise en place de mesures de sécurité adaptées.",
+   "Accélérer la réponse aux incidents : en cas de cyberattaque, vous savez immédiatement quelles applications ou données sont impactées et pouvez agir plus vite.",
+   "Simplifier les audits et la conformité : les informations sont structurées, documentées et facilement exportables pour les autorités ou les auditeurs.",
+   "Améliorer la gouvernance du SI : la cartographie devient un outil de pilotage stratégique au service de la DSI et de la direction générale."
+  ]
+ },
+ {
+  "type": "p",
+  "text": "En bref, myCarto favorise une démarche proactive. La cartographie du SI devient alors un véritable levier de sécurité, de performance et de conformité."
+ },
+ {
+  "type": "h2",
+  "text": "Comment se lancer dans une démarche de cartographie SI conforme à NIS2 ?"
+ },
+ {
+  "type": "p",
+  "text": "Enfin, la réussite de cette démarche repose sur une approche progressive et pragmatique :"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "Identifier le périmètre prioritaire : commencez par les services essentiels et les applications critiques.",
+   "Impliquer les bons acteurs : la cartographie est transversale, elle implique la DSI, la sécurité, les métiers et parfois les prestataires.",
+   "Structurer les données : définissez les attributs et les critères de criticité à renseigner pour chaque actif.",
+   "Mettre à jour régulièrement : la conformité NIS2 n’est pas un état figé, mais une démarche continue.",
+   "Valoriser la cartographie : exploitez-la pour vos audits, vos analyses de risques, vos plans de continuité ou vos projets de transformation."
+  ]
+ },
+ {
+  "type": "h2",
+  "text": "FAQ : Directive NIS2 et cartographie du SI"
+ },
+ {
+  "type": "p",
+  "text": "La directive NIS2 (Network and Information Systems) est une réglementation européenne visant à renforcer la cybersécurité des systèmes d’information dans tous les secteurs critiques. Elle élargit le périmètre de NIS1, impose des obligations strictes de gouvernance et exige la documentation et la traçabilité des actifs critiques."
+ },
+ {
+  "type": "p",
+  "text": "Toutes les entités essentielles et importantes dans les secteurs critiques et numériques : santé, énergie, transport, services numériques, administrations publiques, infrastructures critiques, fournisseurs IT stratégiques, gestion des déchets, fabrication/production chimique, agroalimentaire, services postaux, secteur spatial et télécommunications. En général, NIS2 s’applique aux organisations de 50 employés minimum ou réalisant un chiffre d’affaires annuel supérieur à 10 M€, sauf exceptions spécifiques prévues par la directive."
+ },
+ {
+  "type": "p",
+  "text": "Oui, c’est obligatoire. La cartographie du SI est la première mesure technique à mettre en place : elle permet de recenser et structurer l’ensemble des actifs, applications, flux, infrastructures et prestataires. Sans ce référentiel complet et à jour, aucune organisation ne peut démontrer sa conformité à NIS2."
+ },
+ {
+  "type": "p",
+  "text": "myCarto centralise et historise tous les actifs, flux et prestataires, permet de visualiser les dépendances et de générer des rapports exploitables pour audits, analyses de risques et gouvernance. Il transforme la cartographie en référentiel vivant, clé pour la conformité NIS2."
+ },
+ {
+  "type": "p",
+  "text": "S’équiper d’un outil de cartographie SI comme myCarto apporte plusieurs bénéfices concrets :"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "Meilleure visibilité sur l’ensemble du système d’information",
+   "Réduction des risques, en identifiant et hiérarchisant les zones critiques",
+   "Réactivité accrue en cas d’incident, grâce à la visualisation des flux et dépendances",
+   "Simplification des audits et reporting, avec des données structurées et exportables",
+   "Renforcement de la gouvernance SI, transformant la cartographie en levier stratégique pour la DSI et la direction générale"
+  ]
+ },
+ {
+  "type": "h2",
+  "text": "En conclusion"
+ },
+ {
+  "type": "p",
+  "text": "Face aux exigences croissantes de la directive NIS2, les organisations doivent renforcer leur résilience numérique et leur capacité à démontrer la maîtrise de leurs systèmes d’information."
+ },
+ {
+  "type": "p",
+  "text": "La cartographie du SI s’impose comme un outil central : elle apporte la visibilité, la traçabilité et la compréhension nécessaires pour piloter la sécurité et prouver la conformité."
+ },
+ {
+  "type": "p",
+  "text": "S’équiper d’un outil de cartographie dédié comme myCarto n’est pas seulement une réponse à NIS2 : c’est un investissement stratégique dans la gouvernance et la cybersécurité de votre organisation."
+ }
+]

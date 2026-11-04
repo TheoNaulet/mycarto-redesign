@@ -1,0 +1,222 @@
+[
+ {
+  "type": "h2",
+  "text": "Mapping IT : comprendre ce concept et son lien avec la cartographie du SI"
+ },
+ {
+  "type": "p",
+  "text": "Le terme mapping IT (ou IT mapping) revient de plus en plus dans le vocabulaire des DSI. Cette tendance vient de l’influence des outils et méthodologies anglo-saxonnes. Mais cet anglicisme cache une confusion fréquente. En effet, le mapping IT est-il la même chose que la cartographie du système d’information ? Est-ce lié au data mapping ou au service mapping, des notions parfois utilisées pour désigner des approches plus techniques ? Cet article fait le point. Il clarifie les différents usages du terme. Il explique aussi pourquoi cette pratique est devenue incontournable pour toute DSI."
+ },
+ {
+  "type": "h3",
+  "text": "Qu’est-ce que le mapping IT ?"
+ },
+ {
+  "type": "p",
+  "text": "Le mapping IT désigne la représentation visuelle des composants du système d’information d’une organisation. Il inclut aussi les relations qui existent entre eux. Concrètement, il s’agit de répondre à une question simple : de quoi est fait mon SI ? Et comment ses éléments interagissent-ils entre eux ?"
+ },
+ {
+  "type": "h3",
+  "text": "Les couches couvertes par le mapping IT"
+ },
+ {
+  "type": "p",
+  "text": "Cette démarche peut couvrir plusieurs couches de l’entreprise :"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "l’infrastructure technique (serveurs, réseaux, équipements)",
+   "les applications et logiciels métier",
+   "les flux de données entre systèmes",
+   "les processus métier qui s’appuient sur ces briques"
+  ]
+ },
+ {
+  "type": "h3",
+  "text": "Mapping IT et cartographie du SI : un même objectif"
+ },
+ {
+  "type": "p",
+  "text": "En résumé, le mapping IT est l’équivalent anglophone de la cartographie informatique. En France, on parle aussi de cartographie du système d’information. Les deux termes désignent la même démarche, avec la même finalité : gouvernance, maîtrise des risques et aide à la décision. La différence est avant tout terminologique. Le terme « mapping IT » reste plus fréquent dans les organisations internationales ou les outils SaaS anglophones. À l’inverse, « cartographie du SI » demeure la norme dans le vocabulaire français, notamment dans les référentiels de l’ANSSI."
+ },
+ {
+  "type": "h3",
+  "text": "Attention à la confusion : toutes les « cartographies » ne parlent pas de la même chose"
+ },
+ {
+  "type": "p",
+  "text": "C’est le principal piège du terme « mapping » : il est utilisé dans des contextes très différents, ce qui génère beaucoup de confusion en ligne. Avant d’aller plus loin, voici un tableau qui distingue clairement le mapping IT des autres notions qui portent un nom proche."
+ },
+ {
+  "type": "h3",
+  "text": "Pourquoi cette distinction compte"
+ },
+ {
+  "type": "p",
+  "text": "Retenir cette distinction évite un écueil fréquent. Il ne faut pas construire une cartographie purement technique, sans la relier aux processus métier qu’elle doit servir. Sinon, la cartographie devient difficile à exploiter par les décideurs non techniques."
+ },
+ {
+  "type": "h2",
+  "text": "Pourquoi le mapping IT est devenu incontournable"
+ },
+ {
+  "type": "h3",
+  "text": "Une exigence réglementaire croissante"
+ },
+ {
+  "type": "p",
+  "text": "Les référentiels de l’ANSSI imposent aux organisations une meilleure connaissance de leurs actifs numériques. Il en va de même pour les obligations du RGPD et les exigences de la directive NIS2. Ainsi, un mapping IT à jour devient un élément central des démarches de conformité et des audits de sécurité."
+ },
+ {
+  "type": "h3",
+  "text": "Un outil de maîtrise des risques"
+ },
+ {
+  "type": "p",
+  "text": "Un mapping IT fiable permet d’identifier rapidement les dépendances critiques et les points de défaillance potentiels. Il révèle aussi les risques susceptibles d’affecter la continuité d’activité. C’est donc un prérequis pour tout Plan de Reprise d’Activité (PRA) ou Plan de Continuité d’Activité (PCA)."
+ },
+ {
+  "type": "h3",
+  "text": "Un levier de rationalisation et de maîtrise des coûts"
+ },
+ {
+  "type": "p",
+  "text": "Cette pratique met souvent en évidence des applications redondantes, sous-utilisées ou obsolètes. Il facilite ainsi les démarches de rationalisation applicative et la maîtrise du budget IT. C’est un enjeu d’autant plus fort dans un contexte de dette technique croissante."
+ },
+ {
+  "type": "h3",
+  "text": "Un accélérateur pour les projets de transformation"
+ },
+ {
+  "type": "p",
+  "text": "Migration vers le cloud, fusion-acquisition, modernisation du SI : ces contextes ont un point commun. Ils nécessitent une cartographie à jour pour anticiper les impacts d’un changement avant de le lancer. Sinon, ces impacts se découvrent en cours de projet."
+ },
+ {
+  "type": "h2",
+  "text": "Les différents niveaux d’un mapping IT complet"
+ },
+ {
+  "type": "p",
+  "text": "Un mapping réellement exploitable ne se limite pas à une seule vue technique. Il s’articule généralement en plusieurs couches complémentaires, cohérentes avec la logique d’urbanisation du système d’information :"
+ },
+ {
+  "type": "ol",
+  "items": [
+   "La couche métier : les processus qui créent de la valeur pour l’entreprise (relève du business process mapping)",
+   "La couche fonctionnelle : les grandes fonctions du SI, indépendamment des outils qui les réalisent : c’est ici qu’intervient le Plan d’Occupation des Sols (POS), qui structure cette couche en zones, quartiers et îlots",
+   "La couche applicative : les logiciels et applications réellement déployés",
+   "La couche technique/infrastructure : serveurs, réseaux, bases de données, équipements"
+  ]
+ },
+ {
+  "type": "p",
+  "text": "Ces couches doivent être reliées entre elles pour donner tout son sens à la démarche. En effet, un mapping purement technique, déconnecté des processus métier, perd une grande partie de sa valeur de pilotage."
+ },
+ {
+  "type": "h2",
+  "text": "Comment mettre en place un mapping IT dans son organisation"
+ },
+ {
+  "type": "h3",
+  "text": "1. Définir le périmètre et les objectifs"
+ },
+ {
+  "type": "p",
+  "text": "Avant de démarrer, il faut clarifier la finalité recherchée : conformité réglementaire, gestion des risques cyber, rationalisation applicative, ou préparation d’une migration. Cette finalité oriente le niveau de détail nécessaire."
+ },
+ {
+  "type": "h3",
+  "text": "2. Choisir la ou les couches à cartographier en priorité"
+ },
+ {
+  "type": "p",
+  "text": "Il est rarement pertinent de tout cartographier en même temps. La plupart des organisations démarrent par la couche applicative, la plus concrète. Elles remontent ensuite vers la couche métier et fonctionnelle."
+ },
+ {
+  "type": "h3",
+  "text": "3. Collecter les données existantes"
+ },
+ {
+  "type": "p",
+  "text": "CMDB, inventaires techniques, entretiens avec les équipes métier : les sources de données sont multiples et rarement centralisées au départ. C’est souvent l’étape la plus consommatrice de temps."
+ },
+ {
+  "type": "h3",
+  "text": "4. Choisir le bon mode de mise à jour"
+ },
+ {
+  "type": "p",
+  "text": "Une cartographie construite une fois puis jamais mise à jour perd rapidement sa valeur. Deux approches coexistent :"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "La mise à jour manuelle, via des outils bureautiques, adaptée aux environnements peu complexes et peu évolutifs",
+   "La mise à jour dynamique, via une solution dédiée qui relie les données automatiquement et reflète les évolutions du SI en continu. Elle devient indispensable dès que l’environnement IT se complexifie ou évolue vite"
+  ]
+ },
+ {
+  "type": "p",
+  "text": "C’est à cette étape qu’un outil comme myCarto prend tout son sens. Plutôt que de figer cette cartographie dans un fichier statique, myCarto relie dynamiquement les couches métier, fonctionnelle, applicative et technique. Il maintient ainsi une vision à jour au fil des projets, plutôt que lors d’un audit annuel."
+ },
+ {
+  "type": "h2",
+  "text": "Mapping IT et cartographie du SI : faut-il choisir un seul terme ?"
+ },
+ {
+  "type": "p",
+  "text": "Non. Dans la pratique, les deux coexistent selon le contexte :"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "Le terme « cartographie du système d’information » reste la référence dans les textes réglementaires français (ANSSI, RGPD). Il domine aussi dans la majorité des organisations francophones.",
+   "Le terme « mapping IT » est davantage employé dans les contextes internationaux et les outils SaaS anglo-saxons. On le retrouve aussi chez les équipes IT habituées au vocabulaire anglophone (ITOM, ITAM, CMDB)."
+  ]
+ },
+ {
+  "type": "p",
+  "text": "Pour une DSI, l’essentiel n’est pas de choisir un vocabulaire plutôt qu’un autre. Il s’agit plutôt de s’assurer que la démarche couvre bien l’ensemble des couches du SI : métier, fonctionnelle, applicative et technique. Peu importe alors le nom qu’on lui donne en interne."
+ },
+ {
+  "type": "h2",
+  "text": "FAQ : Mapping IT"
+ },
+ {
+  "type": "p",
+  "text": "Non, ce sont deux termes pour une même démarche. « Mapping IT » est simplement l’expression anglophone la plus courante, tandis que « cartographie du SI » est le terme de référence en France, notamment dans les publications de l’ANSSI."
+ },
+ {
+  "type": "p",
+  "text": "Non. Le data mapping est une pratique plus étroite, centrée sur la correspondance entre champs de données lors d’une migration ou d’une intégration de systèmes. Il peut intervenir en support d’un mapping IT plus large, mais ne le remplace pas."
+ },
+ {
+  "type": "p",
+  "text": "Le service mapping, se concentre sur la représentation dynamique des services IT et de leurs dépendances techniques, généralement à partir d’une CMDB. Dans son acception la plus complète, il couvre en plus les couches métier et fonctionnelle du SI."
+ },
+ {
+  "type": "p",
+  "text": "La plupart des organisations démarrent par la couche applicative, plus concrète et plus rapide à documenter, avant de remonter vers les couches fonctionnelle et métier. L’essentiel est de ne pas viser l’exhaustivité dès le départ, mais de construire une première vue exploitable, puis de l’enrichir progressivement."
+ },
+ {
+  "type": "p",
+  "text": "Un tableur peut suffire pour une première ébauche limitée à une seule couche, mais il atteint vite ses limites dès que plusieurs couches doivent être reliées entre elles et mises à jour régulièrement. Une solution de cartographie dynamique comme myCarto permet de connecter ces couches et de refléter automatiquement les évolutions du SI."
+ },
+ {
+  "type": "h2",
+  "text": "En conclusion"
+ },
+ {
+  "type": "p",
+  "text": "Que vous parliez de « mapping IT » ou de « cartographie du système d’information », la finalité reste la même. Il s’agit de donner à votre DSI une vision claire de son patrimoine informatique, du métier jusqu’à la technique. Le vrai risque n’est pas dans le choix du vocabulaire. Il réside plutôt dans la tentation de limiter cette démarche à une seule couche, souvent la plus technique. Cela revient à la déconnecter des enjeux métier qu’elle est censée servir."
+ },
+ {
+  "type": "p",
+  "text": "Une cartographie complète, qui relie ces couches, devient alors bien plus qu’un inventaire. Elle devient un véritable outil de pilotage, capable d’accompagner vos projets de conformité, de rationalisation et de transformation. Cela suppose toutefois qu’elle reste vivante et à jour."
+ },
+ {
+  "type": "p",
+  "text": "Pour aller plus loin, découvrez comment le Plan d’Occupation des Sols structure la couche fonctionnelle de votre mapping IT, ou explorez notre démarche de cartographie du SI avec myCarto."
+ }
+]

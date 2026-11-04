@@ -70,6 +70,8 @@ function isAnchor(to?: string) {
   grid-template-areas:
     'icon name arrow'
     'icon line arrow';
+  grid-template-rows: auto auto;
+  align-content: center;
   column-gap: var(--space-4);
   align-items: center;
   padding-block: var(--space-4);
@@ -79,6 +81,7 @@ function isAnchor(to?: string) {
 
 .keys__icon {
   grid-area: icon;
+  grid-row: 1 / 3;
   width: 3.5rem;
   height: 3.5rem;
   object-fit: contain;
@@ -96,6 +99,12 @@ function isAnchor(to?: string) {
   font-size: var(--fs-l);
   line-height: 1.2;
   text-wrap: balance;
+  align-self: end;
+}
+
+.keys__row:not(:has(.keys__line)) .keys__name {
+  grid-row: 1 / 3;
+  align-self: center;
 }
 
 .keys__line {
@@ -103,6 +112,7 @@ function isAnchor(to?: string) {
   font-size: var(--fs-s);
   line-height: 1.5;
   color: var(--text);
+  align-self: start;
 }
 
 .keys__arrow {
@@ -136,7 +146,18 @@ function isAnchor(to?: string) {
 .keys--columns .keys__row {
   grid-template-columns: auto minmax(11rem, 1fr) minmax(0, 1.3fr) auto;
   grid-template-areas: 'icon name line arrow';
+  grid-template-rows: auto;
   column-gap: var(--space-5);
+}
+
+.keys--columns .keys__icon,
+.keys--columns .keys__name {
+  grid-row: auto;
+  align-self: center;
+}
+
+.keys--columns .keys__line {
+  align-self: center;
 }
 
 @media (max-width: 720px) {
@@ -156,6 +177,22 @@ function isAnchor(to?: string) {
       'icon name arrow'
       'icon line arrow';
     column-gap: var(--space-4);
+  }
+
+  .keys--columns .keys__row {
+    grid-template-rows: auto auto;
+  }
+
+  .keys--columns .keys__icon {
+    grid-row: 1 / 3;
+  }
+
+  .keys--columns .keys__name {
+    align-self: end;
+  }
+
+  .keys--columns .keys__line {
+    align-self: start;
   }
 }
 </style>

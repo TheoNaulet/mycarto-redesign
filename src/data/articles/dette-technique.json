@@ -1,0 +1,168 @@
+[
+ {
+  "type": "p",
+  "text": "Un vendredi soir, une mise à jour de sécurité anodine fait tomber un applicatif métier critique. En effet, personne dans l’équipe IT ne savait qu’il dépendait encore d’un serveur Windows Server 2012. Ce serveur était lui-même connecté à trois autres applications « qu’on pensait décommissionnées ». Résultat : le lundi matin, la DSI passe sa réunion à reconstituer, à la main, une carte que personne n’avait jamais dessinée."
+ },
+ {
+  "type": "p",
+  "text": "Cette histoire, la plupart des DSI l’ont vécue sous une forme ou une autre. Pourtant, ce n’est pas un problème de compétence technique. C’est avant tout un problème de visibilité. En réalité, on ne peut pas piloter ce qu’on ne voit pas, et la dette technique, par nature, se cache. C’est exactement le rôle d’un architecte d’entreprise : donner cette vue transverse qui manque cruellement quand l’incident survient."
+ },
+ {
+  "type": "h2",
+  "text": "Qu’est-ce que la dette technique d’un système d’information ?"
+ },
+ {
+  "type": "p",
+  "text": "La dette technique désigne l’ensemble des raccourcis, compromis et reports de décision accumulés dans un système d’information au fil du temps. Concrètement, elle regroupe les applications non mises à jour, les dépendances non documentées, les infrastructures obsolètes et les doublons fonctionnels jamais rationalisés."
+ },
+ {
+  "type": "p",
+  "text": "Le terme vient à l’origine du développement logiciel. Ward Cunningham l’a théorisé en 1992 pour désigner le coût futur d’un code écrit trop vite. Mais à l’échelle d’un SI entier, la dette technique dépasse largement le code. Ainsi, elle touche :"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "les applications : versions non supportées, redondances, modules critiques sans documentation",
+   "l’infrastructure : serveurs en fin de vie, bases de données non patchées, dépendances cloud/on-premise mal maîtrisées",
+   "l’organisation : silos entre équipes, connaissance concentrée sur une seule personne, processus non formalisés"
+  ]
+ },
+ {
+  "type": "p",
+  "text": "Contrairement à une idée reçue, la dette technique n’est pas toujours une erreur. Depuis Martin Fowler, la littérature distingue en effet deux formes de dette. D’un côté, une dette prudente : un choix assumé pour aller plus vite. De l’autre, une dette imprudente, subie faute de visibilité. Le problème n’est donc pas la dette elle-même, mais bien son absence de pilotage."
+ },
+ {
+  "type": "h2",
+  "text": "Pourquoi la dette technique reste invisible dans la plupart des DSI"
+ },
+ {
+  "type": "p",
+  "text": "Trois raisons expliquent pourquoi tant d’organisations découvrent leur dette technique au moment où elle explose."
+ },
+ {
+  "type": "h3",
+  "text": "1. Elle est distribuée, pas centralisée."
+ },
+ {
+  "type": "p",
+  "text": "Chaque équipe connaît sa propre dette, mais personne n’a de vue transverse. Par exemple, l’architecte applicatif voit les redondances de son périmètre, tandis que l’infrastructure voit ses obsolescences. Or, aucun des deux ne voit l’impact croisé."
+ },
+ {
+  "type": "h3",
+  "text": "2. Elle vieillit silencieusement."
+ },
+ {
+  "type": "p",
+  "text": "Une application vieillit sans qu’aucun événement ne le signale. Il n’y a donc pas d’ « alarme dette technique », juste un écart qui se creuse. Puis, un jour, un audit de sécurité, une panne ou un projet de migration la révèle brutalement."
+ },
+ {
+  "type": "h3",
+  "text": "3. Elle se documente dans des fichiers Excel isolés."
+ },
+ {
+  "type": "p",
+  "text": "Beaucoup de DSI ont une photographie de leur dette. Cependant, cette photo reste figée à la date de l’audit qui l’a produite. Elle n’est ni mise à jour, ni reliée aux autres référentiels (CMDB, ITSM, PPM)."
+ },
+ {
+  "type": "p",
+  "text": "Résultat : quand la dette est enfin visible, elle est déjà coûteuse. Par exemple, une documentation lacunaire peut allonger de plusieurs semaines le temps d’intégration d’un nouveau collaborateur. C’est un coût caché, qui ne remonte d’ailleurs jamais dans un tableau de bord financier classique."
+ },
+ {
+  "type": "h2",
+  "text": "La cartographie du SI : le chaînon manquant entre \"on sait qu’on a de la dette\" et \"on la pilote\""
+ },
+ {
+  "type": "p",
+  "text": "C’est là que la cartographie du SI change la donne. Bien sûr, elle ne supprime pas la dette technique : aucun outil ne le fait. En revanche, elle résout le problème en amont, en la rendant visible, mesurable et priorisable."
+ },
+ {
+  "type": "p",
+  "text": "Concrètement, une cartographie dynamique du SI permet de :"
+ },
+ {
+  "type": "ul",
+  "items": [
+   "Visualiser l’obsolescence en un coup d’œil. Un code couleur sur les composants techniques (serveurs, bases, frameworks) permet de repérer immédiatement ce qui approche ou a dépassé sa date de fin de support.",
+   "Relier la dette technique à son impact métier. Une base de données obsolète isolée dans un tableau Excel, c’est une simple ligne. Reliée sur une carte à 5 applications critiques, cette même base devient une priorité business évidente.",
+   "Suivre les dépendances cachées. C’est précisément ce qui a manqué un vendredi soir : savoir qu’un composant en fin de vie supporte encore une application que « personne n’utilise plus ». Sauf qu’en réalité, si.",
+   "Historiser l’évolution. Une carte à jour en continu permet de suivre si la dette augmente ou diminue d’un trimestre à l’autre. Elle permet ainsi de justifier objectivement un plan de remédiation auprès de la direction.",
+   "Parler le même langage que les métiers. Une carte est en effet bien plus persuasive qu’un rapport technique de 40 pages pour obtenir un budget auprès d’un COMEX."
+  ]
+ },
+ {
+  "type": "h2",
+  "text": "Une méthode en 4 étapes pour piloter sa dette technique via la cartographie"
+ },
+ {
+  "type": "h3",
+  "text": "1. Cartographier avant de mesurer."
+ },
+ {
+  "type": "p",
+  "text": "Avant tout indicateur, il faut d’abord un référentiel fiable. Autrement dit : quelles applications, quelles infrastructures, quelles dépendances existent réellement, et non celles qu’on croit connaître. C’est l’étape la plus sous-estimée, et pourtant la plus rentable."
+ },
+ {
+  "type": "h3",
+  "text": "2. Croiser criticité métier et niveau d’obsolescence."
+ },
+ {
+  "type": "p",
+  "text": "Toute dette technique n’a pas le même poids. Par exemple, un serveur obsolète qui supporte une application secondaire n’appelle pas la même urgence qu’un socle partagé par trois processus critiques. Ainsi, la cartographie permet ce croisement en quelques clics, là où un tableur demande des heures de recoupement manuel."
+ },
+ {
+  "type": "h3",
+  "text": "3. Prioriser avec une feuille de route visuelle."
+ },
+ {
+  "type": "p",
+  "text": "Plutôt qu’une liste à plat de 200 lignes, une carte permet de zoner : ce qui est urgent, ce qui peut attendre, ce qui est un choix assumé. C’est donc ce qui transforme un audit ponctuel en gouvernance continue."
+ },
+ {
+  "type": "h3",
+  "text": "4. Suivre dans le temps, pas juste au moment de l’audit."
+ },
+ {
+  "type": "p",
+  "text": "La vraie valeur apparaît quand la cartographie est connectée aux référentiels vivants, plutôt qu’alimentée une fois par an. En effet, la dette technique évolue en continu ; son suivi doit donc l’être aussi. C’est ce type de démarche que Bouygues Construction a mis en place pour suivre sa dette technique dans la durée."
+ },
+ {
+  "type": "h2",
+  "text": "Ce que la cartographie ne remplace pas"
+ },
+ {
+  "type": "p",
+  "text": "Soyons honnêtes : la cartographie du SI est un outil de pilotage, pas une baguette magique. Elle ne réécrit pas le code legacy et ne migre pas les serveurs. Elle ne remplace pas non plus l’expertise des équipes techniques, qui devront toujours faire le travail de fond. En revanche, elle apporte quelque chose d’essentiel : la capacité à savoir où regarder en premier. Sur un SI de plusieurs centaines d’applications, ce n’est pas un détail."
+ },
+ {
+  "type": "h2",
+  "text": "FAQ : Dette Technique"
+ },
+ {
+  "type": "p",
+  "text": "Non. À l’échelle d’un SI, elle concerne aussi les infrastructures, l’organisation et les processus. La cartographie du SI permet justement de couvrir ces différentes couches dans une seule vue."
+ },
+ {
+  "type": "p",
+  "text": "En croisant systématiquement deux critères : le niveau d’obsolescence technique et la criticité métier du composant. Un outil de cartographie permet ainsi de visualiser ce croisement directement, sans recoupement manuel."
+ },
+ {
+  "type": "p",
+  "text": "Non, et ce n’est d’ailleurs jamais réaliste. L’objectif est plutôt de rendre la dette visible en continu, afin d’arbitrer en connaissance de cause, projet après projet."
+ },
+ {
+  "type": "p",
+  "text": "Ça dépend de la taille du SI, mais l’essentiel est de commencer par les périmètres les plus critiques plutôt que de viser l’exhaustivité dès le départ. Une cartographie vivante s’enrichit en continu, elle n’a pas besoin d’être complète pour devenir utile."
+ },
+ {
+  "type": "p",
+  "text": "La DSI porte généralement le sujet, mais la cartographie permet justement de le partager avec les métiers, puisqu’elle rend visible l’impact business de chaque composant obsolète. C’est ce qui transforme la dette technique d’un sujet purement IT en un sujet de gouvernance partagée."
+ },
+ {
+  "type": "h2",
+  "text": "En résumé"
+ },
+ {
+  "type": "p",
+  "text": "La dette technique n’est pas un problème qu’on résout un jour pour toutes. C’est un flux permanent qu’il faut piloter, et on ne pilote bien que ce qu’on voit clairement. La cartographie du SI transforme une dette diffuse, documentée dans des fichiers épars et vite obsolètes, en un référentiel vivant, partagé entre IT et métiers, qui permet d’arbitrer en continu plutôt que de subir dans l’urgence."
+ }
+]
