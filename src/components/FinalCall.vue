@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// The closing call on navy, shown under every page except the demo and contact forms (see App.vue).
 import { site } from '../data/content'
 </script>
 

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// Mentions légales and Politique RGPD on one template, chosen by the route `doc` prop (data: legal.ts).
 import { computed } from 'vue'
 import PageHero from '../components/ui/PageHero.vue'
 import { legal } from '../data/legal'

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// One article: the body is loaded on demand (articles.ts), with a table of contents that follows the reading.
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { articles, formatDate, loadBody, topics, type Block } from '../data/articles'

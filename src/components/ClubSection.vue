@@ -1,3 +1,4 @@
+<!-- Home and clients: the user club in one photo, one line and the next date, linking to /club-utilisateurs. -->
 <template>
   <section id="club" class="section club" aria-labelledby="club-title">
     <div class="wrap club__grid">

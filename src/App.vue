@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// App shell: header, the routed page (with a short settle on route change), closing call and footer.
 import { useRoute } from 'vue-router'
 import SiteHeader from './components/SiteHeader.vue'
 import FinalCall from './components/FinalCall.vue'

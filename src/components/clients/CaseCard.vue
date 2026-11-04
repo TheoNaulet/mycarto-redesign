@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// A case study card: cover or logo, the organisation, its key figure and one line.
 import type { CaseStudy } from '../../data/cases'
 
 defineProps<{ study: CaseStudy }>()

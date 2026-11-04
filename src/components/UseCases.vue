@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// Home: the three ways DSI use myCarto, each with its brand persona, linking to /metiers.
 import { directions } from '../data/content'
 </script>
 

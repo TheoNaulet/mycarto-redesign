@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// Articles et guides: the latest article in large, then every article with topic filters.
 import { computed, ref } from 'vue'
 import PageHero from '../components/ui/PageHero.vue'
 import { articles, formatDate, topics, type Topic } from '../data/articles'

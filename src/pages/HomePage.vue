@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// The home page: one section per idea, on alternating grounds (see DESIGN.md, Layout).
 import HeroSection from '../components/HeroSection.vue'
 import ClientsStrip from '../components/ClientsStrip.vue'
 import UseCases from '../components/UseCases.vue'

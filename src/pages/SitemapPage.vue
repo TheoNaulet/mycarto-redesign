@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// Plan du site, built from the same data as the menus (nav.ts), the cases and the articles, so it never drifts.
 import PageHero from '../components/ui/PageHero.vue'
 import { articles } from '../data/articles'
 import { caseStudies as cases } from '../data/cases'

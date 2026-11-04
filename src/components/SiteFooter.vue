@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// Footer: contact details, one column per menu group (from nav.ts), legal links and the concept notice.
 import BrandLogo from './BrandLogo.vue'
 import { candidate, site } from '../data/content'
 import { companyLinks, legalLinks, navGroups } from '../data/nav'

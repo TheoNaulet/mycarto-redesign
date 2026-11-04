@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// Home: the navy client band, 14 of the 26 client logos, linking to /clients.
 import { clients } from '../data/content'
 
 const shown = clients.slice(0, 14)

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// Home: "La légende de myCarto", the five features as the framed key list that the inner pages reuse.
 import { features } from '../data/content'
 </script>
 

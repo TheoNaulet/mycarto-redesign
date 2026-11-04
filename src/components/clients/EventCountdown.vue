@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// Live countdown to the next event, ticking every second; screen readers get days and hours only.
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 
 const props = defineProps<{ to: string }>()

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// Nos clients: the logo wall, the ten case studies (each links to /clients/:slug), testimonials and club.
 import { clients } from '../data/content'
 import { caseStudies } from '../data/cases'
 import VoicesBoard from '../components/VoicesBoard.vue'

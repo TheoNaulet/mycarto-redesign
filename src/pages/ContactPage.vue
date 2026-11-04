@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// Contact commercial: a compact form validated field by field; nothing is sent, the concept says so.
 import { nextTick, reactive, ref } from 'vue'
 import { site } from '../data/content'
 
