@@ -22,14 +22,7 @@ import { directions } from '../data/content'
 
 <style scoped>
 .usages {
-  display: flex;
-  align-items: center;
-  min-height: 100dvh;
-  background: var(--yellow-pale);
-}
-
-.usages > .wrap {
-  width: min(100% - 2 * var(--gutter), var(--max));
+  background: var(--paper-cool);
 }
 
 .usages__head {
