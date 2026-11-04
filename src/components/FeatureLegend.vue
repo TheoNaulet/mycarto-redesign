@@ -93,19 +93,7 @@ import { features } from '../data/content'
 }
 
 @media (max-width: 720px) {
-  .more {
-  display: inline-block;
-  margin-top: var(--space-5);
-  font-family: var(--font-display);
-  font-weight: 700;
-  color: var(--navy);
-  text-decoration: underline;
-  text-decoration-color: var(--yellow);
-  text-decoration-thickness: 3px;
-  text-underline-offset: 0.3em;
-}
-
-.legend__keys {
+  .legend__keys {
     padding: var(--space-1) var(--space-4);
   }
 

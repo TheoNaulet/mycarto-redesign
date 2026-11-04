@@ -1,14 +1,71 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import BrandLogo from './BrandLogo.vue'
 import { candidate, site } from '../data/content'
+import { navGroups, type NavGroup } from '../data/nav'
 
-const open = ref(false)
-const nav = [
-  { to: '/fonctionnalites', label: 'Fonctionnalités' },
-  { to: '/clients', label: 'Clients' },
-  { to: '/ressources', label: 'Ressources' },
-]
+const route = useRoute()
+const drawer = ref(false)
+const openId = ref<string | null>(null)
+const headerEl = ref<HTMLElement | null>(null)
+
+let closeTimer: number | undefined
+let hoverOpenedAt = 0
+let canHover: MediaQueryList | null = null
+
+function isActive(g: NavGroup) {
+  return g.items.some((i) => !i.external && (route.path === i.to || route.path.startsWith(`${i.to}/`)))
+}
+
+function hoverOpen(id: string) {
+  if (!canHover?.matches) return
+  window.clearTimeout(closeTimer)
+  if (openId.value !== id) hoverOpenedAt = Date.now()
+  openId.value = id
+}
+
+function hoverClose() {
+  if (!canHover?.matches) return
+  closeTimer = window.setTimeout(() => (openId.value = null), 180)
+}
+
+function toggle(id: string) {
+  // A click right after the hover opened the panel keeps it open instead of closing it.
+  if (openId.value === id && Date.now() - hoverOpenedAt < 400) return
+  openId.value = openId.value === id ? null : id
+}
+
+function onKey(e: KeyboardEvent) {
+  if (e.key !== 'Escape' || !openId.value) return
+  const id = openId.value
+  openId.value = null
+  nextTick(() => document.getElementById(`menu-${id}`)?.focus())
+}
+
+function onPointer(e: PointerEvent) {
+  if (openId.value && headerEl.value && !headerEl.value.contains(e.target as Node)) openId.value = null
+}
+
+watch(
+  () => route.fullPath,
+  () => {
+    openId.value = null
+    drawer.value = false
+  },
+)
+
+onMounted(() => {
+  canHover = window.matchMedia('(hover: hover) and (min-width: 961px)')
+  document.addEventListener('keydown', onKey)
+  document.addEventListener('pointerdown', onPointer)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('keydown', onKey)
+  document.removeEventListener('pointerdown', onPointer)
+  window.clearTimeout(closeTimer)
+})
 </script>
 
 <template>
@@ -18,7 +75,7 @@ const nav = [
       <a :href="site.official" rel="noopener">Voir le site officiel</a>
     </p>
   </div>
-  <header class="header">
+  <header ref="headerEl" class="header">
     <div class="wrap header__bar">
       <RouterLink class="header__logo" to="/" aria-label="myCarto, accueil">
         <BrandLogo />
@@ -26,25 +83,63 @@ const nav = [
       <button
         type="button"
         class="header__toggle"
-        :aria-expanded="open"
+        :aria-expanded="drawer"
         aria-controls="main-nav"
-        @click="open = !open"
+        @click="drawer = !drawer"
       >
         <span class="visually-hidden">Menu</span>
         <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path v-if="!open" d="M4 7h16M4 12h16M4 17h16" />
+          <path v-if="!drawer" d="M4 7h16M4 12h16M4 17h16" />
           <path v-else d="M6 6l12 12M18 6 6 18" />
         </svg>
       </button>
-      <nav id="main-nav" class="header__nav" :class="{ 'is-open': open }" aria-label="Navigation principale">
-        <ul>
-          <li v-for="item in nav" :key="item.to">
-            <RouterLink :to="item.to" @click="open = false">{{ item.label }}</RouterLink>
+      <nav id="main-nav" class="header__nav" :class="{ 'is-open': drawer }" aria-label="Navigation principale">
+        <ul class="menu">
+          <li
+            v-for="g in navGroups"
+            :key="g.id"
+            class="menu__group"
+            @mouseenter="hoverOpen(g.id)"
+            @mouseleave="hoverClose"
+          >
+            <button
+              :id="`menu-${g.id}`"
+              type="button"
+              class="menu__trigger"
+              :class="{ 'is-active': isActive(g), 'is-open': openId === g.id }"
+              :aria-expanded="openId === g.id"
+              :aria-controls="`panel-${g.id}`"
+              @click="toggle(g.id)"
+            >
+              {{ g.label }}
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+            </button>
+            <Transition name="drop">
+              <div v-show="openId === g.id" :id="`panel-${g.id}`" class="menu__panel">
+                <ul>
+                  <li v-for="item in g.items" :key="item.to">
+                    <a v-if="item.external" class="menu__item" :href="item.to" rel="noopener">
+                      <img :src="`/brand/nav/${item.icon}.svg`" alt="" width="44" height="44" />
+                      <span class="menu__name">{{ item.label }} <span class="menu__ext" aria-hidden="true">↗</span></span>
+                      <span class="menu__line">{{ item.line }}</span>
+                    </a>
+                    <RouterLink v-else class="menu__item" :to="item.to">
+                      <img :src="`/brand/nav/${item.icon}.svg`" alt="" width="44" height="44" />
+                      <span class="menu__name">{{ item.label }}</span>
+                      <span class="menu__line">{{ item.line }}</span>
+                    </RouterLink>
+                  </li>
+                </ul>
+              </div>
+            </Transition>
+          </li>
+          <li class="menu__group">
+            <RouterLink class="menu__trigger menu__trigger--link" to="/a-propos">À propos</RouterLink>
           </li>
         </ul>
         <div class="header__actions">
-          <RouterLink class="btn btn--ghost" to="/contact" @click="open = false">Contact commercial</RouterLink>
-          <RouterLink class="btn btn--primary" to="/demo" @click="open = false">Demander une démo</RouterLink>
+          <RouterLink class="btn btn--ghost" to="/contact">Contact commercial</RouterLink>
+          <RouterLink class="btn btn--primary" to="/demo">Demander une démo</RouterLink>
         </div>
       </nav>
     </div>
@@ -70,6 +165,8 @@ const nav = [
 }
 
 .header {
+  position: relative;
+  z-index: 30;
   background: var(--paper);
   color: var(--navy);
   border-bottom: 1px solid var(--line);
@@ -101,23 +198,135 @@ const nav = [
   margin-left: auto;
 }
 
-.header__nav ul {
+.menu {
   display: flex;
-  gap: var(--space-5);
+  align-items: center;
+  gap: var(--space-4);
 }
 
-.header__nav ul a {
+.menu__group {
+  position: relative;
+}
+
+.menu__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.4rem 0;
+  border: 0;
+  background: linear-gradient(var(--yellow), var(--yellow)) left bottom / 0 2px no-repeat;
   font-weight: 600;
   font-size: var(--fs-s);
+  color: var(--navy);
   text-decoration: none;
-  padding-block: 0.4rem;
-  background: linear-gradient(var(--yellow), var(--yellow)) left bottom / 0 2px no-repeat;
   transition: background-size 0.25s var(--ease-out);
 }
 
-.header__nav ul a:hover,
-.header__nav ul a.router-link-active {
+.menu__trigger svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.25s var(--ease-out);
+}
+
+.menu__trigger:hover,
+.menu__trigger.is-open,
+.menu__trigger.is-active,
+.menu__trigger--link.router-link-active {
   background-size: 100% 2px;
+}
+
+.menu__trigger.is-open svg {
+  transform: rotate(180deg);
+}
+
+/* The dropdown is a small legend: the 3px navy frame and hairline rows of the key list. */
+.menu__panel {
+  position: absolute;
+  top: calc(100% + 1.05rem);
+  left: -1.25rem;
+  width: 25rem;
+  padding: var(--space-1) var(--space-5);
+  border: var(--frame) solid var(--navy);
+  border-radius: var(--radius-panel);
+  background: var(--paper);
+}
+
+/* Keeps the panel open while the pointer crosses the gap under the trigger. */
+.menu__panel::before {
+  content: '';
+  position: absolute;
+  inset: -1.25rem 0 100%;
+}
+
+.menu__panel li + li {
+  border-top: 1px solid var(--line);
+}
+
+.menu__item {
+  display: grid;
+  grid-template-columns: 2.75rem minmax(0, 1fr);
+  grid-template-areas:
+    'icon name'
+    'icon line';
+  column-gap: var(--space-4);
+  align-items: center;
+  padding-block: var(--space-3);
+  color: var(--navy);
+  text-decoration: none;
+}
+
+.menu__item img {
+  grid-area: icon;
+  width: 2.75rem;
+  height: 2.75rem;
+  object-fit: contain;
+}
+
+.menu__name {
+  grid-area: name;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-m);
+  line-height: 1.25;
+}
+
+.menu__ext {
+  font-family: var(--font-text);
+  font-weight: 600;
+  font-size: var(--fs-s);
+}
+
+.menu__line {
+  grid-area: line;
+  font-size: var(--fs-s);
+  line-height: 1.4;
+  color: var(--text);
+}
+
+.menu__item:hover .menu__name,
+.menu__item.router-link-active .menu__name {
+  text-decoration: underline;
+  text-decoration-color: var(--yellow);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 0.2em;
+}
+
+.drop-enter-active,
+.drop-leave-active {
+  transition:
+    opacity 0.2s var(--ease-out),
+    transform 0.2s var(--ease-out);
+}
+
+.drop-enter-from,
+.drop-leave-to {
+  opacity: 0;
+  transform: translateY(-6px);
 }
 
 .header__actions {
@@ -150,11 +359,7 @@ const nav = [
   stroke-linecap: round;
 }
 
-@media (max-width: 1180px) {
-  .header__nav ul {
-    gap: var(--space-4);
-  }
-
+@media (max-width: 1240px) {
   .header__actions .btn--ghost {
     display: none;
   }
@@ -173,7 +378,9 @@ const nav = [
     flex-direction: column;
     align-items: stretch;
     gap: var(--space-5);
-    padding: var(--space-5) var(--gutter) var(--space-6);
+    max-height: calc(100dvh - 6.8rem);
+    overflow-y: auto;
+    padding: var(--space-3) var(--gutter) var(--space-6);
     background: var(--paper);
     border-bottom: var(--frame) solid var(--navy);
   }
@@ -182,20 +389,44 @@ const nav = [
     display: flex;
   }
 
-  .header {
-    position: relative;
-  }
-
-  .header__nav ul {
+  .menu {
     flex-direction: column;
-    gap: var(--space-1);
+    align-items: stretch;
+    gap: 0;
   }
 
-  .header__nav ul a {
-    display: block;
-    font-size: var(--fs-l);
+  .menu__group + .menu__group {
+    border-top: 1px solid var(--line);
+  }
+
+  .menu__trigger {
+    width: 100%;
+    justify-content: space-between;
+    padding-block: 0.85rem;
+    background: none;
     font-family: var(--font-display);
-    padding-block: 0.6rem;
+    font-weight: 700;
+    font-size: var(--fs-l);
+  }
+
+  .menu__panel {
+    position: static;
+    width: auto;
+    padding: 0 0 var(--space-3);
+    border: 0;
+    border-radius: 0;
+  }
+
+  .menu__panel::before {
+    display: none;
+  }
+
+  .menu__panel li + li {
+    border-top: 0;
+  }
+
+  .menu__item {
+    padding-block: var(--space-2);
   }
 
   .header__actions {

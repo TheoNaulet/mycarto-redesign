@@ -825,21 +825,7 @@ const dashIcons = [
   }
 
   .meta__photo,
-  .tiles svg {
-  width: 3rem;
-  height: 3rem;
-  fill: none;
-  stroke: var(--navy);
-  stroke-width: 3;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.tiles svg :deep(.y) {
-  fill: var(--yellow);
-}
-
-.dash__photo {
+  .dash__photo {
     max-width: 20rem;
   }
 }
