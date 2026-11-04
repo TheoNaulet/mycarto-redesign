@@ -1,28 +1,20 @@
 <script setup lang="ts">
+import { useRoute } from 'vue-router'
 import SiteHeader from './components/SiteHeader.vue'
-import HeroSection from './components/HeroSection.vue'
-import ClientsStrip from './components/ClientsStrip.vue'
-import UseCases from './components/UseCases.vue'
-import FeatureLegend from './components/FeatureLegend.vue'
-import VoicesBoard from './components/VoicesBoard.vue'
-import RouteSection from './components/RouteSection.vue'
-import ClubSection from './components/ClubSection.vue'
 import FinalCall from './components/FinalCall.vue'
+import SiteFooter from './components/SiteFooter.vue'
+
+const route = useRoute()
 </script>
 
 <template>
   <a class="skip" href="#main">Aller au contenu</a>
   <SiteHeader />
   <main id="main">
-    <HeroSection />
-    <ClientsStrip />
-    <UseCases />
-    <FeatureLegend />
-    <VoicesBoard />
-    <RouteSection />
-    <ClubSection />
+    <RouterView />
   </main>
-  <FinalCall />
+  <FinalCall v-if="route.name !== 'demo'" />
+  <SiteFooter />
 </template>
 
 <style scoped>

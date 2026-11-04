@@ -5,11 +5,9 @@ import { candidate, site } from '../data/content'
 
 const open = ref(false)
 const nav = [
-  { href: '#usages', label: 'Usages' },
-  { href: '#fonctionnalites', label: 'Fonctionnalités' },
-  { href: '#temoignages', label: 'Témoignages' },
-  { href: '#accompagnement', label: 'Accompagnement' },
-  { href: '#club', label: 'Club' },
+  { to: '/fonctionnalites', label: 'Fonctionnalités' },
+  { to: '/clients', label: 'Clients' },
+  { to: '/ressources', label: 'Ressources' },
 ]
 </script>
 
@@ -22,9 +20,9 @@ const nav = [
   </div>
   <header class="header">
     <div class="wrap header__bar">
-      <a class="header__logo" href="#top" aria-label="myCarto, retour en haut">
+      <RouterLink class="header__logo" to="/" aria-label="myCarto, accueil">
         <BrandLogo />
-      </a>
+      </RouterLink>
       <button
         type="button"
         class="header__toggle"
@@ -40,13 +38,13 @@ const nav = [
       </button>
       <nav id="main-nav" class="header__nav" :class="{ 'is-open': open }" aria-label="Navigation principale">
         <ul>
-          <li v-for="item in nav" :key="item.href">
-            <a :href="item.href" @click="open = false">{{ item.label }}</a>
+          <li v-for="item in nav" :key="item.to">
+            <RouterLink :to="item.to" @click="open = false">{{ item.label }}</RouterLink>
           </li>
         </ul>
         <div class="header__actions">
           <a class="btn btn--ghost" :href="site.contact">Contact commercial</a>
-          <a class="btn btn--primary" :href="site.demo">Demander une démo</a>
+          <RouterLink class="btn btn--primary" to="/demo" @click="open = false">Demander une démo</RouterLink>
         </div>
       </nav>
     </div>
@@ -117,7 +115,8 @@ const nav = [
   transition: background-size 0.25s var(--ease-out);
 }
 
-.header__nav ul a:hover {
+.header__nav ul a:hover,
+.header__nav ul a.router-link-active {
   background-size: 100% 2px;
 }
 

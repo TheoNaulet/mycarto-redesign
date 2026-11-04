@@ -13,6 +13,7 @@ const shown = clients.slice(0, 14)
           <img :src="`/brand/clients/${c.file}.svg`" :alt="c.name" />
         </li>
       </ul>
+      <RouterLink class="clients__more" to="/clients">Voir les cas clients</RouterLink>
     </div>
   </section>
 </template>
@@ -57,6 +58,17 @@ const shown = clients.slice(0, 14)
   max-height: 100%;
   max-width: 100%;
   width: auto;
+}
+
+.clients__more {
+  display: inline-block;
+  margin-top: var(--space-7);
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: var(--yellow);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 0.3em;
 }
 
 @media (max-width: 900px) {

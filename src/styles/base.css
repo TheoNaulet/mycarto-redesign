@@ -133,7 +133,9 @@ a {
 }
 
 button,
-input {
+input,
+textarea,
+select {
   font: inherit;
   color: inherit;
 }
@@ -290,3 +292,41 @@ button {
   }
 }
 
+
+/* Inner pages */
+.page-head {
+  padding-block: var(--space-8) var(--space-7);
+}
+
+.page-head h1 {
+  font-size: var(--fs-3xl);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  max-width: 18ch;
+}
+
+.page-head p {
+  margin-top: var(--space-4);
+  font-size: var(--fs-l);
+  line-height: 1.45;
+  max-width: 40ch;
+}
+
+.link-more {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--yellow);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 0.3em;
+}
+
+.link-more:hover {
+  text-decoration-color: currentColor;
+}
+
+.ground-cool {
+  background: var(--paper-cool);
+}

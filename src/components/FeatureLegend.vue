@@ -8,6 +8,7 @@ import { features } from '../data/content'
       <div class="section-head legend__head">
         <h2 id="legend-title">La légende de myCarto</h2>
         <p>Cinq outils, zéro ligne de code pour les administrer.</p>
+        <RouterLink class="more" to="/fonctionnalites">Voir les fonctionnalités en détail</RouterLink>
       </div>
       <dl class="legend__keys">
         <div v-for="f in features" :key="f.icon" class="legend__key">
@@ -28,6 +29,18 @@ import { features } from '../data/content'
   grid-template-columns: minmax(16rem, 0.8fr) minmax(0, 1.6fr);
   gap: var(--space-7);
   align-items: start;
+}
+
+.more {
+  display: inline-block;
+  margin-top: var(--space-5);
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--navy);
+  text-decoration: underline;
+  text-decoration-color: var(--yellow);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 0.3em;
 }
 
 .legend__keys {
@@ -80,7 +93,19 @@ import { features } from '../data/content'
 }
 
 @media (max-width: 720px) {
-  .legend__keys {
+  .more {
+  display: inline-block;
+  margin-top: var(--space-5);
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--navy);
+  text-decoration: underline;
+  text-decoration-color: var(--yellow);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 0.3em;
+}
+
+.legend__keys {
     padding: var(--space-1) var(--space-4);
   }
 

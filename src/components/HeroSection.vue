@@ -9,7 +9,7 @@ import { site } from '../data/content'
         <h1 id="hero-title">Plus jamais perdu dans votre SI</h1>
         <p>Le logiciel de cartographie du SI : vos référentiels deviennent des cartes, toujours à jour.</p>
         <div class="hero__actions">
-          <a class="btn btn--primary btn--lg" :href="site.demo">Demander une démo</a>
+          <RouterLink class="btn btn--primary btn--lg" to="/demo">Demander une démo</RouterLink>
           <a class="btn btn--ghost btn--lg" :href="site.contact">Contact commercial</a>
         </div>
       </div>
