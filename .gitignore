@@ -3,3 +3,5 @@ dist
 .DS_Store
 _brand-assets
 _archive
+storybook-static
+*.log

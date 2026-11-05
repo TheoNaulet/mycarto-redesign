@@ -3,6 +3,8 @@ import { RouterLink } from 'vue-router'
 import PageHero from '../components/ui/PageHero.vue'
 import EventCountdown from '../components/clients/EventCountdown.vue'
 import { eventDay, eventFormats, eventTime, splitEvents } from '../data/community'
+import BaseButton from '../components/ui/BaseButton.vue'
+import BaseBadge from '../components/ui/BaseBadge.vue'
 
 const { upcoming, past } = splitEvents()
 // The hero shows the next date, or the last one when nothing is announced yet.
@@ -18,16 +20,16 @@ const firstYear = new Date(past[past.length - 1]?.start ?? Date.now()).getFullYe
       <template #title>Événements et webinaires</template>
       <template #lede>Clubs utilisateurs, webconférences et salons, en ligne ou sur place.</template>
       <template #actions>
-        <RouterLink class="btn btn--primary btn--lg" to="/demo">Demander une démo</RouterLink>
-        <RouterLink class="btn btn--ghost btn--lg" to="/club-utilisateurs">Le club utilisateurs</RouterLink>
+        <BaseButton to="/demo" size="l">Demander une démo</BaseButton>
+        <BaseButton to="/club-utilisateurs" variant="ghost" size="l">Le club utilisateurs</BaseButton>
       </template>
       <template #aside>
         <article v-if="featured" class="next" aria-labelledby="t-featured">
           <img :src="featured.image" alt="" width="1084" height="559" fetchpriority="high" />
           <div class="next__body">
             <p class="next__when">
-              <time :datetime="featured.start">{{ eventDay(featured.start) }}, {{ eventTime(featured.start) }}</time>
-              <span>{{ featured.place }}</span>
+              <BaseBadge as="time" :datetime="featured.start">{{ eventDay(featured.start) }}, {{ eventTime(featured.start) }}</BaseBadge>
+              <BaseBadge tone="outline">{{ featured.place }}</BaseBadge>
             </p>
             <h2 id="t-featured">{{ isUpcoming ? 'À venir' : 'Dernier en date' }}&nbsp;: {{ featured.title }}</h2>
             <p class="next__line">{{ featured.line }}</p>
@@ -112,24 +114,6 @@ const firstYear = new Date(past[past.length - 1]?.start ?? Date.now()).getFullYe
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
-}
-
-.next__when time,
-.next__when span {
-  padding: 0.5rem 1rem 0.4rem;
-  border-radius: var(--radius-pill);
-  background: var(--navy);
-  color: var(--on-navy);
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: var(--fs-s);
-}
-
-.next__when span {
-  padding-block: calc(0.5rem - 2px) calc(0.4rem - 2px);
-  border: 2px solid var(--navy);
-  background: transparent;
-  color: var(--navy);
 }
 
 .next h2 {
@@ -285,13 +269,13 @@ a.plate:focus-visible {
   outline-color: var(--navy);
 }
 
-@media (max-width: 900px) {
+@media (--bp-m) {
   .formats__list {
     grid-template-columns: 1fr;
   }
 }
 
-@media (max-width: 560px) {
+@media (--bp-xs) {
   .next__body {
     padding: var(--space-4) var(--space-4) var(--space-5);
   }

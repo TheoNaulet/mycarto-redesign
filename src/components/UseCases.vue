@@ -71,7 +71,7 @@ import { directions } from '../data/content'
   color: var(--navy);
 }
 
-@media (max-width: 860px) {
+@media (--bp-m) {
   .usages__list {
     grid-template-columns: 1fr;
     gap: var(--space-7);

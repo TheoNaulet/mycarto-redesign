@@ -1,0 +1,8 @@
+/* The frame a story sits in: a full ground, with the site's gutter unless the story is full width. */
+.sb-ground {
+  min-height: 100vh;
+}
+
+.sb-ground--padded {
+  padding: var(--space-7) var(--gutter);
+}

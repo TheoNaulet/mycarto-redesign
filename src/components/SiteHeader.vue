@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 import BrandLogo from './BrandLogo.vue'
 import { candidate, site } from '../data/content'
 import { navGroups, type NavGroup } from '../data/nav'
+import BaseButton from './ui/BaseButton.vue'
 
 const route = useRoute()
 const drawer = ref(false)
@@ -13,20 +14,29 @@ const headerEl = ref<HTMLElement | null>(null)
 let closeTimer: number | undefined
 let hoverOpenedAt = 0
 let canHover: MediaQueryList | null = null
+const toggleEl = ref<HTMLButtonElement | null>(null)
+
+/**
+ * Menus open on hover only with a real pointer and the desktop bar. Rather than repeating the
+ * --bp-l value here, it asks the CSS: the drawer button is hidden exactly when the bar is shown.
+ */
+function hoverMenus() {
+  return !!canHover?.matches && !!toggleEl.value && getComputedStyle(toggleEl.value).display === 'none'
+}
 
 function isActive(g: NavGroup) {
   return g.items.some((i) => !i.external && (route.path === i.to || route.path.startsWith(`${i.to}/`)))
 }
 
 function hoverOpen(id: string) {
-  if (!canHover?.matches) return
+  if (!hoverMenus()) return
   window.clearTimeout(closeTimer)
   if (openId.value !== id) hoverOpenedAt = Date.now()
   openId.value = id
 }
 
 function hoverClose() {
-  if (!canHover?.matches) return
+  if (!hoverMenus()) return
   closeTimer = window.setTimeout(() => (openId.value = null), 180)
 }
 
@@ -56,7 +66,7 @@ watch(
 )
 
 onMounted(() => {
-  canHover = window.matchMedia('(hover: hover) and (min-width: 961px)')
+  canHover = window.matchMedia('(hover: hover)')
   document.addEventListener('keydown', onKey)
   document.addEventListener('pointerdown', onPointer)
 })
@@ -81,6 +91,7 @@ onBeforeUnmount(() => {
         <BrandLogo />
       </RouterLink>
       <button
+        ref="toggleEl"
         type="button"
         class="header__toggle"
         :aria-expanded="drawer"
@@ -138,8 +149,8 @@ onBeforeUnmount(() => {
           </li>
         </ul>
         <div class="header__actions">
-          <RouterLink class="btn btn--ghost" to="/contact">Contact commercial</RouterLink>
-          <RouterLink class="btn btn--primary" to="/demo">Demander une démo</RouterLink>
+          <BaseButton class="header__contact" to="/contact" variant="ghost" size="s">Contact commercial</BaseButton>
+          <BaseButton to="/demo" size="s">Demander une démo</BaseButton>
         </div>
       </nav>
     </div>
@@ -170,12 +181,6 @@ onBeforeUnmount(() => {
   background: var(--paper);
   color: var(--navy);
   border-bottom: 1px solid var(--line);
-}
-
-.header__actions .btn--ghost:hover {
-  background: var(--navy);
-  border-color: var(--navy);
-  color: var(--on-navy);
 }
 
 .header__bar {
@@ -334,9 +339,9 @@ onBeforeUnmount(() => {
   gap: var(--space-3);
 }
 
-.header__actions .btn {
-  min-height: 2.75rem;
-  font-size: var(--fs-s);
+/* One action in the desktop bar; the drawer offers both. */
+.header__actions .header__contact {
+  display: none;
 }
 
 .header__toggle {
@@ -359,13 +364,7 @@ onBeforeUnmount(() => {
   stroke-linecap: round;
 }
 
-@media (max-width: 1240px) {
-  .header__actions .btn--ghost {
-    display: none;
-  }
-}
-
-@media (max-width: 960px) {
+@media (--bp-l) {
   .header__toggle {
     display: grid;
   }
@@ -441,7 +440,7 @@ onBeforeUnmount(() => {
     flex-direction: column;
   }
 
-  .header__actions .btn--ghost {
+  .header__actions .header__contact {
     display: inline-flex;
   }
 }

@@ -86,14 +86,14 @@ import { features } from '../data/content'
   line-height: 1.5;
 }
 
-@media (max-width: 1100px) {
+@media (--bp-l) {
   .legend {
     grid-template-columns: 1fr;
     gap: 0;
   }
 }
 
-@media (max-width: 720px) {
+@media (--bp-s) {
   .legend__keys {
     padding: var(--space-1) var(--space-4);
   }

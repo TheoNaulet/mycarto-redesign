@@ -131,13 +131,13 @@ const columns = [
   color: var(--on-navy-soft);
 }
 
-@media (max-width: 1100px) {
+@media (--bp-l) {
   .footer__top {
     grid-template-columns: 1fr;
   }
 }
 
-@media (max-width: 760px) {
+@media (--bp-s) {
   .footer__cols {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-6) var(--space-5);

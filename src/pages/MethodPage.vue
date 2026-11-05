@@ -2,6 +2,8 @@
 import PageHero from '../components/ui/PageHero.vue'
 import MethodTrail from '../components/audiences/MethodTrail.vue'
 import { frameworks, methodPhases, methodSteps } from '../data/audiences'
+import BaseButton from '../components/ui/BaseButton.vue'
+import BaseBadge from '../components/ui/BaseBadge.vue'
 
 const byN = Object.fromEntries(methodSteps.map((s) => [s.n, s]))
 const [cadrer, construire, faireVivre] = methodPhases.map((p) => ({ ...p, items: p.steps.map((n) => byN[n]) }))
@@ -13,8 +15,8 @@ const [cadrer, construire, faireVivre] = methodPhases.map((p) => ({ ...p, items:
       <template #title><span class="nowrap">10 points</span> de passage pour cartographier votre SI</template>
       <template #lede>Tirés de plus de 200 implémentations, de l’objectif aux référentiels.</template>
       <template #actions>
-        <RouterLink class="btn btn--primary btn--lg" to="/demo">Demander une démo</RouterLink>
-        <RouterLink class="btn btn--ghost btn--lg" to="/integration">Notre intégration</RouterLink>
+        <BaseButton to="/demo" size="l">Demander une démo</BaseButton>
+        <BaseButton to="/integration" variant="ghost" size="l">Notre intégration</BaseButton>
       </template>
       <template #aside>
         <MethodTrail class="method-trail" :steps="methodSteps" />
@@ -79,7 +81,7 @@ const [cadrer, construire, faireVivre] = methodPhases.map((p) => ({ ...p, items:
         <div class="frameworks">
           <p>Les cadres sur lesquels s’appuyer</p>
           <ul>
-            <li v-for="f in frameworks" :key="f">{{ f }}</li>
+            <BaseBadge v-for="f in frameworks" :key="f" as="li">{{ f }}</BaseBadge>
           </ul>
         </div>
       </div>
@@ -93,7 +95,7 @@ const [cadrer, construire, faireVivre] = methodPhases.map((p) => ({ ...p, items:
 }
 
 /* The trail needs room to stay legible; on phones the steps below say it all. */
-@media (max-width: 700px) {
+@media (--bp-s) {
   .method-trail {
     display: none;
   }
@@ -240,17 +242,7 @@ const [cadrer, construire, faireVivre] = methodPhases.map((p) => ({ ...p, items:
   gap: var(--space-2);
 }
 
-.frameworks li {
-  padding: 0.65rem 1.2rem 0.55rem;
-  border-radius: var(--radius-pill);
-  background: var(--navy);
-  color: var(--on-navy);
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: var(--fs-s);
-}
-
-@media (max-width: 1100px) {
+@media (--bp-l) {
   .legend__row {
     grid-template-columns: auto 3.5rem minmax(0, 1fr);
     grid-template-areas:
@@ -279,7 +271,7 @@ const [cadrer, construire, faireVivre] = methodPhases.map((p) => ({ ...p, items:
   }
 }
 
-@media (max-width: 900px) {
+@media (--bp-m) {
   .tiles {
     grid-template-columns: 1fr;
     max-width: 34rem;
@@ -292,7 +284,7 @@ const [cadrer, construire, faireVivre] = methodPhases.map((p) => ({ ...p, items:
   }
 }
 
-@media (max-width: 560px) {
+@media (--bp-xs) {
   .legend {
     padding: var(--space-1) var(--space-4);
   }

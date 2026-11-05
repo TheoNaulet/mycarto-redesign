@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import PageHero from '../components/ui/PageHero.vue'
 import { faq } from '../data/faq'
+import BaseButton from '../components/ui/BaseButton.vue'
 
 const query = ref('')
 const open = ref<Set<string>>(new Set([faq[0].items[0].q]))
@@ -113,7 +114,7 @@ const idOf = (q: string) => `a-${norm(q).replace(/[^a-z0-9]+/g, '-').slice(0, 40
           <div v-if="!themes.length" class="empty">
             <h2>Pas encore de réponse à celle-là.</h2>
             <p>Posez-la directement à l’équipe, elle vous répond.</p>
-            <RouterLink class="btn btn--primary" to="/contact">Poser ma question</RouterLink>
+            <BaseButton to="/contact">Poser ma question</BaseButton>
           </div>
         </div>
       </div>
@@ -396,7 +397,7 @@ const idOf = (q: string) => `a-${norm(q).replace(/[^a-z0-9]+/g, '-').slice(0, 40
   font-size: var(--fs-xl);
 }
 
-@media (max-width: 1000px) {
+@media (--bp-l) {
   .hero-visual {
     max-width: 15rem;
   }
@@ -410,13 +411,13 @@ const idOf = (q: string) => `a-${norm(q).replace(/[^a-z0-9]+/g, '-').slice(0, 40
   }
 }
 
-@media (max-width: 700px) {
+@media (--bp-s) {
   .hero-visual {
     display: none;
   }
 }
 
-@media (max-width: 560px) {
+@media (--bp-xs) {
   .qa {
     padding: var(--space-1) var(--space-4);
   }

@@ -142,7 +142,7 @@ import { vDraw } from '../motion/draw'
   text-decoration-thickness: 1px;
 }
 
-@media (max-width: 860px) {
+@media (--bp-m) {
   .steps {
     grid-template-columns: 1fr;
     gap: var(--space-6);

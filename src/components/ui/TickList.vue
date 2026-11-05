@@ -65,7 +65,7 @@ withDefaults(
   color: var(--on-navy);
 }
 
-@media (max-width: 560px) {
+@media (--bp-xs) {
   .ticks--l li {
     font-size: var(--fs-m);
   }

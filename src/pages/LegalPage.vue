@@ -273,7 +273,7 @@ tbody th {
   color: var(--navy);
 }
 
-@media (max-width: 640px) {
+@media (--bp-s) {
   .notice {
     grid-template-columns: 1fr;
     padding: var(--space-5);

@@ -168,13 +168,13 @@ import ClubSection from '../components/ClubSection.vue'
   text-underline-offset: 0.3em;
 }
 
-@media (max-width: 900px) {
+@media (--bp-m) {
   .cases {
     grid-template-columns: 1fr;
   }
 }
 
-@media (max-width: 520px) {
+@media (--bp-xs) {
   .case {
     grid-template-columns: 4.5rem minmax(0, 1fr);
     padding: var(--space-4);

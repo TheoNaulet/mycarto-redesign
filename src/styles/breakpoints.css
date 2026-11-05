@@ -1,0 +1,23 @@
+/*
+ * The four breakpoints of the site, and the only place where their values are written.
+ *
+ * Every stylesheet (base.css, forms.css and each component's <style>) uses them by name:
+ *   @media (--bp-m) { … }
+ * postcss-custom-media replaces the names at build time (vite.config.ts), so the browser receives
+ * plain `max-width` queries. The syntax is the standard one (Media Queries level 5). Stylelint refuses
+ * a raw `max-width` anywhere else (stylelint.config.mjs), and the build fails on an unknown name.
+ *
+ * Desktop first: the layout is designed wide, and each tier simplifies it.
+ */
+
+/* ≤ 1100px, small laptop and landscape tablet: side-by-side columns stack, the menu goes into the drawer. */
+@custom-media --bp-l (max-width: 1100px);
+
+/* ≤ 900px, portrait tablet: grids of three or four drop to two, illustrations get smaller. */
+@custom-media --bp-m (max-width: 900px);
+
+/* ≤ 720px, large phone: grids of two drop to one, form rows stack. */
+@custom-media --bp-s (max-width: 720px);
+
+/* ≤ 560px, phone: tighter spacing, smaller display type, full-width buttons. */
+@custom-media --bp-xs (max-width: 560px);

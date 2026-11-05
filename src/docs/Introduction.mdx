@@ -1,0 +1,29 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Introduction" />
+
+# Le système de design myCarto (concept)
+
+Les briques de la refonte de [my-carto.com](https://my-carto.com/), un concept réalisé en Vue 3 pour une candidature. Ce n’est pas le site officiel : la marque, ses visuels et ses textes appartiennent à AB+ Software.
+
+Chaque story utilise **le composant du site lui-même**, avec les mêmes styles, les mêmes données et le même build Vite. Il n’existe aucune copie pour la vitrine.
+
+## Les règles
+
+- **Des jetons, jamais de valeur en dur.** Couleurs, tailles de texte, espacements, rayons et courbes viennent de `src/styles/base.css` (voir *Fondations*).
+- **Quatre paliers, et pas un de plus.** Les media queries s’écrivent `@media (--bp-m)`, avec les noms de `src/styles/breakpoints.css`. Stylelint refuse un `max-width` écrit en dur, et le build échoue sur un palier inconnu.
+- **Zéro `!important`**, sauf une seule exception documentée : la préférence « réduire les animations », qui doit l’emporter sur tous les composants.
+- **Le contraste vient des fonds.** Les sections alternent papier, gris clair, jaune et navy, sans ombre ni dégradé. Le sélecteur **Fond** de la barre d’outils pose chaque brique sur chacun d’eux.
+- **Un composant suit son fond.** Dans `.on-navy`, le bouton contour, les titres et le focus passent en clair, sans variante à choisir page par page.
+- **Le mouvement dessine, il ne décore pas.** Les tracés se dessinent une fois à l’arrivée (`v-draw`), et tout s’affiche directement avec « réduire les animations ».
+- **Accessible par défaut.** Focus visible sur chaque fond, onglets au clavier, textes alternatifs. L’onglet *Accessibility* audite chaque story (axe).
+
+## Où trouver quoi
+
+| Dossier | Contenu |
+|---|---|
+| `src/styles/` | jetons, paliers, styles de base |
+| `src/components/ui/` | briques partagées : `BaseButton`, `BaseBadge`, `KeyList`, `TickList`, `PageHero` |
+| `src/components/product/`, `audiences/`, `clients/` | composants propres à un groupe de pages |
+| `src/motion/` | `v-draw` (tracés) et l’apparition au défilement |
+| `src/data/` | tout le contenu, typé, séparé des composants |

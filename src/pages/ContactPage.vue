@@ -2,6 +2,7 @@
 // Contact commercial: a compact form validated field by field; nothing is sent, the concept says so.
 import { nextTick, reactive, ref } from 'vue'
 import { site } from '../data/content'
+import BaseButton from '../components/ui/BaseButton.vue'
 
 type Field = 'prenom' | 'nom' | 'email' | 'societe' | 'tel' | 'message' | 'consent'
 
@@ -137,10 +138,10 @@ const textFields: { id: Exclude<Field, 'message' | 'consent'>; label: string; ty
             <p id="ce-consent" class="field__error">{{ errors.consent }}</p>
           </div>
 
-          <button class="btn btn--primary btn--lg submit" type="submit" :disabled="status === 'sending'">
+          <BaseButton class="submit" type="submit" size="l" :disabled="status === 'sending'">
             <span v-if="status === 'sending'" class="spinner" aria-hidden="true" />
             {{ status === 'sending' ? 'Envoi en cours' : 'Envoyer le message' }}
-          </button>
+          </BaseButton>
         </form>
       </div>
 
@@ -163,7 +164,7 @@ const textFields: { id: Exclude<Field, 'message' | 'consent'>; label: string; ty
         <div class="demo-nudge">
           <p class="demo-nudge__title">Envie de voir l’outil ?</p>
           <p>Une démo avec un expert produit, en visio.</p>
-          <RouterLink class="btn btn--navy-solid" to="/demo">Demander une démo</RouterLink>
+          <BaseButton to="/demo" variant="navy">Demander une démo</BaseButton>
         </div>
       </aside>
     </div>
@@ -268,23 +269,14 @@ a.way:hover {
   font-size: var(--fs-s);
 }
 
-.btn--navy-solid {
-  background: var(--navy);
-  color: var(--on-navy);
-}
-
-.btn--navy-solid:hover {
-  background: #343e8c;
-}
-
-@media (max-width: 1000px) {
+@media (--bp-l) {
   .contact__grid {
     grid-template-columns: 1fr;
     gap: var(--space-7);
   }
 }
 
-@media (max-width: 640px) {
+@media (--bp-s) {
   .contact__panel {
     padding: var(--space-4);
   }

@@ -3,6 +3,8 @@ import PageHero from '../components/ui/PageHero.vue'
 import SectorPicker from '../components/audiences/SectorPicker.vue'
 import { otherSectors, sectors } from '../data/audiences'
 import { clients } from '../data/content'
+import BaseButton from '../components/ui/BaseButton.vue'
+import BaseBadge from '../components/ui/BaseBadge.vue'
 
 const clientName = (file: string) => clients.find((c) => c.file === file)?.name ?? file
 </script>
@@ -13,8 +15,8 @@ const clientName = (file: string) => clients.find((c) => c.file === file)?.name 
       <template #title>À chaque secteur son jeu de cartes</template>
       <template #lede>Public ou privé, PME ou grand groupe&nbsp;: le numérique est partout, myCarto aussi.</template>
       <template #actions>
-        <RouterLink class="btn btn--primary btn--lg" to="/demo">Demander une démo</RouterLink>
-        <RouterLink class="btn btn--ghost btn--lg" to="/clients">Voir les cas clients</RouterLink>
+        <BaseButton to="/demo" size="l">Demander une démo</BaseButton>
+        <BaseButton to="/clients" variant="ghost" size="l">Voir les cas clients</BaseButton>
       </template>
       <template #aside>
         <figure class="hero-visual">
@@ -51,7 +53,7 @@ const clientName = (file: string) => clients.find((c) => c.file === file)?.name 
           <h2 id="t-others">Et toutes les autres DSI</h2>
           <p class="others__lede">myCarto décrit n’importe quel système d’information, quel que soit le métier.</p>
           <ul class="others__names" aria-label="Autres secteurs équipés">
-            <li v-for="n in otherSectors.names" :key="n">{{ n }}</li>
+            <BaseBadge v-for="n in otherSectors.names" :key="n" as="li">{{ n }}</BaseBadge>
           </ul>
           <ul class="others__logos" aria-label="Quelques clients">
             <li v-for="c in otherSectors.clients" :key="c">
@@ -160,16 +162,6 @@ const clientName = (file: string) => clients.find((c) => c.file === file)?.name 
   margin-top: var(--space-6);
 }
 
-.others__names li {
-  padding: 0.6rem 1.1rem 0.5rem;
-  border-radius: var(--radius-pill);
-  background: var(--navy);
-  color: var(--on-navy);
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: var(--fs-s);
-}
-
 /* The white client logos sit on small navy plates, so they read on yellow. */
 .others__logos {
   display: grid;
@@ -196,7 +188,7 @@ const clientName = (file: string) => clients.find((c) => c.file === file)?.name 
   object-fit: contain;
 }
 
-@media (max-width: 1000px) {
+@media (--bp-l) {
   .hero-visual {
     margin-inline: auto;
   }
@@ -217,13 +209,13 @@ const clientName = (file: string) => clients.find((c) => c.file === file)?.name 
   }
 }
 
-@media (max-width: 860px) {
+@media (--bp-m) {
   .by-sector {
     padding-block: var(--space-8);
   }
 }
 
-@media (max-width: 560px) {
+@media (--bp-xs) {
   .hero-visual {
     padding: var(--space-4) var(--space-4) 0;
   }

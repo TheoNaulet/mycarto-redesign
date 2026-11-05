@@ -4,6 +4,8 @@ import { RouterLink } from 'vue-router'
 import PageHero from '../components/ui/PageHero.vue'
 import TickList from '../components/ui/TickList.vue'
 import { clubBenefits, clubFigures, eventDay, eventTime, events, nextClub, splitEvents } from '../data/community'
+import BaseButton from '../components/ui/BaseButton.vue'
+import BaseBadge from '../components/ui/BaseBadge.vue'
 
 const next = events.find((e) => e.id === nextClub.eventId)!
 const isUpcoming = computed(() => Date.parse(next.start) >= Date.now())
@@ -21,8 +23,8 @@ const pastClubs = computed(() =>
       <template #title>Le club utilisateurs</template>
       <template #lede>Une communauté de clients qui inspire la roadmap de myCarto.</template>
       <template #actions>
-        <RouterLink class="btn btn--primary btn--lg" to="/demo">Demander une démo</RouterLink>
-        <RouterLink class="btn btn--ghost btn--lg" :to="{ hash: '#prochain' }">Le prochain club</RouterLink>
+        <BaseButton to="/demo" size="l">Demander une démo</BaseButton>
+        <BaseButton :to="{ hash: '#prochain' }" variant="ghost" size="l">Le prochain club</BaseButton>
       </template>
       <template #aside>
         <figure class="visual">
@@ -73,8 +75,8 @@ const pastClubs = computed(() =>
         </figure>
         <div>
           <p class="next__date">
-            <time :datetime="next.start">{{ eventDay(next.start) }}, {{ eventTime(next.start) }}</time>
-            <span>{{ next.place }}</span>
+            <BaseBadge as="time" :datetime="next.start">{{ eventDay(next.start) }}, {{ eventTime(next.start) }}</BaseBadge>
+            <BaseBadge tone="outline">{{ next.place }}</BaseBadge>
           </p>
           <h2 id="t-next">{{ isUpcoming ? 'Le prochain club' : 'Le dernier club' }}</h2>
           <p class="next__line">
@@ -276,24 +278,6 @@ const pastClubs = computed(() =>
   margin-bottom: var(--space-4);
 }
 
-.next__date time,
-.next__date span {
-  padding: 0.55rem 1rem 0.45rem;
-  border-radius: var(--radius-pill);
-  background: var(--navy);
-  color: var(--on-navy);
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: var(--fs-s);
-}
-
-.next__date span {
-  padding-block: calc(0.55rem - 2px) calc(0.45rem - 2px);
-  border: 2px solid var(--navy);
-  background: transparent;
-  color: var(--navy);
-}
-
 .next h2 {
   font-size: var(--fs-2xl);
 }
@@ -409,7 +393,7 @@ a.past__card:hover .past__title {
   text-underline-offset: 0.2em;
 }
 
-@media (max-width: 1100px) {
+@media (--bp-l) {
   .benefits {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -420,7 +404,14 @@ a.past__card:hover .past__title {
   }
 }
 
-@media (max-width: 760px) {
+/* Two past clubs side by side need the room of a landscape screen. */
+@media (--bp-m) {
+  .past {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (--bp-s) {
   .figures__list {
     grid-template-columns: 1fr;
     gap: var(--space-5);
@@ -434,7 +425,6 @@ a.past__card:hover .past__title {
   }
 
   .benefits,
-  .past,
   .next__cols,
   .past__card {
     grid-template-columns: 1fr;
@@ -446,7 +436,7 @@ a.past__card:hover .past__title {
   }
 }
 
-@media (max-width: 560px) {
+@media (--bp-xs) {
   .visual {
     padding: var(--space-4) var(--space-4) 0;
   }

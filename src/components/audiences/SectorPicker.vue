@@ -182,7 +182,7 @@ const clientName = (file: string) => clients.find((c) => c.file === file)?.name 
   width: auto;
 }
 
-@media (max-width: 1000px) {
+@media (--bp-l) {
   .panel {
     grid-template-columns: 1fr;
     gap: var(--space-5);
@@ -194,7 +194,7 @@ const clientName = (file: string) => clients.find((c) => c.file === file)?.name 
   }
 }
 
-@media (max-width: 560px) {
+@media (--bp-xs) {
   .sectors__tabs {
     justify-content: flex-start;
   }

@@ -2,6 +2,7 @@
 import { computed, nextTick, reactive, ref } from 'vue'
 import { demoFormats, demoNext } from '../data/pages'
 import { site } from '../data/content'
+import BaseButton from '../components/ui/BaseButton.vue'
 
 type Field = 'nom' | 'prenom' | 'email' | 'societe' | 'tel' | 'projet' | 'consent'
 
@@ -200,10 +201,10 @@ async function submit() {
             <p id="e-consent" class="field__error">{{ errors.consent }}</p>
           </div>
 
-          <button class="btn btn--primary btn--lg submit" type="submit" :disabled="status === 'sending'">
+          <BaseButton class="submit" type="submit" size="l" :disabled="status === 'sending'">
             <span v-if="status === 'sending'" class="spinner" aria-hidden="true" />
             {{ status === 'sending' ? 'Envoi en cours' : 'Demander ma démo' }}
-          </button>
+          </BaseButton>
         </form>
       </div>
 
@@ -379,14 +380,14 @@ async function submit() {
   font-size: var(--fs-s);
 }
 
-@media (max-width: 1000px) {
+@media (--bp-l) {
   .demo__grid {
     grid-template-columns: 1fr;
     gap: var(--space-7);
   }
 }
 
-@media (max-width: 640px) {
+@media (--bp-s) {
   .demo__panel {
     padding: var(--space-4);
   }

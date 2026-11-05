@@ -7,6 +7,7 @@ import TickList from '../components/ui/TickList.vue'
 import CaseCard from '../components/clients/CaseCard.vue'
 import { findCase, nextCases } from '../data/cases'
 import { setPageTitle } from '../router'
+import BaseBadge from '../components/ui/BaseBadge.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -43,7 +44,7 @@ watchEffect(() => {
         </li>
       </ul>
       <p class="meta">
-        <span class="meta__sector">{{ study.sector }}</span>
+        <BaseBadge>{{ study.sector }}</BaseBadge>
         <a class="meta__source" :href="study.source" rel="noopener">Le cas complet sur my-carto.com</a>
       </p>
 
@@ -225,16 +226,6 @@ watchEffect(() => {
   align-items: center;
   gap: var(--space-3) var(--space-5);
   margin-top: var(--space-5);
-}
-
-.meta__sector {
-  padding: 0.5rem 1rem 0.4rem;
-  border-radius: var(--radius-pill);
-  background: var(--navy);
-  color: var(--on-navy);
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: var(--fs-s);
 }
 
 .meta__source {
@@ -505,7 +496,7 @@ watchEffect(() => {
   gap: var(--space-5);
 }
 
-@media (max-width: 1100px) {
+@media (--bp-l) {
   .steps {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -525,7 +516,7 @@ watchEffect(() => {
   }
 }
 
-@media (max-width: 760px) {
+@media (--bp-s) {
   /* The lineage view stays readable: it scrolls sideways in its frame. */
   .screen--wide .screen__frame {
     overflow-x: auto;
@@ -538,7 +529,7 @@ watchEffect(() => {
   }
 }
 
-@media (max-width: 560px) {
+@media (--bp-xs) {
   .steps {
     grid-template-columns: 1fr;
   }

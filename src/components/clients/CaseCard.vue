@@ -104,7 +104,7 @@ defineProps<{ study: CaseStudy }>()
   text-decoration-color: var(--navy);
 }
 
-@media (max-width: 640px) {
+@media (--bp-s) {
   .card {
     grid-template-columns: 1fr;
   }

@@ -117,31 +117,11 @@ const slots = defineSlots<{
   margin-top: var(--space-6);
 }
 
-.page-hero__actions :deep(.btn--ghost) {
-  color: var(--navy);
-}
-
-.page-hero__actions :deep(.btn--ghost:hover) {
-  background: var(--navy);
-  border-color: var(--navy);
-  color: var(--on-navy);
-}
-
-.page-hero--navy .page-hero__actions :deep(.btn--ghost) {
-  color: var(--on-navy);
-}
-
-.page-hero--navy .page-hero__actions :deep(.btn--ghost:hover) {
-  background: var(--on-navy);
-  border-color: var(--on-navy);
-  color: var(--navy);
-}
-
 .page-hero__aside {
   min-width: 0;
 }
 
-@media (max-width: 1000px) {
+@media (--bp-l) {
   .page-hero--full {
     min-height: 0;
   }
@@ -152,7 +132,7 @@ const slots = defineSlots<{
   }
 }
 
-@media (max-width: 560px) {
+@media (--bp-xs) {
   .page-hero {
     padding-block: var(--space-7);
   }

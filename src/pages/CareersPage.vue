@@ -3,6 +3,8 @@ import PageHero from '../components/ui/PageHero.vue'
 import { candidate, site } from '../data/content'
 import { careersEmail, hiringSteps, reasons } from '../data/company'
 import { vDraw } from '../motion/draw'
+import BaseButton from '../components/ui/BaseButton.vue'
+import BaseBadge from '../components/ui/BaseBadge.vue'
 
 const spontaneous = `mailto:${careersEmail}?subject=${encodeURIComponent('Candidature spontanée')}`
 </script>
@@ -13,8 +15,8 @@ const spontaneous = `mailto:${careersEmail}?subject=${encodeURIComponent('Candid
       <template #title>Nous rejoindre</template>
       <template #lede>AB+ Software grandit grâce à la fidélité de ses clients, et cherche toujours de nouveaux talents.</template>
       <template #actions>
-        <a class="btn btn--primary btn--lg" :href="spontaneous">Envoyer ma candidature</a>
-        <a class="btn btn--ghost btn--lg" :href="site.linkedin" rel="noopener">Nous suivre</a>
+        <BaseButton :href="spontaneous" size="l">Envoyer ma candidature</BaseButton>
+        <BaseButton :href="site.linkedin" rel="noopener" variant="ghost" size="l">Nous suivre</BaseButton>
       </template>
       <template #aside>
         <div class="jobs">
@@ -23,7 +25,7 @@ const spontaneous = `mailto:${careersEmail}?subject=${encodeURIComponent('Candid
             <li class="job job--here">
               <span class="job__name">Développeur front UI/UX</span>
               <span class="job__where">Montpellier</span>
-              <span class="job__here">Vous êtes ici</span>
+              <BaseBadge class="job__here" tone="yellow" size="s">Vous êtes ici</BaseBadge>
               <span class="job__line">Cette maquette est la candidature de {{ candidate.name }} à cette offre.</span>
             </li>
             <li>
@@ -127,13 +129,6 @@ const spontaneous = `mailto:${careersEmail}?subject=${encodeURIComponent('Candid
 .job__here {
   grid-area: tag;
   align-self: center;
-  padding: 0.45rem 0.9rem 0.4rem;
-  border-radius: var(--radius-pill);
-  background: var(--yellow);
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: var(--fs-s);
-  line-height: 1;
   white-space: nowrap;
 }
 
@@ -259,7 +254,7 @@ a.job:hover svg {
   font-size: var(--fs-s);
 }
 
-@media (max-width: 1100px) {
+@media (--bp-l) {
   .why__list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -274,7 +269,7 @@ a.job:hover svg {
   }
 }
 
-@media (max-width: 640px) {
+@media (--bp-s) {
   .jobs {
     padding: var(--space-4) var(--space-4) var(--space-1);
   }

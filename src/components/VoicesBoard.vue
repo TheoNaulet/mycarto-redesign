@@ -95,6 +95,7 @@ function onFocusOut(e: FocusEvent) {
               class="voice-tab__timer"
               :class="{ 'is-paused': !running }"
               :style="{ animationDuration: `${DURATION}s` }"
+              data-motion="essential"
               aria-hidden="true"
               @animationend="go(active + 1)"
             />
@@ -301,7 +302,7 @@ function onFocusOut(e: FocusEvent) {
   fill: currentColor;
 }
 
-@media (max-width: 900px) {
+@media (--bp-m) {
   .voices {
     padding-block: var(--space-8);
   }
@@ -318,17 +319,10 @@ function onFocusOut(e: FocusEvent) {
   }
 }
 
-@media (max-width: 480px) {
+@media (--bp-xs) {
   .voice-tab {
     height: 4.5rem;
     padding: var(--space-2);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  /* Keep the timer working (it drives the rotation) even under the global motion reset. */
-  .voice-tab__timer {
-    animation-duration: 8s !important;
   }
 }
 </style>

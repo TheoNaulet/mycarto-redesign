@@ -105,13 +105,13 @@ const groups = [
   text-underline-offset: 0.2em;
 }
 
-@media (max-width: 1000px) {
+@media (--bp-l) {
   .map {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 640px) {
+@media (--bp-s) {
   .map {
     grid-template-columns: 1fr;
   }

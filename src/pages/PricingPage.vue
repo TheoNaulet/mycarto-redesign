@@ -4,6 +4,8 @@ import KeyList from '../components/ui/KeyList.vue'
 import TickList from '../components/ui/TickList.vue'
 import UsersAppsChart from '../components/product/UsersAppsChart.vue'
 import { alwaysIncluded, extraServices, plans, pricingPrinciple, purchasingCentres } from '../data/product'
+import BaseButton from '../components/ui/BaseButton.vue'
+import BaseBadge from '../components/ui/BaseBadge.vue'
 
 const principleKeys = pricingPrinciple.map((p) => ({ name: p.name, line: p.line, icon: `/brand/nav/${p.icon}.svg` }))
 </script>
@@ -14,8 +16,8 @@ const principleKeys = pricingPrinciple.map((p) => ({ name: p.name, line: p.line,
       <template #title>Une offre pour chaque maturité</template>
       <template #lede>Vous payez des utilisateurs, pas des applications : votre cartographie, elle, reste illimitée.</template>
       <template #actions>
-        <RouterLink class="btn btn--primary btn--lg" to="/demo">Demander une démo</RouterLink>
-        <RouterLink class="btn btn--ghost btn--lg" to="/contact">Demander un devis</RouterLink>
+        <BaseButton to="/demo" size="l">Demander une démo</BaseButton>
+        <BaseButton to="/contact" variant="ghost" size="l">Demander un devis</BaseButton>
       </template>
       <template #aside>
         <UsersAppsChart />
@@ -31,7 +33,7 @@ const principleKeys = pricingPrinciple.map((p) => ({ name: p.name, line: p.line,
         </div>
         <ul class="plans">
           <li v-for="p in plans" :key="p.id" class="plan" :class="{ 'plan--featured on-navy': p.featured }">
-            <span v-if="p.featured" class="plan__badge">Plébiscité</span>
+            <BaseBadge v-if="p.featured" class="plan__badge" tone="yellow">Plébiscité</BaseBadge>
             <h3>{{ p.name }}</h3>
             <p class="plan__for">{{ p.forWhom }}</p>
             <p class="plan__intro">{{ p.intro }}</p>
@@ -39,11 +41,11 @@ const principleKeys = pricingPrinciple.map((p) => ({ name: p.name, line: p.line,
             <div v-if="p.options" class="plan__options">
               <span class="plan__options-label">En option</span>
               <ul>
-                <li v-for="o in p.options" :key="o">{{ o }}</li>
+                <BaseBadge v-for="o in p.options" :key="o" as="li" size="s">{{ o }}</BaseBadge>
               </ul>
             </div>
             <p v-if="p.note" class="plan__note">{{ p.note }}</p>
-            <RouterLink class="btn btn--ghost plan__cta" to="/contact">Demander un devis</RouterLink>
+            <BaseButton class="plan__cta" to="/contact" variant="ghost">Demander un devis</BaseButton>
           </li>
         </ul>
       </div>
@@ -142,13 +144,6 @@ const principleKeys = pricingPrinciple.map((p) => ({ name: p.name, line: p.line,
   position: absolute;
   top: calc(-1 * var(--space-4));
   left: var(--space-6);
-  padding: 0.5rem 1rem 0.4rem;
-  border-radius: var(--radius-pill);
-  background: var(--yellow);
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: var(--fs-s);
-  color: var(--navy);
 }
 
 .plan h3 {
@@ -204,16 +199,6 @@ const principleKeys = pricingPrinciple.map((p) => ({ name: p.name, line: p.line,
   gap: var(--space-2);
 }
 
-.plan__options li {
-  padding: 0.4rem 0.85rem 0.3rem;
-  border-radius: var(--radius-pill);
-  background: var(--navy);
-  color: var(--on-navy);
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: var(--fs-s);
-}
-
 .plan__note {
   margin-top: var(--space-5);
   font-size: var(--fs-s);
@@ -222,22 +207,11 @@ const principleKeys = pricingPrinciple.map((p) => ({ name: p.name, line: p.line,
 
 .plan__cta {
   align-self: flex-start;
-  color: var(--navy);
 }
 
 /* Space before the button, after whatever comes last in the card. */
 .plan > :nth-last-child(2) {
   margin-bottom: var(--space-6);
-}
-
-.plan__cta:hover {
-  background: var(--navy);
-  border-color: var(--navy);
-  color: var(--on-navy);
-}
-
-.plan--featured .plan__cta {
-  color: var(--on-navy);
 }
 
 /* Principle */
@@ -334,7 +308,7 @@ const principleKeys = pricingPrinciple.map((p) => ({ name: p.name, line: p.line,
   object-fit: contain;
 }
 
-@media (max-width: 1100px) {
+@media (--bp-l) {
   .plans {
     grid-template-columns: 1fr;
     max-width: 38rem;
@@ -347,13 +321,13 @@ const principleKeys = pricingPrinciple.map((p) => ({ name: p.name, line: p.line,
   }
 }
 
-@media (max-width: 860px) {
+@media (--bp-m) {
   .principle {
     grid-template-columns: 1fr;
   }
 }
 
-@media (max-width: 640px) {
+@media (--bp-s) {
   .plan {
     padding: var(--space-5);
   }

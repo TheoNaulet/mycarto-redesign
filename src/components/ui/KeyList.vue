@@ -160,7 +160,7 @@ function isAnchor(to?: string) {
   align-self: center;
 }
 
-@media (max-width: 720px) {
+@media (--bp-s) {
   .keys {
     padding: var(--space-1) var(--space-4);
   }

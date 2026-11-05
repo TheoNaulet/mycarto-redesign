@@ -1,25 +1,11 @@
-@font-face {
-  font-family: 'Nexa';
-  src: url('/fonts/Nexa-Book.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Nexa';
-  src: url('/fonts/Nexa-Bold.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
 :root {
   /* Brand palette, from the myCarto Elementor kit */
   --navy: #262e6f;
   --navy-deep: #1f2660;
+  --navy-hover: #343e8c;
   --yellow: #fac130;
   --yellow-soft: #fde7a8;
+  --yellow-hover: #ffd25c;
   --blue: #398acb;
   --text: #363637;
   --line: #dee2e4;
@@ -35,8 +21,9 @@
   --on-navy-soft: rgb(255 255 255 / 0.74);
   --on-navy-line: rgb(255 255 255 / 0.22);
 
-  --font-display: 'Nexa', 'Noto Sans', system-ui, sans-serif;
-  --font-text: 'Noto Sans', system-ui, sans-serif;
+  /* Outfit and Noto Sans, both under the SIL Open Font License, self-hosted through Fontsource (main.ts). */
+  --font-display: 'Outfit Variable', 'Noto Sans Variable', system-ui, sans-serif;
+  --font-text: 'Noto Sans Variable', system-ui, sans-serif;
 
   --fs-xs: 0.8125rem;
   --fs-s: 0.9375rem;
@@ -181,7 +168,7 @@ button {
 }
 
 .visually-hidden {
-  position: absolute !important;
+  position: absolute;
   width: 1px;
   height: 1px;
   padding: 0;
@@ -190,59 +177,6 @@ button {
   clip: rect(0 0 0 0);
   white-space: nowrap;
   border: 0;
-}
-
-/* Buttons: enamel sign plates */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-3);
-  min-height: 3rem;
-  padding: 0.7rem 1.4rem 0.6rem;
-  border-radius: var(--radius-pill);
-  border: 2px solid transparent;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: var(--fs-m);
-  line-height: 1;
-  text-decoration: none;
-  white-space: nowrap;
-  transition:
-    background-color 0.2s var(--ease-out),
-    color 0.2s var(--ease-out),
-    border-color 0.2s var(--ease-out),
-    transform 0.2s var(--ease-out);
-}
-
-.btn:active {
-  transform: translateY(1px);
-}
-
-.btn--primary {
-  background: var(--yellow);
-  color: var(--navy);
-}
-
-.btn--primary:hover {
-  background: #ffd25c;
-}
-
-.btn--ghost {
-  border-color: currentColor;
-}
-
-.on-navy .btn--ghost:hover {
-  background: var(--on-navy);
-  border-color: var(--on-navy);
-  color: var(--navy);
-}
-
-
-.btn--lg {
-  min-height: 3.5rem;
-  padding-inline: 1.8rem;
-  font-size: var(--fs-l);
 }
 
 .section {
@@ -269,13 +203,20 @@ button {
     scroll-behavior: auto;
   }
 
-  *,
+  /*
+   * The one !important of the site, on purpose: "reduce motion" is the visitor's choice and must win
+   * over every component, whatever its selector. An animation that carries information rather than
+   * movement (the testimonial timer) opts out with data-motion="essential".
+   */
+  /* stylelint-disable declaration-no-important */
+  *:not([data-motion='essential']),
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+  /* stylelint-enable declaration-no-important */
 }
 
 /* The page grammar, taken from the legend: heading on the left, a framed key list on the right. */
@@ -290,7 +231,7 @@ button {
   margin-bottom: 0;
 }
 
-@media (max-width: 1100px) {
+@media (--bp-l) {
   .split {
     grid-template-columns: 1fr;
     gap: 0;

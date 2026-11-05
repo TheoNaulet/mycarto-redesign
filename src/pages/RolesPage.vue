@@ -5,6 +5,7 @@ import PageHero from '../components/ui/PageHero.vue'
 import KeyList, { type KeyItem } from '../components/ui/KeyList.vue'
 import RolePicker from '../components/audiences/RolePicker.vue'
 import { architect, dsi, teamRoles } from '../data/audiences'
+import BaseButton from '../components/ui/BaseButton.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -28,7 +29,7 @@ const contents: KeyItem[] = [
       <template #title>Chaque métier du SI a sa carte</template>
       <template #lede>Du DSI au support, chacun lit le même référentiel à son échelle.</template>
       <template #actions>
-        <RouterLink class="btn btn--primary btn--lg" to="/demo">Demander une démo</RouterLink>
+        <BaseButton to="/demo" size="l">Demander une démo</BaseButton>
       </template>
       <template #aside>
         <nav class="roles-index" aria-label="Aller à un métier">
@@ -253,7 +254,7 @@ const contents: KeyItem[] = [
   color: var(--navy);
 }
 
-@media (max-width: 1100px) {
+@media (--bp-l) {
   .dsi__themes {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-7) var(--space-5);
@@ -265,14 +266,14 @@ const contents: KeyItem[] = [
   }
 }
 
-@media (max-width: 860px) {
+@media (--bp-m) {
   .dsi,
   .team {
     padding-block: var(--space-8);
   }
 }
 
-@media (max-width: 560px) {
+@media (--bp-xs) {
   .dsi__themes {
     gap: var(--space-6) var(--space-4);
   }

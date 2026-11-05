@@ -3,6 +3,7 @@ import PageHero from '../components/ui/PageHero.vue'
 import BrandLogo from '../components/BrandLogo.vue'
 import { soluQiqChanges, soluQiqStory } from '../data/product'
 import { voices } from '../data/content'
+import BaseButton from '../components/ui/BaseButton.vue'
 
 const quote = voices.find((v) => v.id === 'delysse')!
 </script>
@@ -13,7 +14,7 @@ const quote = voices.find((v) => v.id === 'delysse')!
       <template #title>Solu-QIQ devient myCarto</template>
       <template #lede>Plus de quatre ans de R&amp;D : toutes les fonctions qui ont fait son succès, sur une technologie entièrement neuve.</template>
       <template #actions>
-        <RouterLink class="btn btn--primary btn--lg" to="/demo">Voir la nouvelle version</RouterLink>
+        <BaseButton to="/demo" size="l">Voir la nouvelle version</BaseButton>
       </template>
       <template #aside>
         <figure class="rename" aria-label="Solu-QIQ, de 2006 à 2023, devient myCarto en 2023">
@@ -71,7 +72,7 @@ const quote = voices.find((v) => v.id === 'delysse')!
         <div>
           <h2 id="migrate-title">Déjà sur Solu-QIQ ?</h2>
           <p class="migrate__lede">Depuis 2024, nos équipes accompagnent les clients historiques vers myCarto.</p>
-          <RouterLink class="btn btn--ghost btn--lg migrate__cta" to="/contact">Parler de votre migration</RouterLink>
+          <BaseButton class="migrate__cta" to="/contact" variant="ghost" size="l">Parler de votre migration</BaseButton>
         </div>
         <figure class="migrate__quote">
           <blockquote>
@@ -286,13 +287,6 @@ const quote = voices.find((v) => v.id === 'delysse')!
 
 .migrate__cta {
   margin-top: var(--space-6);
-  color: var(--navy);
-}
-
-.migrate__cta:hover {
-  background: var(--navy);
-  border-color: var(--navy);
-  color: var(--on-navy);
 }
 
 .migrate__quote {
@@ -315,7 +309,7 @@ const quote = voices.find((v) => v.id === 'delysse')!
   color: var(--navy);
 }
 
-@media (max-width: 1000px) {
+@media (--bp-l) {
   .story__line {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     row-gap: var(--space-7);
@@ -345,7 +339,7 @@ const quote = voices.find((v) => v.id === 'delysse')!
   }
 }
 
-@media (max-width: 640px) {
+@media (--bp-s) {
   .rename {
     grid-template-columns: 1fr;
     justify-items: stretch;

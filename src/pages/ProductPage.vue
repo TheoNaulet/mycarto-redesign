@@ -4,6 +4,7 @@ import KeyList from '../components/ui/KeyList.vue'
 import LayersIllustration from '../components/product/LayersIllustration.vue'
 import FaqList from '../components/product/FaqList.vue'
 import { productFaq, productFeatures, starterKit, verbs, whyMap } from '../data/product'
+import BaseButton from '../components/ui/BaseButton.vue'
 
 const featureKeys = productFeatures.map((f) => ({
   name: f.name,
@@ -19,8 +20,8 @@ const featureKeys = productFeatures.map((f) => ({
       <template #title>Le logiciel de cartographie du SI</template>
       <template #lede>Process, applications, flux, infrastructures, données : tout votre SI, couche par couche, dans un seul référentiel.</template>
       <template #actions>
-        <RouterLink class="btn btn--primary btn--lg" to="/demo">Demander une démo</RouterLink>
-        <RouterLink class="btn btn--ghost btn--lg" to="/tarifs">Voir les tarifs</RouterLink>
+        <BaseButton to="/demo" size="l">Demander une démo</BaseButton>
+        <BaseButton to="/tarifs" variant="ghost" size="l">Voir les tarifs</BaseButton>
       </template>
       <template #aside>
         <figure class="layers-frame">
@@ -350,7 +351,7 @@ const featureKeys = productFeatures.map((f) => ({
   color: var(--navy);
 }
 
-@media (max-width: 1100px) {
+@media (--bp-l) {
   .verbs__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -365,7 +366,7 @@ const featureKeys = productFeatures.map((f) => ({
   }
 }
 
-@media (max-width: 640px) {
+@media (--bp-s) {
   .why__grid,
   .kit__plates {
     grid-template-columns: 1fr;

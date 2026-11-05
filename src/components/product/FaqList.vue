@@ -87,7 +87,7 @@ details[open] summary svg {
   max-width: 60ch;
 }
 
-@media (max-width: 560px) {
+@media (--bp-xs) {
   .faq {
     padding: var(--space-1) var(--space-4);
   }

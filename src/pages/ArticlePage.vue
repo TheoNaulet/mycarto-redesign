@@ -4,6 +4,7 @@ import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { articles, formatDate, loadBody, topics, type Block } from '../data/articles'
 import { setPageTitle } from '../router'
+import BaseBadge from '../components/ui/BaseBadge.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -83,7 +84,7 @@ onBeforeUnmount(() => observer?.disconnect())
           Tous les articles
         </RouterLink>
         <p class="meta">
-          <span v-if="topic" class="meta__topic">{{ topic.label }}</span>
+          <BaseBadge v-if="topic" size="s">{{ topic.label }}</BaseBadge>
           <time :datetime="article.date">{{ formatDate(article.date) }}</time>
           <span aria-hidden="true">·</span>
           <span>{{ article.minutes }} min de lecture</span>
@@ -198,15 +199,6 @@ onBeforeUnmount(() => observer?.disconnect())
   font-size: var(--fs-s);
   font-weight: 600;
   color: var(--text-muted);
-}
-
-.meta__topic {
-  padding: 0.4rem 0.85rem 0.35rem;
-  border-radius: var(--radius-pill);
-  background: var(--navy);
-  color: var(--on-navy);
-  font-family: var(--font-display);
-  font-weight: 700;
 }
 
 .article__head h1 {
@@ -366,11 +358,11 @@ onBeforeUnmount(() => observer?.disconnect())
   line-height: 1;
 }
 
-.source {
-  margin-top: var(--space-8) !important;
+.article__body .source {
+  margin-top: var(--space-8);
   padding-top: var(--space-5);
   border-top: 1px solid var(--line);
-  font-size: var(--fs-s) !important;
+  font-size: var(--fs-s);
   color: var(--text-muted);
 }
 
@@ -423,7 +415,7 @@ onBeforeUnmount(() => observer?.disconnect())
   text-underline-offset: 0.15em;
 }
 
-@media (max-width: 1100px) {
+@media (--bp-l) {
   .article__layout--toc {
     grid-template-columns: minmax(0, 52rem);
   }
@@ -433,7 +425,7 @@ onBeforeUnmount(() => observer?.disconnect())
   }
 }
 
-@media (max-width: 860px) {
+@media (--bp-m) {
   .related {
     grid-template-columns: 1fr;
   }

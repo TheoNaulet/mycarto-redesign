@@ -1,4 +1,8 @@
-<!-- Home and clients: the user club in one photo, one line and the next date, linking to /club-utilisateurs. -->
+<script setup lang="ts">
+// Home and clients: the user club in one photo, one line and the next date, linking to /club-utilisateurs.
+import BaseBadge from './ui/BaseBadge.vue'
+</script>
+
 <template>
   <section id="club" class="section club" aria-labelledby="club-title">
     <div class="wrap club__grid">
@@ -11,7 +15,7 @@
       <div>
         <h2 id="club-title">Le club utilisateurs</h2>
         <p class="club__lede">Trois fois par an, entre clients, pour choisir les prochaines fonctionnalités.</p>
-        <p class="club__date">Prochaine édition le 19 novembre 2026</p>
+        <BaseBadge as="p" class="club__date">Prochaine édition le 19 novembre 2026</BaseBadge>
         <p>Avec le témoignage du Crédit Agricole Leasing &amp; Factoring. Réservé aux clients.</p>
         <RouterLink class="link-more club__more" to="/club-utilisateurs">Découvrir le club</RouterLink>
       </div>
@@ -45,14 +49,7 @@
 }
 
 .club__date {
-  display: inline-block;
   margin: var(--space-6) 0 var(--space-3);
-  padding: 0.55rem 1rem 0.45rem;
-  border-radius: var(--radius-pill);
-  background: var(--navy);
-  color: var(--on-navy);
-  font-family: var(--font-display);
-  font-weight: 700;
 }
 
 .club__grid p:last-of-type {
@@ -65,7 +62,7 @@
   color: var(--navy);
 }
 
-@media (max-width: 860px) {
+@media (--bp-m) {
   .club__grid {
     grid-template-columns: 1fr;
     gap: var(--space-5);

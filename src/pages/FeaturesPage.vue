@@ -2,7 +2,11 @@
 import { featureDetails } from '../data/pages'
 import { ref } from 'vue'
 import MapIllustration from '../components/MapIllustration.vue'
+import FeatureIntro from '../components/product/FeatureIntro.vue'
+import InteropHub from '../components/product/InteropHub.vue'
+import TickList from '../components/ui/TickList.vue'
 import { prefersReduced, vDraw } from '../motion/draw'
+import BaseButton from '../components/ui/BaseButton.vue'
 
 const f = Object.fromEntries(featureDetails.map((d) => [d.id, d])) as Record<string, (typeof featureDetails)[number]>
 const meta = f['meta-modele']
@@ -26,14 +30,6 @@ function runToken() {
   root.querySelector<SVGAnimationElement>('#bpmn-token')?.beginElement()
 }
 
-const systems = ['CMDB', 'ITSM', 'PPM', 'BI', 'SI Finances', 'Connaissances', 'LDAP']
-
-/** Position of tool i on the circle around myCarto, in % of the hub box. */
-function hubPos(i: number) {
-  const angle = (i / systems.length) * Math.PI * 2 - Math.PI / 2
-  return { x: 50 + Math.cos(angle) * 38, y: 50 + Math.sin(angle) * 38 }
-}
-
 // One small drawn pictogram per dashboard point, in the navy and yellow of their icon set.
 const dashIcons = [
   // library of dashboards
@@ -55,7 +51,7 @@ const dashIcons = [
           <h1><span class="nowrap">5 fonctionnalités</span> clés</h1>
           <p>Pour une urbanisation du SI maîtrisée, sans une ligne de code.</p>
           <div class="features-head__actions">
-            <RouterLink class="btn btn--primary btn--lg" to="/demo">Les voir en démo</RouterLink>
+            <BaseButton to="/demo" size="l">Les voir en démo</BaseButton>
           </div>
         </div>
         <nav class="jump" aria-label="Aller à une fonctionnalité">
@@ -73,12 +69,8 @@ const dashIcons = [
     <section :id="meta.id" class="feat feat--meta on-navy" aria-labelledby="t-meta">
       <div class="wrap meta">
         <div class="meta__text">
-          <span class="feat__icon feat__icon--light"><img :src="`/brand/features/${meta.icon}.svg`" alt="" /></span>
-          <h2 id="t-meta">{{ meta.name }}</h2>
-          <p class="feat__why">{{ meta.why }}</p>
-          <ul class="ticks ticks--light">
-            <li v-for="p in meta.points" :key="p">{{ p }}</li>
-          </ul>
+          <FeatureIntro :icon="meta.icon" :title="meta.name" title-id="t-meta" :why="meta.why" ground="navy" />
+          <TickList class="feat__ticks" :items="meta.points" ground="navy" />
         </div>
         <img class="meta__photo" src="/brand/photos/dsi-manager-it.webp" alt="" width="512" height="512" />
       </div>
@@ -97,12 +89,8 @@ const dashIcons = [
           <MapIllustration />
         </figure>
         <div>
-          <span class="feat__icon"><img :src="`/brand/features/${cartes.icon}.svg`" alt="" /></span>
-          <h2 id="t-cartes">{{ cartes.name }}</h2>
-          <p class="feat__why">{{ cartes.why }}</p>
-          <ul class="ticks">
-            <li v-for="p in cartes.points" :key="p">{{ p }}</li>
-          </ul>
+          <FeatureIntro :icon="cartes.icon" :title="cartes.name" title-id="t-cartes" :why="cartes.why" />
+          <TickList class="feat__ticks" :items="cartes.points" />
           <p class="feat__case"><strong>Exemple :</strong> {{ cartes.usecase }}</p>
         </div>
       </div>
@@ -111,11 +99,7 @@ const dashIcons = [
     <!-- 3. Tableaux de bord: cool grey, four big tiles and a persona -->
     <section :id="dash.id" class="feat ground-cool" aria-labelledby="t-dash">
       <div class="wrap">
-        <div class="dash__head">
-          <span class="feat__icon"><img :src="`/brand/features/${dash.icon}.svg`" alt="" /></span>
-          <h2 id="t-dash">{{ dash.name }}</h2>
-          <p class="feat__why">{{ dash.why }}</p>
-        </div>
+        <FeatureIntro :icon="dash.icon" :title="dash.name" title-id="t-dash" :why="dash.why" align="center" />
         <div class="dash">
           <ul class="tiles">
             <li v-for="(p, i) in dash.points" :key="p">
@@ -134,48 +118,17 @@ const dashIcons = [
     <section :id="interop.id" class="feat feat--yellow" aria-labelledby="t-interop">
       <div class="wrap interop">
         <div>
-          <span class="feat__icon"><img :src="`/brand/features/${interop.icon}.svg`" alt="" /></span>
-          <h2 id="t-interop">{{ interop.name }}</h2>
-          <p class="feat__why">{{ interop.why }}</p>
-          <ul class="ticks">
-            <li v-for="p in interop.points" :key="p">{{ p }}</li>
-          </ul>
+          <FeatureIntro :icon="interop.icon" :title="interop.name" title-id="t-interop" :why="interop.why" />
+          <TickList class="feat__ticks" :items="interop.points" ground="yellow" />
         </div>
-        <div v-draw class="hub" role="img" :aria-label="`myCarto relié à ${systems.join(', ')}`">
-          <svg class="hub__lines" viewBox="0 0 100 100" aria-hidden="true">
-            <line
-              v-for="(s, i) in systems"
-              :key="s"
-              x1="50"
-              y1="50"
-              :x2="hubPos(i).x"
-              :y2="hubPos(i).y"
-              :style="{ '--i': i }"
-            />
-          </svg>
-          <span
-            v-for="(s, i) in systems"
-            :key="s"
-            class="hub__node"
-            :style="{ left: `${hubPos(i).x}%`, top: `${hubPos(i).y}%`, '--i': i }"
-            aria-hidden="true"
-          >{{ s }}</span>
-          <span class="hub__core" aria-hidden="true">
-            <img src="/brand/logo-mycarto.svg" alt="" width="164" height="50" />
-            <span>API REST</span>
-          </span>
-        </div>
+        <InteropHub />
       </div>
     </section>
 
     <!-- 5. BPMN: a real BPMN diagram across three lanes -->
     <section :id="bpmn.id" class="feat" aria-labelledby="t-bpmn">
       <div class="wrap bpmn">
-        <div class="bpmn__head">
-          <span class="feat__icon"><img :src="`/brand/features/${bpmn.icon}.svg`" alt="" /></span>
-          <h2 id="t-bpmn">{{ bpmn.name }}</h2>
-          <p class="feat__why">{{ bpmn.why }}</p>
-        </div>
+        <FeatureIntro :icon="bpmn.icon" :title="bpmn.name" title-id="t-bpmn" :why="bpmn.why" align="center" />
 
         <figure ref="diagram" v-draw="runToken" class="diagram">
           <div class="diagram__scroll">
@@ -394,38 +347,8 @@ const dashIcons = [
   padding-block: var(--space-9);
 }
 
-.feat h2 {
-  font-size: var(--fs-3xl);
-  line-height: 1.04;
-  letter-spacing: -0.02em;
-  max-width: 14ch;
-}
-
-.feat__icon {
-  display: inline-grid;
-  place-items: center;
-  width: 5.5rem;
-  height: 5.5rem;
-  margin-bottom: var(--space-5);
-  border-radius: var(--radius-panel);
-  background: var(--paper);
-  border: var(--frame) solid var(--navy);
-}
-
-.feat__icon img {
-  width: 3.75rem;
-  height: 3.75rem;
-}
-
-.feat__icon--light {
-  border-color: var(--paper);
-}
-
-.feat__why {
-  margin-top: var(--space-4);
-  font-size: var(--fs-xl);
-  line-height: 1.3;
-  max-width: 26ch;
+.feat__ticks {
+  margin-top: var(--space-6);
 }
 
 .feat__case {
@@ -438,40 +361,6 @@ const dashIcons = [
   font-family: var(--font-display);
 }
 
-.ticks {
-  display: grid;
-  gap: var(--space-3);
-  margin-top: var(--space-6);
-}
-
-.ticks li {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  font-size: var(--fs-l);
-  font-weight: 500;
-  color: var(--navy);
-}
-
-.ticks li::before {
-  content: '';
-  width: 1.75rem;
-  height: 1.75rem;
-  flex: none;
-  border-radius: 50%;
-  background: var(--yellow)
-    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m6.5 12.5 3.5 3.5 7.5-8" fill="none" stroke="%23262e6f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>')
-    center / 70% no-repeat;
-}
-
-.feat--yellow .ticks li::before {
-  background-color: var(--paper);
-}
-
-.ticks--light li {
-  color: var(--on-navy);
-}
-
 /* 1. Méta-modèle */
 .feat--meta {
   background: var(--navy);
@@ -482,10 +371,6 @@ const dashIcons = [
   grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
   gap: var(--space-8);
   align-items: center;
-}
-
-.feat--meta .feat__why {
-  color: var(--on-navy-soft);
 }
 
 .meta__photo {
@@ -530,16 +415,6 @@ const dashIcons = [
 }
 
 /* 3. Tableaux de bord */
-.dash__head {
-  display: grid;
-  justify-items: center;
-  text-align: center;
-}
-
-.dash__head .feat__why {
-  margin-inline: auto;
-}
-
 .dash {
   display: grid;
   grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
@@ -610,103 +485,7 @@ const dashIcons = [
   align-items: center;
 }
 
-.hub {
-  position: relative;
-  width: 100%;
-  max-width: 34rem;
-  aspect-ratio: 1;
-  justify-self: center;
-}
-
-.hub__lines {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-
-.hub__lines line {
-  stroke: var(--navy);
-  stroke-width: 0.6;
-  stroke-dasharray: 1.6 1.2;
-  /* Each link grows out of myCarto, then its tool lands at the end of it. */
-  transform-box: view-box;
-  transform-origin: 50% 50%;
-  transition: transform 0.55s var(--ease-out) calc(0.25s + var(--i) * 80ms);
-}
-
-.hub[data-draw]:not(.is-drawn) .hub__lines line {
-  transform: scale(0);
-}
-
-.hub[data-draw]:not(.is-drawn) .hub__node {
-  opacity: 0;
-  scale: 0.6;
-}
-
-.hub[data-draw]:not(.is-drawn) .hub__core {
-  opacity: 0;
-  scale: 0.85;
-}
-
-.hub__node {
-  transition:
-    opacity 0.3s var(--ease-out) calc(0.55s + var(--i) * 80ms),
-    scale 0.45s var(--ease-out) calc(0.55s + var(--i) * 80ms);
-  position: absolute;
-  transform: translate(-50%, -50%);
-  padding: 0.7rem 1.15rem 0.6rem;
-  border-radius: var(--radius-pill);
-  background: var(--navy);
-  color: var(--on-navy);
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: var(--fs-m);
-  white-space: nowrap;
-}
-
-.hub__core {
-  transition:
-    opacity 0.4s var(--ease-out),
-    scale 0.5s var(--ease-out);
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  display: grid;
-  justify-items: center;
-  gap: var(--space-2);
-  width: 42%;
-  aspect-ratio: 1;
-  align-content: center;
-  border: var(--frame) solid var(--navy);
-  border-radius: 50%;
-  background: var(--paper);
-}
-
-.hub__core img {
-  width: 72%;
-  height: auto;
-}
-
-.hub__core span {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: var(--fs-s);
-}
-
 /* 5. BPMN */
-.bpmn__head {
-  display: grid;
-  justify-items: center;
-  text-align: center;
-}
-
-.bpmn__head .feat__why {
-  margin-inline: auto;
-}
-
 .diagram {
   margin: var(--space-8) 0 0;
 }
@@ -955,7 +734,7 @@ const dashIcons = [
     center / 70% no-repeat;
 }
 
-@media (max-width: 1000px) {
+@media (--bp-l) {
   .bpmn__points {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -988,7 +767,7 @@ const dashIcons = [
   }
 }
 
-@media (max-width: 560px) {
+@media (--bp-xs) {
   .jump {
     padding: var(--space-1) var(--space-4);
   }
@@ -1008,15 +787,6 @@ const dashIcons = [
 
   .tiles li {
     min-height: 0;
-  }
-
-  .ticks li {
-    font-size: var(--fs-m);
-  }
-
-  .hub__node {
-    padding: 0.45rem 0.7rem 0.4rem;
-    font-size: var(--fs-xs);
   }
 
   .bpmn__points {

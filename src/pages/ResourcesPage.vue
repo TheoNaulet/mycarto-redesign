@@ -3,6 +3,7 @@
 import { computed, ref } from 'vue'
 import PageHero from '../components/ui/PageHero.vue'
 import { articles, formatDate, topics, type Topic } from '../data/articles'
+import BaseButton from '../components/ui/BaseButton.vue'
 
 const [featured, ...rest] = articles
 const filter = ref<Topic | 'all'>('all')
@@ -21,7 +22,7 @@ const topicLabel = (id: Topic) => topics.find((t) => t.id === id)?.label
       <template #title>Articles et guides</template>
       <template #lede>Pour piloter votre SI : méthode, réglementation, retours terrain.</template>
       <template #actions>
-        <a class="btn btn--primary btn--lg" href="#tous">Parcourir les {{ articles.length }} articles</a>
+        <BaseButton href="#tous" size="l">Parcourir les {{ articles.length }} articles</BaseButton>
       </template>
       <template #aside>
         <img
@@ -271,7 +272,7 @@ const topicLabel = (id: Topic) => topics.find((t) => t.id === id)?.label
   transform: translateY(12px);
 }
 
-@media (max-width: 1000px) {
+@media (--bp-l) {
   .hero-visual {
     max-width: 15rem;
   }
@@ -286,7 +287,7 @@ const topicLabel = (id: Topic) => topics.find((t) => t.id === id)?.label
   }
 }
 
-@media (max-width: 600px) {
+@media (--bp-xs) {
   .grid {
     grid-template-columns: 1fr;
   }

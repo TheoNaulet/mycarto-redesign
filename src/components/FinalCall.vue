@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // The closing call on navy, shown under every page except the demo and contact forms (see App.vue).
 import { site } from '../data/content'
+import BaseButton from './ui/BaseButton.vue'
 </script>
 
 <template>
@@ -9,8 +10,8 @@ import { site } from '../data/content'
       <h2 id="final-title">Votre SI mérite son plan.</h2>
       <p>Demandez une démo, l’équipe myCarto vous recontacte.</p>
       <div class="final__actions">
-        <RouterLink class="btn btn--primary btn--lg" to="/demo">Demander une démo</RouterLink>
-        <RouterLink class="btn btn--ghost btn--lg" to="/contact">Contact commercial</RouterLink>
+        <BaseButton to="/demo" size="l">Demander une démo</BaseButton>
+        <BaseButton to="/contact" variant="ghost" size="l">Contact commercial</BaseButton>
       </div>
       <p class="final__direct">
         Ou directement : <a :href="site.phoneHref">{{ site.phone }}</a>, <a :href="`mailto:${site.email}`">{{ site.email }}</a>

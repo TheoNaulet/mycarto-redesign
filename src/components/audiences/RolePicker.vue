@@ -196,7 +196,7 @@ const { onKey } = useRovingTabs('tabs', () => props.roles.length, select)
   max-width: 30ch;
 }
 
-@media (max-width: 1100px) {
+@media (--bp-l) {
   .picker {
     grid-template-columns: 1fr;
     gap: var(--space-6);
@@ -216,7 +216,7 @@ const { onKey } = useRovingTabs('tabs', () => props.roles.length, select)
   }
 }
 
-@media (max-width: 700px) {
+@media (--bp-s) {
   .panel {
     grid-template-columns: 1fr;
     gap: var(--space-4);

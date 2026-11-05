@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import PageHero from '../components/ui/PageHero.vue'
 import { ambition, identity, phases, timeline, values } from '../data/company'
 import { vDraw } from '../motion/draw'
+import BaseButton from '../components/ui/BaseButton.vue'
 
 const rail = ref<HTMLElement | null>(null)
 
@@ -22,8 +23,8 @@ function scrollRail(dir: 1 | -1) {
         <span class="ambition">« {{ ambition }} »</span>
       </template>
       <template #actions>
-        <RouterLink class="btn btn--primary btn--lg" to="/demo">Demander une démo</RouterLink>
-        <RouterLink class="btn btn--ghost btn--lg" to="/recrutement">Nous rejoindre</RouterLink>
+        <BaseButton to="/demo" size="l">Demander une démo</BaseButton>
+        <BaseButton to="/recrutement" variant="ghost" size="l">Nous rejoindre</BaseButton>
       </template>
       <template #aside>
         <dl class="identity">
@@ -101,7 +102,7 @@ function scrollRail(dir: 1 | -1) {
           <h2 id="join-title">Une équipe à taille humaine</h2>
           <p>Ingénieurs, consultants, support et commerciaux, au même endroit.</p>
         </div>
-        <RouterLink class="btn btn--ghost btn--lg" to="/recrutement">Voir le recrutement</RouterLink>
+        <BaseButton to="/recrutement" variant="ghost" size="l">Voir le recrutement</BaseButton>
       </div>
     </section>
   </div>
@@ -439,17 +440,7 @@ function scrollRail(dir: 1 | -1) {
   font-size: var(--fs-l);
 }
 
-.join .btn--ghost {
-  color: var(--navy);
-}
-
-.join .btn--ghost:hover {
-  background: var(--navy);
-  border-color: var(--navy);
-  color: var(--on-navy);
-}
-
-@media (max-width: 760px) {
+@media (--bp-s) {
   .stops {
     grid-template-columns: 1fr;
     gap: var(--space-7);
@@ -523,7 +514,7 @@ function scrollRail(dir: 1 | -1) {
   }
 }
 
-@media (max-width: 520px) {
+@media (--bp-xs) {
   .values {
     grid-template-columns: 1fr 1fr;
     gap: var(--space-3);

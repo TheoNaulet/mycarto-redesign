@@ -150,13 +150,13 @@
 }
 
 
-@media (max-width: 900px) {
+@media (--bp-m) {
   .fields--3 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 640px) {
+@media (--bp-s) {
   .fields,
   .fields--3 {
     grid-template-columns: 1fr;

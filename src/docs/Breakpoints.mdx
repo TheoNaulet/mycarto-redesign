@@ -1,0 +1,44 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Fondations/Paliers" />
+
+# Quatre paliers
+
+Le site est conçu large, et chaque palier le simplifie (*desktop first*). Les quatre valeurs sont écrites une seule fois, dans `src/styles/breakpoints.css` :
+
+```css
+@custom-media --bp-l (max-width: 1100px);
+@custom-media --bp-m (max-width: 900px);
+@custom-media --bp-s (max-width: 720px);
+@custom-media --bp-xs (max-width: 560px);
+```
+
+| Palier | Largeur | Ce qui change |
+|---|---|---|
+| `--bp-l` | ≤ 1100px | les colonnes côte à côte s’empilent, le menu passe dans le tiroir |
+| `--bp-m` | ≤ 900px | les grilles de trois ou quatre passent à deux |
+| `--bp-s` | ≤ 720px | les grilles de deux passent à une, les lignes de formulaire s’empilent |
+| `--bp-xs` | ≤ 560px | espacements resserrés, titres et schémas plus petits |
+
+## À l’usage
+
+```css
+.cases {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (--bp-m) {
+  .cases {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+```
+
+C’est la syntaxe standard des *custom media queries* (Media Queries niveau 5). `postcss-custom-media` la compile en `max-width` au build, dans `vite.config.ts`, pour le site comme pour ce Storybook.
+
+## Les garde-fous
+
+- **Stylelint** (`pnpm lint:css`) refuse tout `max-width` ou `min-width` écrit en dur dans une media query.
+- **Le build échoue** sur un nom de palier qui n’existe pas (`--bp-xl`, une faute de frappe) : un cinquième palier ne passe pas inaperçu.
+- **Le JavaScript ne recopie pas les valeurs.** L’en-tête ne se demande pas si l’écran fait plus de 1100 px : il regarde si son bouton de tiroir est affiché. Le palier reste écrit à un seul endroit.
+- **Les tailles de texte et la gouttière** suivent l’écran avec `clamp()`, sans palier.

@@ -3,6 +3,7 @@ import PageHero from '../components/ui/PageHero.vue'
 import KeyList from '../components/ui/KeyList.vue'
 import { practices, projectSteps, services, smart } from '../data/product'
 import { vDraw } from '../motion/draw'
+import BaseButton from '../components/ui/BaseButton.vue'
 
 const serviceKeys = services.map((s) => ({ name: s.name, line: s.line, icon: `/brand/integration/${s.icon}.svg` }))
 </script>
@@ -13,8 +14,8 @@ const serviceKeys = services.map((s) => ({ name: s.name, line: s.line, icon: `/b
       <template #title>Opérationnel en moins d’un mois</template>
       <template #lede>Plus de 200 implémentations nous ont donné une méthode simple, qui part de vos données.</template>
       <template #actions>
-        <RouterLink class="btn btn--primary btn--lg" to="/demo">Demander une démo</RouterLink>
-        <RouterLink class="btn btn--ghost btn--lg" to="/contact">Contact commercial</RouterLink>
+        <BaseButton to="/demo" size="l">Demander une démo</BaseButton>
+        <BaseButton to="/contact" variant="ghost" size="l">Contact commercial</BaseButton>
       </template>
       <template #aside>
         <div class="services">
@@ -128,8 +129,6 @@ const serviceKeys = services.map((s) => ({ name: s.name, line: s.line, icon: `/b
   font-size: 3.5rem;
   line-height: 1;
   color: var(--navy);
-  /* Nexa sits a little high in its box. */
-  padding-top: 0.2rem;
 }
 
 .smart h3 {
@@ -246,7 +245,7 @@ const serviceKeys = services.map((s) => ({ name: s.name, line: s.line, icon: `/b
   color: var(--navy);
 }
 
-@media (max-width: 1100px) {
+@media (--bp-l) {
   .smart {
     grid-template-columns: 1fr;
     max-width: 40rem;
@@ -272,7 +271,7 @@ const serviceKeys = services.map((s) => ({ name: s.name, line: s.line, icon: `/b
   }
 }
 
-@media (max-width: 640px) {
+@media (--bp-s) {
   .practices {
     grid-template-columns: 1fr;
     gap: var(--space-5);

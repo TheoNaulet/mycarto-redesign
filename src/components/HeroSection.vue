@@ -1,4 +1,14 @@
 <script setup lang="ts">
+// Home hero: the promise, the two actions, and the brand banner in its yellow frame.
+import { onMounted, ref } from 'vue'
+import BaseButton from './ui/BaseButton.vue'
+
+// The frame and its image arrive together: the frame waits until the image is ready to paint.
+const img = ref<HTMLImageElement | null>(null)
+const ready = ref(false)
+onMounted(() => {
+  if (img.value?.complete) ready.value = true
+})
 </script>
 
 <template>
@@ -8,17 +18,20 @@
         <h1 id="hero-title">Plus jamais perdu dans votre SI</h1>
         <p>Le logiciel de cartographie du SI : vos référentiels deviennent des cartes, toujours à jour.</p>
         <div class="hero__actions">
-          <RouterLink class="btn btn--primary btn--lg" to="/demo">Demander une démo</RouterLink>
-          <RouterLink class="btn btn--ghost btn--lg" to="/contact">Contact commercial</RouterLink>
+          <BaseButton to="/demo" size="l">Demander une démo</BaseButton>
+          <BaseButton to="/contact" variant="ghost" size="l">Contact commercial</BaseButton>
         </div>
       </div>
-      <figure class="hero__visual">
+      <figure class="hero__visual" :class="{ 'is-ready': ready }">
         <img
+          ref="img"
           src="/brand/photos/hero-banner.webp"
           alt="Un utilisateur de myCarto entouré de ses cartes, processus et tableaux de bord"
           width="1173"
           height="839"
           fetchpriority="high"
+          @load="ready = true"
+          @error="ready = true"
         />
       </figure>
     </div>
@@ -67,16 +80,6 @@
   margin-top: var(--space-6);
 }
 
-.hero__actions .btn--ghost {
-  color: var(--navy);
-}
-
-.hero__actions .btn--ghost:hover {
-  background: var(--navy);
-  border-color: var(--navy);
-  color: var(--on-navy);
-}
-
 .hero__visual {
   border: var(--frame) solid var(--navy);
   border-radius: var(--radius-panel);
@@ -88,12 +91,11 @@
 .hero__visual img {
   width: 100%;
   height: auto;
-  animation: rise 0.9s var(--ease-out) 0.4s both;
 }
 
 /*
  * The page's one orchestrated moment, kept calm: the copy settles line by line,
- * the yellow frame settles with it, and the user steps up into the frame.
+ * and the banner, frame and image as one piece, settles beside it as soon as the image is ready.
  */
 .hero__copy > * {
   animation: settle 0.7s var(--ease-out) both;
@@ -107,8 +109,12 @@
   animation-delay: 0.16s;
 }
 
-.hero__visual {
-  animation: settle 0.8s var(--ease-out) 0.12s both;
+.hero__visual:not(.is-ready) {
+  opacity: 0;
+}
+
+.hero__visual.is-ready {
+  animation: settle 0.8s var(--ease-out) both;
 }
 
 @keyframes settle {
@@ -118,20 +124,13 @@
   }
 }
 
-@keyframes rise {
-  from {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-}
-
-@media (max-width: 1100px) {
+@media (--bp-l) {
   .hero__visual {
     margin-top: var(--space-6);
   }
 }
 
-@media (max-width: 560px) {
+@media (--bp-xs) {
   .hero {
     padding-top: var(--space-5);
   }

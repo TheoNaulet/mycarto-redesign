@@ -72,13 +72,13 @@ const shown = clients.slice(0, 14)
   text-underline-offset: 0.3em;
 }
 
-@media (max-width: 900px) {
+@media (--bp-m) {
   .clients__logos {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 520px) {
+@media (--bp-xs) {
   .clients {
     padding-block: var(--space-8);
   }
