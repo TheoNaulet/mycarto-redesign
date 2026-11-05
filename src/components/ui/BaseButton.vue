@@ -27,6 +27,16 @@ const props = withDefaults(
 )
 
 const tag = computed(() => (props.to ? RouterLink : props.href ? 'a' : 'button'))
+
+/**
+ * Only the attributes of the element actually rendered: an `href` passed to RouterLink, even
+ * undefined, would override the one it computes and leave an <a> without href (no pointer, no focus).
+ */
+const linkAttrs = computed(() => {
+  if (props.to) return { to: props.to }
+  if (props.href) return { href: props.href }
+  return { type: props.type }
+})
 </script>
 
 <template>
@@ -34,9 +44,7 @@ const tag = computed(() => (props.to ? RouterLink : props.href ? 'a' : 'button')
     :is="tag"
     class="btn"
     :class="[`btn--${variant}`, `btn--${size}`]"
-    :to="to"
-    :href="to ? undefined : href"
-    :type="tag === 'button' ? type : undefined"
+    v-bind="linkAttrs"
   >
     <slot />
   </component>
