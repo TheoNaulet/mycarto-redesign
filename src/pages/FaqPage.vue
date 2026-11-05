@@ -85,6 +85,7 @@ const idOf = (q: string) => `a-${norm(q).replace(/[^a-z0-9]+/g, '-').slice(0, 40
               <li v-for="item in t.items" :key="item.q">
                 <h3>
                   <button
+                    :id="`q-${idOf(item.q)}`"
                     type="button"
                     class="qa__q"
                     :aria-expanded="isOpen(item.q)"
@@ -95,7 +96,13 @@ const idOf = (q: string) => `a-${norm(q).replace(/[^a-z0-9]+/g, '-').slice(0, 40
                     <span class="qa__sign" aria-hidden="true" />
                   </button>
                 </h3>
-                <div :id="idOf(item.q)" class="qa__a" :class="{ 'is-open': isOpen(item.q) }" role="region">
+                <div
+                  :id="idOf(item.q)"
+                  class="qa__a"
+                  :class="{ 'is-open': isOpen(item.q) }"
+                  role="region"
+                  :aria-labelledby="`q-${idOf(item.q)}`"
+                >
                   <div class="qa__inner">
                     <p>{{ item.a }}</p>
                     <ul v-if="item.list" class="qa__list">

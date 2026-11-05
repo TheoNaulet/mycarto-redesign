@@ -40,12 +40,14 @@ const points = props.steps.map((s, i) => ({ ...s, x: spots[i][0], y: spots[i][1]
         :key="p.n"
         class="stop"
         :href="`#etape-${p.n}`"
-        :aria-label="`Étape ${p.n} : ${p.name}`"
+        :aria-label="`Étape ${p.n} ${p.short} : ${p.name}`"
         :style="{ '--i': i }"
       >
         <circle :cx="p.x" :cy="p.y" r="25" />
-        <text class="stop__n" :x="p.x" :y="p.y + 7">{{ p.n }}</text>
-        <text class="stop__label" :x="p.x" :y="p.y + 52">{{ p.short }}</text>
+        <!-- One text with a real space, so the link reads « 1 Objectifs », not « 1Objectifs ». -->
+        <text text-anchor="middle">
+          <tspan class="stop__n" :x="p.x" :y="p.y + 7">{{ p.n }}</tspan>{{ ' ' }}<tspan class="stop__label" :x="p.x" :y="p.y + 52">{{ p.short }}</tspan>
+        </text>
       </a>
     </svg>
   </figure>

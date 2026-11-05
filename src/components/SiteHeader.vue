@@ -79,12 +79,12 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="notice">
+  <aside class="notice" aria-label="À propos de cette maquette">
     <p class="wrap">
       Concept de refonte non officiel, proposé par {{ candidate.name }} pour une candidature.
       <a :href="site.official" rel="noopener">Voir le site officiel</a>
     </p>
-  </div>
+  </aside>
   <header ref="headerEl" class="header">
     <div class="wrap header__bar">
       <RouterLink class="header__logo" to="/" aria-label="myCarto, accueil">
