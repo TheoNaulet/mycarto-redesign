@@ -45,7 +45,7 @@ function watchHeadings() {
       const visible = entries.filter((e) => e.isIntersecting).sort((x, y) => x.boundingClientRect.top - y.boundingClientRect.top)
       if (visible[0]) activeId.value = visible[0].target.id
     },
-    { rootMargin: '0px 0px -70% 0px' },
+    { rootMargin: '-80px 0px -70% 0px' },
   )
   toc.value.forEach((t) => {
     const el = document.getElementById(t.id)
@@ -237,9 +237,9 @@ onBeforeUnmount(() => observer?.disconnect())
 /* Table of contents, sticky beside the text, the current section marked in yellow. */
 .toc {
   position: sticky;
-  top: var(--space-5);
+  top: calc(var(--header-h) + var(--space-5));
   align-self: start;
-  max-height: calc(100dvh - 3rem);
+  max-height: calc(100dvh - var(--header-h) - 3rem);
   overflow-y: auto;
   padding-top: var(--space-2);
 }

@@ -1,5 +1,5 @@
 import { fileURLToPath } from 'node:url'
-import { defineConfig } from 'vite'
+import { defineConfig, type Plugin } from 'vite'
 import type { Plugin as PostcssPlugin } from 'postcss'
 import vue from '@vitejs/plugin-vue'
 import postcssGlobalData from '@csstools/postcss-global-data'
@@ -18,8 +18,28 @@ const unknownBreakpoint: PostcssPlugin = {
   },
 }
 
+/**
+ * Preloads the two Latin font files from the HTML, so the browser fetches them alongside the CSS
+ * instead of discovering them at first paint: the text shows in Outfit and Noto Sans straight away,
+ * without a flash of the fallback font.
+ */
+const preloadFonts = (): Plugin => ({
+  name: 'preload-fonts',
+  apply: 'build',
+  transformIndexHtml(_html, ctx) {
+    const files = Object.keys(ctx.bundle ?? {}).filter((f) =>
+      /(outfit|noto-sans)-latin-wght-normal-[\w-]+\.woff2$/.test(f),
+    )
+    return files.map((f) => ({
+      tag: 'link',
+      attrs: { rel: 'preload', href: `/${f}`, as: 'font', type: 'font/woff2', crossorigin: '' },
+      injectTo: 'head-prepend' as const,
+    }))
+  },
+})
+
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [vue(), preloadFonts()],
   css: {
     postcss: {
       plugins: [

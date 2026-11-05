@@ -176,7 +176,9 @@ onBeforeUnmount(() => {
 }
 
 .header {
-  position: relative;
+  /* Stays at the top while scrolling; the notice above it scrolls away. */
+  position: sticky;
+  top: 0;
   z-index: 30;
   background: var(--paper);
   color: var(--navy);

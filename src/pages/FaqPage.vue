@@ -185,7 +185,7 @@ const idOf = (q: string) => `a-${norm(q).replace(/[^a-z0-9]+/g, '-').slice(0, 40
 
 .themes {
   position: sticky;
-  top: var(--space-5);
+  top: calc(var(--header-h) + var(--space-5));
   display: grid;
   gap: var(--space-1);
 }

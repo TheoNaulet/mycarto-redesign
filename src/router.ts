@@ -63,7 +63,8 @@ export const router = createRouter({
   ],
   scrollBehavior(to, from, saved) {
     if (saved) return saved
-    if (to.hash) return { el: to.hash, top: 24, behavior: 'smooth' }
+    // Anchors land below the sticky header.
+    if (to.hash) return { el: to.hash, top: (document.querySelector('.header')?.clientHeight ?? 0) + 24, behavior: 'smooth' }
     // Switching between tabs of the same page (e.g. /metiers/dsi → /metiers/rssi) keeps the scroll.
     if (to.name === from.name && to.name === 'roles') return false
     return { top: 0 }
