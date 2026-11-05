@@ -45,7 +45,7 @@ Storybook (`pnpm storybook`) présente les briques du site, rendues par **les co
 - **Fondations** : les jetons (couleurs et contrastes, typographie, espacements, formes, mouvement) et les quatre paliers ;
 - **Briques** : `BaseButton`, `BaseBadge`, `KeyList` (la liste encadrée), `TickList`, `PageHero` ;
 - **Navigation** : l’en-tête et ses menus, le pied de page, les onglets (`RolePicker`, `SectorPicker`) ;
-- **Produit et clients** : `FeatureIntro`, `InteropHub`, les schémas dessinés, `MethodTrail`, `FaqList`, `CaseCard`, `EventCountdown`.
+- **Produit et clients** : `FeatureIntro`, `InteropHub`, les schémas dessinés, `MethodTrail`, `FaqList`, `CaseCard`, `EventCountdown`, `ClientsMap`.
 
 Le sélecteur **Fond** de la barre d’outils pose chaque brique sur les quatre fonds du site, et l’onglet *Accessibility* audite chaque story (axe).
 

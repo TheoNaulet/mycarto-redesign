@@ -27,7 +27,11 @@ export const timeline = [
   { year: '2006', line: 'Le cabinet développe Solu-QIQ, d’abord pour ses missions de conseil.' },
   { year: '2012', line: 'Les utilisateurs fondent leur club, une association loi 1901.' },
   { year: '2014', line: 'AB+ Software se consacre à son métier d’éditeur.' },
-  { year: '2017', line: 'Trophée IT Innovation de l’IMA et du CRIP, catégorie gouvernance IT.' },
+  {
+    year: '2017',
+    line: 'Trophée IT Innovation de l’IMA et du CRIP, catégorie gouvernance IT.',
+    badge: { src: '/brand/company/trophee-it-innovation-2017.png', alt: 'Trophée IT Innovation 2017' },
+  },
   { year: '2018', line: 'Le cap des 100 clients, dans tous les secteurs.' },
   { year: '2019', line: 'Lancement du programme de R&D myCarto.' },
   { year: '2022', line: '150 clients, et une R&D nourrie par leurs retours.' },

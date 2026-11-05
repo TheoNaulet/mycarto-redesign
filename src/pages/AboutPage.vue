@@ -1,9 +1,11 @@
 <script setup lang="ts">
+// À propos: AB+ Software on the map, its double trade, its values, twenty years of dates, its team.
 import { ref } from 'vue'
 import PageHero from '../components/ui/PageHero.vue'
 import { ambition, identity, phases, timeline, values } from '../data/company'
 import { vDraw } from '../motion/draw'
 import BaseButton from '../components/ui/BaseButton.vue'
+import ClientsMap from '../components/clients/ClientsMap.vue'
 
 const rail = ref<HTMLElement | null>(null)
 
@@ -26,16 +28,17 @@ function scrollRail(dir: 1 | -1) {
         <BaseButton to="/demo" size="l">Demander une démo</BaseButton>
         <BaseButton to="/recrutement" variant="ghost" size="l">Nous rejoindre</BaseButton>
       </template>
+      <dl class="identity">
+        <div v-for="i in identity" :key="i.name">
+          <dt>
+            <span class="identity__figure">{{ i.figure }}</span>
+            <span class="identity__name">{{ i.name }}</span>
+          </dt>
+          <dd>{{ i.line }}</dd>
+        </div>
+      </dl>
       <template #aside>
-        <dl class="identity">
-          <div v-for="i in identity" :key="i.name">
-            <dt>
-              <span class="identity__figure">{{ i.figure }}</span>
-              <span class="identity__name">{{ i.name }}</span>
-            </dt>
-            <dd>{{ i.line }}</dd>
-          </div>
-        </dl>
+        <ClientsMap />
       </template>
     </PageHero>
 
@@ -89,7 +92,10 @@ function scrollRail(dir: 1 | -1) {
         </div>
         <ol ref="rail" v-draw class="rail" tabindex="0" aria-label="Les dates clés, de 2006 à 2026">
           <li v-for="(t, i) in timeline" :key="t.year" :style="{ '--i': i }">
-            <span class="rail__year">{{ t.year }}</span>
+            <span class="rail__year">
+              {{ t.year }}
+              <img v-if="t.badge" class="rail__badge" :src="t.badge.src" :alt="t.badge.alt" width="171" height="171" loading="lazy" />
+            </span>
             <p>{{ t.line }}</p>
           </li>
         </ol>
@@ -97,12 +103,14 @@ function scrollRail(dir: 1 | -1) {
     </section>
 
     <section class="section ground-cool join" aria-labelledby="join-title">
-      <div class="wrap join__inner">
+      <div class="wrap join__grid">
+        <!-- The photo of their own recruitment page. -->
+        <img class="join__photo" src="/brand/company/equipe.webp" alt="" width="1920" height="1260" loading="lazy" />
         <div>
           <h2 id="join-title">Une équipe à taille humaine</h2>
           <p>Ingénieurs, consultants, support et commerciaux, au même endroit.</p>
+          <BaseButton class="join__cta" to="/recrutement" variant="ghost" size="l">Voir le recrutement</BaseButton>
         </div>
-        <BaseButton to="/recrutement" variant="ghost" size="l">Voir le recrutement</BaseButton>
       </div>
     </section>
   </div>
@@ -115,23 +123,29 @@ function scrollRail(dir: 1 | -1) {
   color: var(--navy);
 }
 
-/* Identity card: four figures in the framed key list. */
+/* Identity card: four figures in the framed key list, two by two under the actions. */
 .identity {
-  margin: 0;
-  padding: var(--space-2) var(--space-6);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: 36rem;
+  margin: var(--space-7) 0 0;
   border: var(--frame) solid var(--navy);
   border-radius: var(--radius-panel);
+  overflow: hidden;
 }
 
 .identity div {
   display: grid;
-  grid-template-columns: 11rem minmax(0, 1fr);
-  gap: var(--space-5);
-  align-items: center;
-  padding-block: var(--space-4);
+  align-content: start;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-5) var(--space-4);
 }
 
-.identity div + div {
+.identity div:nth-child(even) {
+  border-left: 1px solid var(--line);
+}
+
+.identity div:nth-child(n + 3) {
   border-top: 1px solid var(--line);
 }
 
@@ -143,7 +157,7 @@ function scrollRail(dir: 1 | -1) {
 .identity__figure {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: var(--fs-2xl);
+  font-size: var(--fs-xl);
   line-height: 1;
   letter-spacing: -0.02em;
 }
@@ -410,7 +424,9 @@ function scrollRail(dir: 1 | -1) {
 }
 
 .rail__year {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
   font-family: var(--font-display);
   font-weight: 700;
   font-size: var(--fs-2xl);
@@ -423,12 +439,31 @@ function scrollRail(dir: 1 | -1) {
   font-size: var(--fs-s);
 }
 
-.join__inner {
-  display: flex;
-  flex-wrap: wrap;
+/* The trophy sits beside its year without pushing the line down. */
+.rail__badge {
+  width: 3.75rem;
+  height: 3.75rem;
+  margin-block: -0.75rem;
+}
+
+.join__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: var(--space-8);
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-5);
+}
+
+.join__photo {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  border: var(--frame) solid var(--navy);
+  border-radius: var(--radius-panel);
+}
+
+.join__cta {
+  margin-top: var(--space-6);
 }
 
 .join h2 {
@@ -438,6 +473,13 @@ function scrollRail(dir: 1 | -1) {
 .join p {
   margin-top: var(--space-3);
   font-size: var(--fs-l);
+}
+
+@media (--bp-m) {
+  .join__grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
 }
 
 @media (--bp-s) {
@@ -462,15 +504,6 @@ function scrollRail(dir: 1 | -1) {
 
   .stops li {
     background: var(--navy);
-  }
-
-  .identity {
-    padding: var(--space-1) var(--space-4);
-  }
-
-  .identity div {
-    grid-template-columns: 1fr;
-    gap: var(--space-1);
   }
 
   /* The years stack on phones, the rail turns vertical. */
