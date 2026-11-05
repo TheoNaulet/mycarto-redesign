@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import { computed, watchEffect } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import PageHero from '../components/ui/PageHero.vue'
 import KeyList from '../components/ui/KeyList.vue'
 import TickList from '../components/ui/TickList.vue'
 import CaseCard from '../components/clients/CaseCard.vue'
 import { findCase, nextCases } from '../data/cases'
-import { setPageTitle } from '../router'
+import { setPageTitle, showNotFound } from '../router'
 import BaseBadge from '../components/ui/BaseBadge.vue'
 
 const route = useRoute()
-const router = useRouter()
 
 const study = computed(() => findCase(String(route.params.slug ?? '')))
 const others = computed(() => (study.value ? nextCases(study.value.slug) : []))
@@ -18,7 +17,7 @@ const others = computed(() => (study.value ? nextCases(study.value.slug) : []))
 watchEffect(() => {
   if (route.name !== 'case') return
   if (!study.value) {
-    router.replace('/clients')
+    showNotFound(route.path)
     return
   }
   setPageTitle(`${study.value.org}, cas client`)

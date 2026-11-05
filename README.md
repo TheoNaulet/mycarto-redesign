@@ -37,7 +37,7 @@ Node 24. Le site est une SPA : en production, toutes les routes renvoient `index
 | Clients | `/clients`, 10 cas clients sur `/clients/:slug`, `/club-utilisateurs` |
 | Ressources | `/ressources`, 13 articles sur `/ressources/:slug`, `/evenements`, `/faq` |
 | Entreprise | `/a-propos`, `/recrutement`, `/demo`, `/contact` |
-| Informations | `/mentions-legales`, `/confidentialite`, `/plan-du-site` |
+| Informations | `/mentions-legales`, `/confidentialite`, `/plan-du-site`, et une page 404 pour toute adresse inconnue |
 
 ## Le système de design
 
@@ -46,7 +46,8 @@ Storybook (`pnpm storybook`) présente les briques du site, rendues par **les co
 - **Fondations** : les jetons (couleurs et contrastes, typographie, espacements, formes, mouvement) et les quatre paliers ;
 - **Briques** : `BaseButton`, `BaseBadge`, `KeyList` (la liste encadrée), `TickList`, `PageHero` ;
 - **Navigation** : l’en-tête et ses menus, le pied de page, les onglets (`RolePicker`, `SectorPicker`) ;
-- **Produit et clients** : `FeatureIntro`, `InteropHub`, les schémas dessinés, `MethodTrail`, `FaqList`, `CaseCard`, `EventCountdown`, `ClientsMap`.
+- **Produit et clients** : `FeatureIntro`, `InteropHub`, les schémas dessinés, `MethodTrail`, `FaqList`, `CaseCard`, `EventCountdown`, `ClientsMap` ;
+- **Pages** : la page 404 et son dessin, `LostMap`.
 
 Le sélecteur **Fond** de la barre d’outils pose chaque brique sur les quatre fonds du site, et l’onglet *Accessibility* audite chaque story (axe).
 

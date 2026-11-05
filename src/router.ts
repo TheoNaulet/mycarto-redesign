@@ -59,7 +59,7 @@ export const router = createRouter({
     },
     page('Plan du site', 'sitemap', '/plan-du-site', () => import('./pages/SitemapPage.vue')),
 
-    { path: '/:pathMatch(.*)*', redirect: '/' },
+    { path: '/:pathMatch(.*)*', name: 'not-found', component: () => import('./pages/NotFoundPage.vue'), meta: { title: 'Page introuvable' } },
   ],
   scrollBehavior(to, from, saved) {
     if (saved) return saved
@@ -75,6 +75,11 @@ router.afterEach((to) => {
 })
 
 /** Pages with a dynamic subject (an article, a case) set their own title once loaded. */
+/** Shows the 404 page in place, keeping the address as typed. */
+export function showNotFound(path: string) {
+  router.replace({ name: 'not-found', params: { pathMatch: path.slice(1).split('/') } })
+}
+
 export function setPageTitle(title: string) {
   document.title = `${title} | myCarto (concept)`
 }

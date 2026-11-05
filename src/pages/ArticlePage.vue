@@ -1,13 +1,12 @@
 <script setup lang="ts">
 // One article: the body is loaded on demand (articles.ts), with a table of contents that follows the reading.
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { articles, formatDate, loadBody, topics, type Block } from '../data/articles'
-import { setPageTitle } from '../router'
+import { setPageTitle, showNotFound } from '../router'
 import BaseBadge from '../components/ui/BaseBadge.vue'
 
 const route = useRoute()
-const router = useRouter()
 
 const slug = computed(() => String(route.params.slug))
 const article = computed(() => articles.find((a) => a.slug === slug.value))
@@ -59,7 +58,7 @@ watch(
   async () => {
     const a = article.value
     if (!a) {
-      router.replace('/ressources')
+      showNotFound(route.path)
       return
     }
     setPageTitle(a.title)
