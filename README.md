@@ -14,7 +14,7 @@ Une refonte complète du site [my-carto.com](https://my-carto.com/), le logiciel
 - **Le contraste par les fonds.** Les sections alternent blanc, navy, gris clair et jaune, sans filet ni ombre.
 - **La carte se dessine toute seule.** C’est la promesse du produit, et l’idée des animations : rails, flux, schémas et graphiques se tracent quand on arrive dessus. Un jeton BPMN parcourt même le processus d’exemple.
 
-Le système visuel complet est décrit dans [DESIGN.md](DESIGN.md), et le contexte du projet dans [PRODUCT.md](PRODUCT.md).
+Le système visuel complet est décrit dans [DESIGN.md](DESIGN.md).
 
 ## Lancer le projet
 
