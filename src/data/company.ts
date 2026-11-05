@@ -5,7 +5,7 @@ export const ambition = 'Donner aux DSI les moyens d’explorer, de sécuriser e
 export const identity = [
   { figure: '2006', name: 'Depuis', line: 'Né d’un cabinet de conseil IT à Montpellier' },
   { figure: '200+', name: 'Clients', line: 'DSI publiques et privées, de tous secteurs' },
-  { figure: '100 %', name: 'Indépendant', line: 'Un modèle bootstrap, financé par sa croissance' },
+  { figure: '100 %', name: 'Indépendant', line: 'Un modèle bootstrap, financé par sa croissance' },
   { figure: '2', name: 'Métiers', line: 'Éditeur et intégrateur de sa solution' },
 ]
 
@@ -52,7 +52,7 @@ export const hiringSteps = [
   { name: 'Candidature', line: 'Un CV ou un profil LinkedIn, et une lettre qui dit ce qui vous motive.' },
   { name: 'Appel de qualification', line: 'Pour vérifier que vos attentes et les nôtres s’alignent.' },
   { name: 'Entretien individuel', line: 'Avec l’équipe que vous rejoindriez.' },
-  { name: 'Mise en situation', line: 'En option : un exercice et la découverte de l’entreprise.' },
+  { name: 'Mise en situation', line: 'En option : un exercice et la découverte de l’entreprise.' },
   { name: 'Proposition', line: 'Une offre, si tout le monde est d’accord.' },
   { name: 'On-boarding', line: 'Welcome pack et formations internes.' },
 ]

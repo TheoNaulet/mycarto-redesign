@@ -22,7 +22,7 @@ const topicLabel = (id: Topic) => topics.find((t) => t.id === id)?.label
       <template #title>Articles et guides</template>
       <template #lede>Pour piloter votre SI : méthode, réglementation, retours terrain.</template>
       <template #actions>
-        <BaseButton href="#tous" size="l">Parcourir les {{ articles.length }} articles</BaseButton>
+        <BaseButton href="#tous" size="l">Parcourir tous les articles</BaseButton>
       </template>
       <template #aside>
         <img

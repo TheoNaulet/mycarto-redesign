@@ -35,7 +35,7 @@ export const legal: Record<'mentions' | 'rgpd', LegalDoc> = {
             items: [
               { name: 'Société', value: 'AB+ Software, SARL au capital de 142 100 €' },
               { name: 'Siège social', value: '137 rue Claude Balbastre, 34000 Montpellier' },
-              { name: 'RCS', value: 'Montpellier, 488 714 387 00039' },
+              { name: 'SIRET', value: '488 714 387 00039' },
               { name: 'Téléphone', value: '04 67 50 56 11' },
               { name: 'E-mail', value: 'contact@abplussoftware.fr' },
             ],
@@ -57,7 +57,7 @@ export const legal: Record<'mentions' | 'rgpd', LegalDoc> = {
             type: 'p',
             text: 'Selon la loi « Informatique et Libertés » du 6 janvier 1978 modifiée, vous disposez d’un droit d’opposition, d’accès, de rectification et de suppression des données vous concernant.',
           },
-          { type: 'p', text: 'Pour l’exercer, écrivez à AB+ Software, 137 rue Claude Balbastre à Montpellier, ou à contact@abplussoftware.fr.' },
+          { type: 'p', text: 'Pour exercer ces droits, écrivez à AB+ Software, 137 rue Claude Balbastre à Montpellier, ou à contact@abplussoftware.fr.' },
         ],
       },
       {
@@ -93,7 +93,7 @@ export const legal: Record<'mentions' | 'rgpd', LegalDoc> = {
           {
             type: 'facts',
             items: [
-              { name: 'Responsable', value: 'myCarto, AB+ Software, 137 rue Claude Balbastre, 34700 Montpellier' },
+              { name: 'Responsable', value: 'myCarto, AB+ Software, 137 rue Claude Balbastre, 34000 Montpellier' },
               { name: 'Contact RGPD', value: 'contact@abplussoftware.fr' },
             ],
           },

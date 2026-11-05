@@ -134,8 +134,8 @@ const dashIcons = [
           <div class="diagram__scroll">
             <svg viewBox="0 0 1000 390" role="img" aria-labelledby="bpmn-desc">
               <desc id="bpmn-desc">
-                Exemple de processus Commande client sur trois couloirs. Métier : recevoir la commande, puis selon que le
-                client est connu ou nouveau. Application : créer la fiche dans le CRM, puis facturer dans l’ERP.
+                Exemple de processus Commande client sur trois couloirs. Métier : recevoir la commande, puis l’orienter selon que
+                le client est connu ou nouveau. Application : créer la fiche dans le CRM, puis facturer dans l’ERP.
                 Infrastructure : le CRM tourne sur le Cloud EU, l’ERP sur le serveur srv-app-01.
               </desc>
               <defs>

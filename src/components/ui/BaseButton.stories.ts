@@ -34,7 +34,7 @@ export const Contour: Story = { args: { variant: 'ghost', to: '/contact' } }
 
 export const Navy: Story = {
   args: { variant: 'navy' },
-  parameters: { ground: 'cool', docs: { description: { story: 'Sur une carte grise ou jaune, où le jaune disparaîtrait.' } } },
+  parameters: { ground: 'cool', docs: { description: { story: 'Sur un fond jaune, où le bouton jaune se fondrait.' } } },
 }
 
 /** Le couple d’actions sur chacun des quatre fonds. Sur le jaune, l’action principale passe en navy. */

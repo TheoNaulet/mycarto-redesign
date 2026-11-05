@@ -68,8 +68,8 @@ export const architect = {
   ] satisfies Theme[],
   quote: {
     figure: '+40\u00a0k€',
-    figureLine: 'd’économie sur les abonnements cloud',
-    text: 'En alignant les niveaux de service de notre infrastructure avec la criticité des applications, nous réalisons +40\u00a0k€ d’économie sur nos abonnements clouds.',
+    figureLine: 'd’économies sur les abonnements cloud',
+    text: 'En alignant les niveaux de service de notre infrastructure avec la criticité des applications, nous réalisons +40\u00a0k€ d’économies sur nos abonnements cloud.',
     name: 'Philippe Chiarbonello',
     role: 'Head of Urbanization & Enterprise Architecture',
   },

@@ -22,7 +22,7 @@ export interface Article {
 export const articles: Article[] = [
   {
     slug: 'dette-technique',
-    title: 'Dette technique : la piloter grâce à la cartographie du SI',
+    title: 'Dette technique : la piloter grâce à la cartographie du SI',
     excerpt: 'La visualiser, la prioriser, la réduire.',
     topic: 'urba',
     date: '2026-08-25',
@@ -31,7 +31,7 @@ export const articles: Article[] = [
   },
   {
     slug: 'mapping-it',
-    title: 'Mapping IT : définition et lien avec la cartographie SI',
+    title: 'Mapping IT : définition et lien avec la cartographie SI',
     excerpt: 'Deux termes, une même démarche.',
     topic: 'urba',
     date: '2026-07-23',
@@ -40,7 +40,7 @@ export const articles: Article[] = [
   },
   {
     slug: 'pos',
-    title: 'Plan d’Occupation des Sols (POS) : urbanisation du SI',
+    title: 'Plan d’Occupation des Sols (POS) : urbanisation du SI',
     excerpt: 'Définition, méthode de construction et exemples.',
     topic: 'urba',
     date: '2026-07-16',
@@ -49,7 +49,7 @@ export const articles: Article[] = [
   },
   {
     slug: 'applicative',
-    title: 'Cartographie applicative : méthode et exemples',
+    title: 'Cartographie applicative : méthode et exemples',
     excerpt: 'Une méthode en 6 étapes et un exemple concret.',
     topic: 'urba',
     date: '2026-03-20',
@@ -58,7 +58,7 @@ export const articles: Article[] = [
   },
   {
     slug: 'anssi',
-    title: 'Cartographie ANSSI : sécurisez votre SI efficacement',
+    title: 'Cartographie ANSSI : sécurisez votre SI efficacement',
     excerpt: 'Les recommandations de l’ANSSI, appliquées.',
     topic: 'cyber',
     date: '2026-02-04',
@@ -67,7 +67,7 @@ export const articles: Article[] = [
   },
   {
     slug: 'risques',
-    title: 'Cartographie des risques IT : définition, enjeux et outils',
+    title: 'Cartographie des risques IT : définition, enjeux et outils',
     excerpt: 'Anticiper les menaces avec une analyse claire.',
     topic: 'cyber',
     date: '2026-02-02',
@@ -76,7 +76,7 @@ export const articles: Article[] = [
   },
   {
     slug: 'nis2',
-    title: 'NIS2 : garantir sa conformité avec la cartographie du SI',
+    title: 'NIS2 : garantir sa conformité avec la cartographie du SI',
     excerpt: 'Pourquoi la cartographie du SI est clé pour la conformité NIS2.',
     topic: 'cyber',
     date: '2025-12-02',
@@ -85,8 +85,8 @@ export const articles: Article[] = [
   },
   {
     slug: 'processus',
-    title: 'Cartographie des processus : définition, exemples et guide',
-    excerpt: 'Du BPMN au SI : qui fait quoi, quand et avec quoi.',
+    title: 'Cartographie des processus : définition, exemples et guide',
+    excerpt: 'Du BPMN au SI : qui fait quoi, quand et avec quoi.',
     topic: 'urba',
     date: '2025-10-22',
     minutes: 5,
@@ -94,7 +94,7 @@ export const articles: Article[] = [
   },
   {
     slug: 'architecture-cyber',
-    title: 'Cartographie et architecture : le socle de la cybersécurité',
+    title: 'Cartographie et architecture : le socle de la cybersécurité',
     excerpt: 'Connaître son SI pour mieux le défendre.',
     topic: 'cyber',
     date: '2025-07-25',
@@ -112,7 +112,7 @@ export const articles: Article[] = [
   },
   {
     slug: 'rgpd',
-    title: 'Cartographie du SI et RGPD : de l’inventaire à l’audit',
+    title: 'Cartographie du SI et RGPD : de l’inventaire à l’audit',
     excerpt: 'Les traitements de données, reliés au SI réel.',
     topic: 'cyber',
     date: '2024-07-31',
@@ -121,7 +121,7 @@ export const articles: Article[] = [
   },
   {
     slug: 'complexite',
-    title: 'Complexité de l’infrastructure IT : réduire et simplifier votre SI',
+    title: 'Complexité de l’infrastructure IT : réduire et simplifier votre SI',
     excerpt: 'Moins de complexité, plus d’efficacité.',
     topic: 'urba',
     date: '2024-07-31',
@@ -130,7 +130,7 @@ export const articles: Article[] = [
   },
   {
     slug: 'strasbourg',
-    title: 'Strasbourg : cartographie du SI et PPM pour la gouvernance',
+    title: 'Strasbourg : cartographie du SI et PPM pour la gouvernance',
     excerpt: 'L’Eurométropole relie cartographie et portefeuille de projets.',
     topic: 'terrain',
     date: '2024-03-20',

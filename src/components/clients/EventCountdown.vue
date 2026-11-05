@@ -13,19 +13,21 @@ onMounted(() => {
 
 onBeforeUnmount(() => window.clearInterval(timer))
 
+const plural = (n: number, word: string) => (n > 1 ? `${word}s` : word)
+
 const parts = computed(() => {
   const left = Math.max(0, Date.parse(props.to) - now.value)
   const s = Math.floor(left / 1000)
   return [
-    { value: Math.floor(s / 86400), label: 'jours' },
-    { value: Math.floor((s % 86400) / 3600), label: 'heures' },
-    { value: Math.floor((s % 3600) / 60), label: 'minutes' },
-    { value: s % 60, label: 'secondes' },
+    { value: Math.floor(s / 86400), label: plural(Math.floor(s / 86400), 'jour') },
+    { value: Math.floor((s % 86400) / 3600), label: plural(Math.floor((s % 86400) / 3600), 'heure') },
+    { value: Math.floor((s % 3600) / 60), label: plural(Math.floor((s % 3600) / 60), 'minute') },
+    { value: s % 60, label: plural(s % 60, 'seconde') },
   ]
 })
 
 /** Read once, not every second: screen readers get the day count only. */
-const spoken = computed(() => `Dans ${parts.value[0].value} jours et ${parts.value[1].value} heures`)
+const spoken = computed(() => `Dans ${parts.value[0].value} ${parts.value[0].label} et ${parts.value[1].value} ${parts.value[1].label}`)
 </script>
 
 <template>

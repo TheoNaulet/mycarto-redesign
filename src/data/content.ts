@@ -109,10 +109,10 @@ export const voices = [
   {
     id: 'delaux',
     name: 'Thomas Delaux',
-    role: 'Architecte d’Entreprise',
+    role: 'Architecte SI',
     org: 'Actia', logo: 'actia',
     quote:
-      'A la différence de la vision statique de notre CMDB, avec myCarto nous avons une vision dynamique des liens entre les couches du SI.',
+      'À la différence de la vision statique de notre CMDB, avec myCarto nous avons une vision dynamique des liens entre les couches du SI.',
   },
   {
     id: 'verschelde',
@@ -138,7 +138,7 @@ export const voices = [
   },
   {
     id: 'delysse',
-    name: 'Stéphane Delysse Hofman',
+    name: 'Stéphane Delysse-Hofman',
     role: 'DSI',
     org: 'Andra', logo: 'andra',
     quote: 'L’arrivée de myCarto marque un gap technologique qui est vraiment notable.',

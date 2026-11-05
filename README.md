@@ -25,7 +25,7 @@ pnpm build-storybook   # Storybook statique dans storybook-static/
 pnpm lint:css          # Stylelint : paliers nommés, aucun !important
 ```
 
-Node 22 ou plus récent (24 sur Vercel). Le site est une SPA : en production, toutes les routes renvoient `index.html`, sauf `/storybook/`, construit dans le même déploiement (`vercel.json`).
+Node 24. Le site est une SPA : en production, toutes les routes renvoient `index.html`, sauf `/storybook/`, construit dans le même déploiement (`vercel.json`).
 
 ## Les pages
 
@@ -91,7 +91,7 @@ scripts/                        extraction du contenu depuis my-carto.com
 - **Des composants partagés plutôt que du copier-coller.** `BaseButton` est le seul bouton du site, `BaseBadge` la seule pastille, `PageHero` ouvre chaque page intérieure, et `KeyList` décline la liste encadrée de la home pour les menus, les en-têtes et les listes de services.
 - **Des illustrations dessinées en SVG** dans le style à plat de la marque (couches du SI, schéma d’interopérabilité, diagramme BPMN, graphique des tarifs, route de la méthode). Elles ne simulent pas de fausses captures du produit.
 - **Les animations ne gênent personne.** Elles passent par des animations CSS qui n’écrasent pas les transitions des composants, et rien n’est masqué si JavaScript manque. Avec « réduire les animations », tout s’affiche directement.
-- **Accessibilité.** Menus au clavier (Échap, clic à l’extérieur), onglets avec les flèches, focus visible sur chaque fond, sauts de lien, contrastes de la charte respectés, textes alternatifs.
+- **Accessibilité.** Menus au clavier et à la souris (Échap, clic à l’extérieur), onglets avec les flèches, focus visible sur chaque fond, liens d’évitement, contrastes de la charte respectés, textes alternatifs.
 
 ## D’où vient le contenu
 

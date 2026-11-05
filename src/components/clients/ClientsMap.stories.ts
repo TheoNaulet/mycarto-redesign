@@ -9,7 +9,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'AB+ Software à Montpellier et quelques clients en France, en carte à plat. Le tracé et les villes sont de vraies coordonnées projetées, rien n’est placé à l’œil. À l’arrivée, Montpellier se pose, puis chaque flux se trace et sa ville apparaît. Seuls les clients dont la ville se lit dans le nom sont placés.',
+          'AB+ Software à Montpellier et quelques clients en France, en carte à plat. Le tracé et les villes sont de vraies coordonnées projetées, rien n’est placé à l’œil. À l’arrivée, Montpellier se pose, puis chaque flux se trace et sa ville apparaît. Chaque client est placé à la ville de son siège.',
       },
     },
   },

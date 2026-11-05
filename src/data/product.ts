@@ -17,7 +17,7 @@ export const whyMap = [
   },
   {
     name: 'Sécuriser les transformations',
-    line: 'Cloud, rationalisation, fusion : anticiper chaque impact.',
+    line: 'Cloud, rationalisation, fusion : anticiper chaque impact.',
   },
   {
     name: 'Partager une vision commune',
@@ -47,7 +47,7 @@ export const starterKit = [
 export const productFeatures = [
   {
     id: 'meta-modele',
-    name: 'Méta-modèle 100 % évolutif',
+    name: 'Méta-modèle 100 % évolutif',
     line: 'Application, flux, donnée, POS… Compatible TOGAF, Zachman et ArchiMate.',
   },
   {
@@ -74,34 +74,34 @@ export const productFeatures = [
 
 export const productFaq = [
   {
-    q: 'Comment est calculé le tarif ?',
-    a: 'Au nombre d’utilisateurs, selon trois profils : administrateur, contributeur, visualisateur. Trois formules : Starter, Advanced, Premium.',
+    q: 'Comment est calculé le tarif ?',
+    a: 'Au nombre d’utilisateurs, selon trois profils : administrateur, contributeur, visualisateur. Trois formules : Starter, Advanced, Premium.',
     link: { to: '/tarifs', label: 'Voir les tarifs' },
   },
   {
-    q: 'Combien de temps pour démarrer ?',
-    a: 'Installation, reprise de vos données et formation des administrateurs : une plateforme opérationnelle en moins de 4 semaines.',
+    q: 'Combien de temps pour démarrer ?',
+    a: 'Installation, reprise de vos données et formation des administrateurs : une plateforme opérationnelle en moins de 4 semaines.',
     link: { to: '/integration', label: 'Voir la méthode' },
   },
   {
-    q: 'SaaS ou On Premise ?',
+    q: 'SaaS ou On Premise ?',
     a: 'Les deux. Le SaaS est hébergé en Union européenne, certifié PAS et HDS. L’On Premise s’installe chez vous selon nos préconisations.',
   },
   {
-    q: 'Compatible TOGAF, Zachman ou ArchiMate ?',
+    q: 'Compatible TOGAF, Zachman ou ArchiMate ?',
     a: 'Oui. Les méta-modèles fournis s’appuient sur ces trois standards, et vous les ajustez à votre stratégie.',
   },
   {
-    q: 'Et pour la sécurité du SI ?',
+    q: 'Et pour la sécurité du SI ?',
     a: 'myCarto fait partie des dispositifs exigés par l’ANSSI pour les OIV, et porte la cartographie des risques et vos PRA / PCA.',
   },
   {
-    q: 'Puis-je importer mes données ?',
-    a: 'Oui : Excel (xlsx), CSV et BPMN.',
+    q: 'Puis-je importer mes données ?',
+    a: 'Oui : Excel (xlsx), CSV et BPMN.',
   },
   {
-    q: 'Quelle différence avec Solu-QIQ ?',
-    a: 'myCarto est sa nouvelle version : une refonte complète, un nouveau méta-modèle et un nouveau moteur graphique.',
+    q: 'Quelle différence avec Solu-QIQ ?',
+    a: 'myCarto est sa nouvelle version : une refonte complète, un nouveau méta-modèle et un nouveau moteur graphique.',
     link: { to: '/solu-qiq', label: 'Ce qui change' },
   },
 ]
@@ -124,7 +124,7 @@ export const smart = [
 ]
 
 export const projectSteps = [
-  { name: 'Environnements', line: 'Instances SaaS activées ou installation chez vous : production, qualification, formation.' },
+  { name: 'Environnements', line: 'Instances SaaS activées ou installation chez vous : production, qualification, formation.' },
   { name: 'Paramétrage itératif', line: 'Ateliers méta-modèle, reprise des données, cartes, tableaux de bord, droits, API en option.' },
   { name: 'Recette', line: 'Homologation de la plateforme.' },
   { name: 'Transfert de compétences', line: 'Formation des administrateurs.' },
@@ -157,7 +157,7 @@ export const plans: Plan[] = [
     id: 'starter',
     name: 'Starter',
     forWhom: 'Les DSI de moins de 15 personnes, ou qui se lancent dans l’urbanisation.',
-    intro: 'Les fonctions essentielles :',
+    intro: 'Les fonctions essentielles :',
     points: [
       'Couches métier, fonctionnelle, applicative, technique et data',
       'Modélisation RGPD',
@@ -172,7 +172,7 @@ export const plans: Plan[] = [
     id: 'advanced',
     name: 'Advanced',
     forWhom: 'Les DSI jusqu’à 100 personnes, pour renforcer la maîtrise du SI.',
-    intro: 'Tout Starter, plus :',
+    intro: 'Tout Starter, plus :',
     points: [
       'Méta-modèle personnalisable sans limite',
       'Couche stratégique',
@@ -186,7 +186,7 @@ export const plans: Plan[] = [
     id: 'premium',
     name: 'Premium',
     forWhom: 'Les DSI de plus de 100 personnes, avec une modélisation métier.',
-    intro: 'Tout Advanced, sans option :',
+    intro: 'Tout Advanced, sans option :',
     points: [
       'Modélisation de processus BPMN',
       'Interfaces par API REST',
@@ -203,7 +203,7 @@ export const pricingPrinciple = [
   {
     icon: 'metier',
     name: 'Licences flottantes',
-    line: 'Trois profils : consultation, mise à jour, administration.',
+    line: 'Trois profils : consultation, mise à jour, administration.',
   },
   {
     icon: 'fonctionnalites',
@@ -254,6 +254,6 @@ export const soluQiqChanges = [
   { name: 'Propagation instantanée', line: 'Le moteur graphique recalcule toutes les cartes en temps réel.' },
   { name: 'Plus de données', line: 'De nouveaux algorithmes pour de grands volumes, dans de nombreuses cartes.' },
   { name: 'Une interface à votre image', line: 'Entièrement personnalisable, elle s’intègre à votre organisation.' },
-  { name: 'Administration full web', line: 'Administrer, contribuer, consulter : tout dans le navigateur, sans code.' },
+  { name: 'Administration full web', line: 'Administrer, contribuer, consulter : tout dans le navigateur, sans code.' },
   { name: 'Bibliothèque de tableaux de bord', line: 'Les chiffres clés du SI, et la liberté d’en ajouter.' },
 ]

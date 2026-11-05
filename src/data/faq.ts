@@ -171,7 +171,7 @@ export const faq: FaqTheme[] = [
         q: 'Quelles sont les différences entre les offres Starter, Advanced et Premium ?',
         a: 'Chaque formule reprend la précédente :',
         list: [
-          'Starter : les fonctionnalités essentielles, toutes les couches du SI, en SaaS uniquement',
+          'Starter : les fonctionnalités essentielles, les couches métier à technique, en SaaS uniquement',
           'Advanced : méta-modèle libre, environnement de test, On Premise, hors ligne, couche stratégique',
           'Premium : BPMN, API REST, planification de tâches, groupes propriétaires, recette dédiée',
         ],

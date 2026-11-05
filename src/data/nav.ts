@@ -29,7 +29,7 @@ export const navGroups: NavGroup[] = [
   },
   {
     id: 'pour-qui',
-    label: 'Pour qui ?',
+    label: 'Pour qui ?',
     items: [
       { label: 'Votre métier', line: 'DSI, architecte, RSSI, DPO…', to: '/metiers', icon: 'metier' },
       { label: 'Votre secteur', line: 'Santé, industrie, BTP, public…', to: '/secteurs', icon: 'secteur' },

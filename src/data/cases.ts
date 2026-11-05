@@ -87,7 +87,7 @@ export const caseStudies: CaseStudy[] = [
       role: 'Urbaniste SI du CHU de Lille',
     },
     second: {
-      text: 'Pour gérer du risque, il faut être en connaissance du risque. Et pour ça, il faut une cartographie de son Système d’Informations. Un RSSI sans cartographie travaille à vue.',
+      text: 'Pour gérer du risque, il faut être en connaissance du risque. Et pour ça, il faut une cartographie de son système d’information. Un RSSI sans cartographie travaille à vue.',
       name: 'Thomas Aubin',
       role: 'RSSI du CHU de Lille et du GHT',
     },
@@ -135,7 +135,7 @@ export const caseStudies: CaseStudy[] = [
     results: [
       'Un objet complet et sa vingtaine de flux cartographiés en moins d’une heure',
       'Deux outils consolidés en un, pour un budget réduit',
-      'L’autonomie complète sur le métamodèle',
+      'L’autonomie complète sur le méta-modèle',
       'Une « Bible IT » partagée par toute l’entreprise',
     ],
     quote: {
@@ -200,7 +200,7 @@ export const caseStudies: CaseStudy[] = [
       role: 'DSI de l’Andra',
     },
     second: {
-      text: 'C’est vraiment le côté simple, il y a pas besoin d’être formé pendant 3 semaines pour commencer à utiliser myCarto.',
+      text: 'C’est vraiment le côté simple, il n’y a pas besoin d’être formé pendant 3 semaines pour commencer à utiliser myCarto.',
       name: 'Arnaud Marchesi',
       role: 'Architecte d’entreprise, Andra',
     },
@@ -246,7 +246,7 @@ export const caseStudies: CaseStudy[] = [
     },
     results: [
       'Des scénarios as-is / to-be montrés en quelques filtres',
-      'La refonte finance de l’ERP préparée sur la carte',
+      'La refonte de l’ERP Finance préparée sur la carte',
       'La dette technique visible par direction',
       'Un point d’entrée unique, sans PowerPoint ni Visio',
     ],
@@ -351,12 +351,12 @@ export const caseStudies: CaseStudy[] = [
       'Une documentation à jour pour les certifications ISO',
     ],
     quote: {
-      text: 'Nous avons réduit de 30 % notre parc de machines virtuelles. Cela génère des économies substantielles en licences et maintenance et aligné avec notre démarche RSE.',
+      text: 'Nous avons réduit de 30 % notre parc de machines virtuelles. Cela génère des économies substantielles en licences et en maintenance, et s’inscrit dans notre démarche RSE.',
       name: 'Thomas Delaux',
       role: 'Architecte SI, ACTIA Automotive',
     },
     second: {
-      text: 'A la différence de la vision statique de notre CMDB, avec myCarto nous avons une vision dynamique et les liens entre les couches du SI.',
+      text: 'À la différence de la vision statique de notre CMDB, avec myCarto nous avons une vision dynamique des liens entre les couches du SI.',
       name: 'Thomas Delaux',
       role: 'Architecte SI, ACTIA Automotive',
     },
@@ -515,7 +515,7 @@ export const caseStudies: CaseStudy[] = [
     quote: {
       text: 'Ce que l’on a trouvé très fort, c’est le nouveau cœur : le moteur graphique dynamique de myCarto. Il nous permet de générer en temps réel les cartes et d’avoir une excellente exploitation des données.',
       name: 'Jean-Marc Roussel',
-      role: 'Enseignant chercheur, référent cartographie de l’ENS Paris-Saclay',
+      role: 'Enseignant-chercheur, référent cartographie de l’ENS Paris-Saclay',
     },
     second: {
       text: 'La documentation dans des fichiers bureautiques n’est pas viable. Pour y voir clair, il est impératif de mettre en place une cartographie du SI globale et centralisée !',

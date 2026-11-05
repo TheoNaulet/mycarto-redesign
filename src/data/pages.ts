@@ -28,7 +28,7 @@ export const featureDetails = [
       'Plus de 50 modèles de cartes',
       'Un atlas de gouvernance illimité',
       'Affichage conditionnel, droits, vues datées',
-      'Neuf structures : hiérarchique, organique, circulaire…',
+      'Neuf structures : hiérarchique, organique, circulaire…',
     ],
     usecase: 'Avant un projet, le POS du domaine révèle une application obsolète à mutualiser.',
   },
@@ -66,7 +66,7 @@ export const featureDetails = [
     points: [
       'Designer natif compatible BPMN 2',
       'Le référentiel applicatif accessible depuis le designer',
-      'Simulation d’impact : arrêt serveur, coupure de flux…',
+      'Simulation d’impact : arrêt serveur, coupure de flux…',
       'Import de modèles BPMN 2',
     ],
     usecase: 'Le lieu de rencontre entre MOA, AMOA et MOE.',
