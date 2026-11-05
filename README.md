@@ -2,8 +2,8 @@
 
 Une refonte complète du site [my-carto.com](https://my-carto.com/), le logiciel de cartographie du SI d’AB+ Software, réalisée en Vue 3 par Théo Naulet pour une candidature au poste de développeur front UI/UX à Montpellier.
 
-- **Le site :** https://mycarto-redesign.vercel.app
-- **Le système de design (Storybook) :** https://mycarto-redesign.vercel.app/storybook/
+- **Le site :** https://mycarto-concept.studio-pixel.co
+- **Le système de design (Storybook) :** https://mycarto-concept.studio-pixel.co/storybook/
 
 **Ce n’est pas le site officiel.** La marque myCarto, son logo, ses visuels, ses textes et les logos clients appartiennent à leurs propriétaires. Les formulaires n’envoient rien, et la maquette ne dépose aucun cookie.
 
