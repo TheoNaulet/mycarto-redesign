@@ -6,3 +6,5 @@ _archive
 storybook-static
 *.log
 .vercel
+storybook-atlas-static
+dist-atlas

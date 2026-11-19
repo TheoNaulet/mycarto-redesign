@@ -1,0 +1,48 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Introduction" />
+
+# myCarto Atlas
+
+La bibliothèque de composants de l'application myCarto : le visualiseur de cartes et l'espace d'administration. Chaque composant est codé en **Vue 3 + TypeScript**, avec tous ses états (repos, survol, focus, sélection, chargement, erreur, vide, désactivé) et en **clair comme en sombre** (bouton *Thème* de la barre d'outils).
+
+## Utiliser un composant
+
+```ts
+// main.ts : une seule fois
+import '@/packages/atlas/src/styles/atlas.css'
+```
+
+```vue
+<script setup lang="ts">
+import McButton from '…/atlas/src/components/McButton/McButton.vue'
+</script>
+
+<template>
+  <McButton variant="primary" icon="pencil">Modifier la carte</McButton>
+</template>
+```
+
+Dans chaque story, l'onglet **Code** (sous l'aperçu) donne le code exact à copier, et l'onglet **Controls** permet d'essayer chaque propriété.
+
+## Sans Vue
+
+Les styles sont du CSS pur, en classes `.mc-*`, qui ne lisent que des variables (`--surface`, `--accent`…). Une équipe en Angular ou en React peut reprendre `styles/atlas.css` et le HTML rendu par une story (inspecteur du navigateur) sans rien réécrire.
+
+## Les trois règles du système
+
+1. **La couleur de couche dit ce qu'est un objet ; l'état dit comment il va.** Jamais l'un à la place de l'autre. Les états sont toujours une icône et un mot.
+2. **Le jaune myCarto, c'est l'action et ce qui est actif** : un seul bouton jaune par vue, l'outil sélectionné, la lentille allumée.
+3. **On voit où l'on est** : fil d'Ariane des cartes, recherche ⌘K, inspecteur qui s'ouvre sans quitter la carte.
+
+## Où sont les choses
+
+| Dossier | Contenu |
+|---|---|
+| `tokens/` | `tokens.json` (source) et `tokens.css` (variables CSS, thèmes clair et sombre) |
+| `styles/` | `atlas.css` (point d'entrée), `components.css` (classes `.mc-*`), `states.css` (états ajoutés) |
+| `icons/` | `McIcon.vue` et la liste des pictogrammes |
+| `components/` | un dossier par composant : le `.vue` et ses stories |
+| `utils/` | types partagés (couches, états) et calcul des liens de carte |
+
+Maquettes de référence : canevas « myCarto Écrans clés ». Règles détaillées : design system « myCarto Atlas ».

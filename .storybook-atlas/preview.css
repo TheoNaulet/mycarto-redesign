@@ -1,0 +1,7 @@
+.sb-atlas { min-height: 100vh; color: var(--ink); font-family: var(--font-sans); font-size: 14px; line-height: 20px; }
+.sb-atlas--surface { background: var(--surface); }
+.sb-atlas--canvas { background-color: var(--canvas); background-image: radial-gradient(var(--canvas-dot) 1px, transparent 1.2px); background-size: var(--space-5) var(--space-5); }
+.sb-atlas--padded { padding: 32px 24px; box-sizing: border-box; }
+.sb-atlas *, .sb-atlas *::before, .sb-atlas *::after { box-sizing: border-box; }
+.sb-atlas .mc-node, .sb-atlas .mc-insp, .sb-atlas .mc-minimap, .sb-atlas .mc-legend { box-sizing: border-box; }
+html, body, #storybook-root { height: 100%; }

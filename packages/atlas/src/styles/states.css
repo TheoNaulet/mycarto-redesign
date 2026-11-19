@@ -1,0 +1,35 @@
+/*
+ * États transverses ajoutés pour la bibliothèque codée : pression, chargement, erreur, champ vide.
+ * Ils complètent components.css sans en changer les valeurs.
+ */
+
+/* Pression : un léger enfoncement, comme un bouton physique. */
+.mc-btn:active:not([disabled]), .mc-ibtn:active:not([disabled]) { transform: translateY(1px); }
+.mc-btn, .mc-ibtn { transition: background-color var(--dur-fast), border-color var(--dur-fast), color var(--dur-fast), transform 80ms; }
+
+/* Bouton en chargement : le libellé reste pour garder la largeur, la roue prend la place de l'icône. */
+.mc-btn.is-loading { cursor: progress; }
+.mc-btn .mc-spin { width: 14px; height: 14px; border-width: 2px; }
+.mc-btn.primary .mc-spin { border-color: color-mix(in srgb, var(--on-yellow) 25%, transparent); border-top-color: var(--on-yellow); }
+.mc-btn.secondary .mc-spin { border-color: color-mix(in srgb, var(--on-navy) 30%, transparent); border-top-color: var(--on-navy); }
+
+/* Boutons et champs : vrais éléments, réinitialisés. */
+button.mc-btn, button.mc-ibtn, a.mc-btn { font-family: var(--font-sans); text-decoration: none; }
+.mc-input input { min-width: 0; }
+.mc-input:focus-within:not(.is-error):not(.is-disabled) { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.mc-input.search:focus-within { background: var(--surface); border-color: var(--accent); }
+
+/* Nœud en chargement (données qui arrivent) et en erreur (objet introuvable). */
+.mc-node.is-loading .tile, .mc-node.is-loading .tx b, .mc-node.is-loading .tx span { color: transparent; background: linear-gradient(90deg, var(--surface-sunken) 0%, var(--line) 50%, var(--surface-sunken) 100%); background-size: 200% 100%; animation: mc-sh 1.4s linear infinite; border-radius: 4px; }
+.mc-node.is-loading .tx b { width: 70%; } .mc-node.is-loading .tx span { width: 45%; margin-top: 2px; }
+.mc-node.is-error { border-color: var(--status-critical); border-style: dashed; background: var(--status-critical-soft); }
+.mc-node.is-error .tile { background: var(--surface); color: var(--status-critical); }
+
+/* Bloc d'erreur générique (tableau, panneau, carte). */
+.mc-error { display: grid; justify-items: center; gap: 8px; padding: var(--space-6) var(--space-5); text-align: center; }
+.mc-error .art { width: 56px; height: 56px; border-radius: 16px; background: var(--status-critical-soft); color: var(--status-critical); display: inline-flex; align-items: center; justify-content: center; }
+.mc-error b { font: 600 15px/20px var(--font-display); color: var(--ink); }
+.mc-error p { margin: 0; max-width: 360px; font-size: 13px; line-height: 18px; color: var(--ink-muted); }
+
+/* Masqué visuellement, lu par les lecteurs d'écran. */
+.mc-sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }

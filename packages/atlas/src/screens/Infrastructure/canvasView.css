@@ -1,0 +1,23 @@
+/* Écrans de carte plein écran (classe `mc-scr-map`) : les panneaux flottants selon la largeur de la fenêtre.
+ * Rien ne change au-dessus de 1280 px ; en dessous, rien ne se chevauche ni ne cache la carte.
+ * Les variables --map-right et --map-bl sont posées par useCanvasView (place des panneaux de droite et de la vue d'ensemble). */
+
+@media (max-width: 1280px), (max-height: 760px) {
+  /* Barre du haut : la recherche et « Exporter » se réduisent à leur pictogramme, le fil garde la place. */
+  .mc-scr-map .mc-appbar .mc-cmdk { width: 32px; padding: 0; justify-content: center; }
+  .mc-scr-map .mc-appbar .mc-cmdk .grow,
+  .mc-scr-map .mc-appbar .mc-cmdk .mc-kbd,
+  .mc-scr-map .mc-scr-map-lbl { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .mc-scr-map .mc-appbar .mc-btn.mc-scr-map-ico { width: var(--control-md); padding: 0; }
+  .mc-scr-map .mc-appbar .mc-trail { flex-wrap: nowrap; }
+}
+
+@media (max-width: 1280px) {
+  /* La barre d'outils se centre dans la zone libre, entre la vue d'ensemble et les panneaux de droite. */
+  .mc-scr-map .mc-canvas-bottom { left: calc(16px + var(--map-bl, 0px)); right: var(--map-right, 16px); transform: none; display: flex; justify-content: center; }
+}
+
+/* Écran étroit ou bas : la vue d'ensemble se masque, la carte et la barre d'outils gardent la place. */
+@media (max-width: 1199px), (max-height: 760px) {
+  .mc-scr-map .mc-canvas-bl { display: none; }
+}

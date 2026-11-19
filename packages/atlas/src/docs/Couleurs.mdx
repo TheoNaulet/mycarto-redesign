@@ -1,0 +1,23 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import TokenSwatches from './blocks/TokenSwatches.vue'
+
+<Meta title="Fondations/Couleurs" />
+
+# Couleurs
+
+Chaque jeton existe en clair (à gauche) et en sombre (à droite). Les composants n'utilisent **que** ces variables : changer une valeur dans `tokens.css` change toute l'application.
+
+## Marque et action
+<TokenSwatches prefixes={['navy', 'yellow', 'on-', 'accent', 'focus']} />
+
+## Fonds, textes, traits
+<TokenSwatches prefixes={['canvas', 'surface', 'line', 'ink', 'edge']} />
+
+## Couches : le type d'un objet, jamais un état
+<TokenSwatches prefixes={['layer-']} />
+
+## États : toujours avec une icône et un mot
+<TokenSwatches prefixes={['status-']} />
+
+## Criticité DICP, données, post-its
+<TokenSwatches prefixes={['crit-', 'data-', 'sticky-']} />

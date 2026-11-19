@@ -1,0 +1,18 @@
+{
+  "extends": "@vue/tsconfig/tsconfig.dom.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.atlas.tsbuildinfo",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "types": [
+      "vite/client"
+    ]
+  },
+  "include": [
+    "packages/atlas/src/**/*.ts",
+    "packages/atlas/src/**/*.vue",
+    "packages/atlas/app/**/*.ts",
+    "packages/atlas/app/**/*.vue"
+  ]
+}
