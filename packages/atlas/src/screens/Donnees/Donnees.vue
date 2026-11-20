@@ -162,9 +162,9 @@ async function shareInspected() {
 }
 
 /* ---------- Barre du haut ---------- */
-const trail: TrailStep[] = [{ label: 'Accueil' }, { label: 'Couche fonctionnelle', layer: 'fonctionnel' }, { label: 'Données' }]
+const trail: TrailStep[] = [{ label: 'Accueil' }, { label: 'Données' }]
 function onTrail(_s: TrailStep, i: number) {
-  if (i <= 1) goPath('/')
+  if (i === 0) goPath('/')
 }
 function onHome(e: MouseEvent) {
   if (e.metaKey || e.ctrlKey || e.shiftKey) return
@@ -173,6 +173,8 @@ function onHome(e: MouseEvent) {
 }
 const paletteOpen = ref(false)
 const sansFlux = objetsDonnees.filter((d) => !d.flux.length).length
+// Sans sélection, l'inspecteur résume ce que montre la liste.
+const summary = computed<KeyValueItem[]>(() => [{ key: 'Objets de données', value: bySearch.value.length }, ...SENS_KEYS.map((k) => ({ key: SENSIBILITES[k].label, value: counts.value[k] }))])
 </script>
 
 <template>
@@ -184,7 +186,7 @@ const sansFlux = objetsDonnees.filter((d) => !d.flux.length).length
       </template>
     </McAppBar>
 
-    <div class="mc-scr-don-wrap" :class="{ 'has-insp': inspected }">
+    <div class="mc-scr-don-wrap">
       <main class="mc-scr-don-main">
         <header class="mc-scr-don-head">
           <div class="mc-scr-don-titles">
@@ -247,22 +249,26 @@ const sansFlux = objetsDonnees.filter((d) => !d.flux.length).length
       </main>
 
       <McInspector
-        v-if="inspected"
-        :key="inspected.id"
-        class="mc-scr-don-insp"
-        :object="{ name: inspected.name, type: 'Donnée', layer: 'fonctionnel', icon: 'database', description: inspected.description }"
+        :key="inspected?.id ?? 'resume'"
+        class="mc-insp-dock mc-scr-don-insp"
+        :object="inspected ? { name: inspected.name, type: 'Donnée', layer: 'fonctionnel', icon: 'database', description: inspected.description } : undefined"
+        empty-title="Sélectionnez une donnée"
+        empty-text="Sa sensibilité, ses traitements et les applications qui la portent s’affichent ici."
         @close="inspectedId = null"
       >
-        <template #statuses>
+        <template #empty><McKeyValueList :items="summary" /></template>
+        <template v-if="inspected" #statuses>
           <McStatusChip :status="SENSIBILITES[inspected.sensibilite].status" size="sm">{{ SENSIBILITES[inspected.sensibilite].label }}</McStatusChip>
         </template>
-        <template #actions>
+        <template v-if="inspected" #actions>
           <McButton size="sm" icon="map" :disabled="!inspected.flux.length" @click="goPath('/carte')">Voir les flux</McButton>
           <McIconButton size="sm" icon="link" label="Copier le lien de la donnée" @click="shareInspected" />
         </template>
-        <McKeyValueList :items="kv" @open="(item, e) => openApp(e, String(item.value))" />
-        <p v-if="inspected.sensibilite === 'sensible'" class="mc-scr-don-warn">{{ SENSIBILITES.sensible.help }}</p>
-        <McRelationList :groups="groups" :visible="6" @open="openRelation" />
+        <template v-if="inspected">
+          <McKeyValueList :items="kv" @open="(item, e) => openApp(e, String(item.value))" />
+          <p v-if="inspected.sensibilite === 'sensible'" class="mc-scr-don-warn">{{ SENSIBILITES.sensible.help }}</p>
+          <McRelationList :groups="groups" :visible="6" @open="openRelation" />
+        </template>
       </McInspector>
     </div>
 
@@ -273,9 +279,8 @@ const sansFlux = objetsDonnees.filter((d) => !d.flux.length).length
 
 <style>
 .mc-scr-don { position: relative; min-height: 100vh; background: var(--canvas); color: var(--ink); font-family: var(--font-sans); box-sizing: border-box; }
-.mc-scr-don-bar { position: sticky; top: 16px; z-index: 20; margin: 16px 16px 0; }
-.mc-scr-don-wrap { max-width: 1280px; margin: 0 auto; padding: 24px 32px 40px; box-sizing: border-box; display: flex; gap: 20px; align-items: flex-start; }
-.mc-scr-don-wrap.has-insp { max-width: 1520px; }
+.mc-scr-don-bar { position: sticky; top: 16px; z-index: 20; margin: 16px var(--page-inset) 0; }
+.mc-scr-don-wrap { max-width: var(--page-w); margin: 0 auto; padding: 24px var(--page-pad) 40px; box-sizing: border-box; display: flex; gap: 20px; align-items: flex-start; }
 .mc-scr-don-main { flex: 1; min-width: 0; display: grid; gap: 16px; }
 .mc-scr-don-head { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
 .mc-scr-don-titles { flex: 1; min-width: 200px; }
@@ -297,13 +302,9 @@ const sansFlux = objetsDonnees.filter((d) => !d.flux.length).length
 .mc-scr-don-note { margin: 0; }
 .mc-scr-don-warn { margin: 0; padding: 8px 10px; border-radius: var(--radius-sm); background: var(--status-critical-soft); font-size: 12px; line-height: 16px; color: var(--ink); }
 .mc-scr-don-insp .body { grid-template-columns: minmax(0, 1fr); }
-.mc-scr-don-insp { position: sticky; top: 92px; flex: none; max-height: calc(100vh - 108px); }
 @media (min-width: 1800px) {
-  .mc-scr-don-wrap, .mc-scr-don-wrap.has-insp { max-width: 1760px; padding-inline: 40px; }
-  .mc-scr-don-bar { width: 1728px; max-width: calc(100% - 32px); margin-inline: auto; box-sizing: border-box; }
 }
 @media (max-width: 1180px) {
-  .mc-scr-don-wrap { padding-inline: 24px; }
   .mc-scr-don-titles { flex-basis: 100%; }
   .mc-scr-don-search, .mc-scr-don-fam { flex: 1 1 220px; width: auto; }
 }

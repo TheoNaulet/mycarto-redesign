@@ -212,9 +212,9 @@ function confirmNew() {
 const newDirty = computed(() => !!String(fName.value ?? '').trim() || !!String(fDesc.value ?? '').trim())
 
 /* ---------- Barre du haut ---------- */
-const trail: TrailStep[] = [{ label: 'Accueil' }, { label: 'Couche applicative', layer: 'applicatif' }, { label: 'Projets' }]
+const trail: TrailStep[] = [{ label: 'Accueil' }, { label: 'Projets' }]
 function onTrail(_s: TrailStep, i: number) {
-  if (i <= 1) goPath('/')
+  if (i === 0) goPath('/')
 }
 function onHome(e: MouseEvent) {
   if (e.metaKey || e.ctrlKey || e.shiftKey) return
@@ -223,6 +223,8 @@ function onHome(e: MouseEvent) {
 }
 const paletteOpen = ref(false)
 const datesOf = (p: Projet) => (p.debut === 'À définir' && p.fin === 'À définir' ? 'Dates à définir' : `${p.debut} → ${p.fin}`)
+// Sans sélection, l'inspecteur résume ce que montre la liste.
+const summary = computed<KeyValueItem[]>(() => [{ key: 'Projets', value: filtered.value.length }, ...columns.value.map((c) => ({ key: ETATS_PROJET[c.etat].label, value: c.items.length })), { key: 'En retard', value: filtered.value.filter(enRetard).length }])
 </script>
 
 <template>
@@ -233,7 +235,7 @@ const datesOf = (p: Projet) => (p.debut === 'À définir' && p.fin === 'À défi
       </template>
     </McAppBar>
 
-    <div class="mc-scr-prj-wrap" :class="{ 'has-insp': inspected }">
+    <div class="mc-scr-prj-wrap">
       <main class="mc-scr-prj-main">
         <header class="mc-scr-prj-head">
           <div class="mc-scr-prj-titles">
@@ -291,22 +293,26 @@ const datesOf = (p: Projet) => (p.debut === 'À définir' && p.fin === 'À défi
       </main>
 
       <McInspector
-        v-if="inspected"
-        :key="inspected.id"
-        class="mc-scr-prj-insp"
-        :object="{ name: inspected.name, type: 'Projet', layer: 'applicatif', icon: 'project', description: inspected.description }"
+        :key="inspected?.id ?? 'resume'"
+        class="mc-insp-dock mc-scr-prj-insp"
+        :object="inspected ? { name: inspected.name, type: 'Projet', layer: 'applicatif', icon: 'project', description: inspected.description } : undefined"
+        empty-title="Sélectionnez un projet"
+        empty-text="Son responsable, ses dates et les applications concernées s’affichent ici."
         @close="inspectedId = null"
       >
-        <template #statuses>
+        <template #empty><McKeyValueList :items="summary" /></template>
+        <template v-if="inspected" #statuses>
           <McStatusChip :status="ETATS_PROJET[inspected.etat].status" size="sm">{{ ETATS_PROJET[inspected.etat].label }}</McStatusChip>
           <McStatusChip v-if="enRetard(inspected)" status="critical" size="sm">En retard</McStatusChip>
         </template>
-        <template #actions>
+        <template v-if="inspected" #actions>
           <McButton v-for="l in inspected.liens" :key="l" size="sm" variant="outline" :icon="LIENS_PROJET[l].icon" @click="goPath(LIENS_PROJET[l].path)">{{ LIENS_PROJET[l].label }}</McButton>
         </template>
-        <McSelect v-model="etatModel" label="État" size="sm" :options="etatOptions" />
-        <McKeyValueList :items="kv" />
-        <McRelationList :groups="groups" :visible="6" @open="openRelation" @add="openAddApp" />
+        <template v-if="inspected">
+          <McSelect v-model="etatModel" label="État" size="sm" :options="etatOptions" />
+          <McKeyValueList :items="kv" />
+          <McRelationList :groups="groups" :visible="6" @open="openRelation" @add="openAddApp" />
+        </template>
       </McInspector>
     </div>
 
@@ -353,9 +359,8 @@ const datesOf = (p: Projet) => (p.debut === 'À définir' && p.fin === 'À défi
 
 <style>
 .mc-scr-prj { position: relative; min-height: 100vh; background: var(--canvas); color: var(--ink); font-family: var(--font-sans); box-sizing: border-box; }
-.mc-scr-prj-bar { position: sticky; top: 16px; z-index: 20; margin: 16px 16px 0; }
-.mc-scr-prj-wrap { max-width: 1400px; margin: 0 auto; padding: 24px 32px 40px; box-sizing: border-box; display: flex; gap: 20px; align-items: flex-start; }
-.mc-scr-prj-wrap.has-insp { max-width: 1600px; }
+.mc-scr-prj-bar { position: sticky; top: 16px; z-index: 20; margin: 16px var(--page-inset) 0; }
+.mc-scr-prj-wrap { max-width: var(--page-w); margin: 0 auto; padding: 24px var(--page-pad) 40px; box-sizing: border-box; display: flex; gap: 20px; align-items: flex-start; }
 .mc-scr-prj-main { flex: 1; min-width: 0; display: grid; gap: 16px; }
 .mc-scr-prj-head { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
 .mc-scr-prj-titles { flex: 1; min-width: 180px; }
@@ -394,18 +399,15 @@ a.mc-scr-prj-app:focus-visible, .mc-scr-prj-more:focus-visible { outline: 2px so
 .mc-scr-prj-who { flex: 1; min-width: 0; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; line-height: 16px; color: var(--ink-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mc-scr-prj-links { display: inline-flex; gap: 2px; }
 .mc-scr-prj-insp .body { grid-template-columns: minmax(0, 1fr); }
-.mc-scr-prj-insp { position: sticky; top: 92px; flex: none; max-height: calc(100vh - 108px); }
 /* Les listes déroulantes du formulaire débordent de la modale au lieu d'être coupées. */
 .mc-scr-prj-form { display: grid; gap: 16px; }
 .mc-scr-prj-dates2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 @media (min-width: 1800px) {
-  .mc-scr-prj-wrap, .mc-scr-prj-wrap.has-insp { max-width: 1760px; padding-inline: 40px; }
-  .mc-scr-prj-bar { width: 1728px; max-width: calc(100% - 32px); margin-inline: auto; box-sizing: border-box; }
 }
 @media (max-width: 1180px) {
-  .mc-scr-prj-wrap { padding-inline: 24px; }
   .mc-scr-prj-titles { flex-basis: 100%; }
   .mc-scr-prj-search, .mc-scr-prj-resp { flex: 1 1 220px; width: auto; }
-  .mc-scr-prj-wrap.has-insp .mc-scr-prj-board { grid-template-columns: minmax(0, 1fr); }
+  /* À côté de l'inspecteur, trois colonnes deviendraient trop étroites : elles s'empilent. */
+  .mc-scr-prj-board { grid-template-columns: minmax(0, 1fr); }
 }
 </style>

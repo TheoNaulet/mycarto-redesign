@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, ref, useId, watch } from 'vue'
+import type { IconName } from '../../icons/icons'
 import McIcon from '../../icons/McIcon.vue'
 import type { Layer } from '../../utils/types'
 
@@ -11,6 +12,8 @@ export interface TrailStep {
   layer?: Layer
   /** Adresse de la carte. Sans elle, le clic émet seulement `navigate`. */
   href?: string
+  /** Pictogramme de la première étape, quand ce n'est pas l'accueil (« Diagrammes BPMN », liste d'où l'on vient). */
+  icon?: IconName
 }
 
 const props = withDefaults(
@@ -146,7 +149,7 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', onDocDown))
           :title="s.index === 0 && compactHome ? s.step.label : undefined"
           @click="go($event, s.step, s.index)"
         >
-          <McIcon v-if="s.index === 0" name="home" size="sm" />
+          <McIcon v-if="s.index === 0" :name="s.step.icon ?? 'home'" size="sm" />
           <span v-else-if="s.step.layer" class="ld" aria-hidden="true" />
           <template v-if="!(s.index === 0 && compactHome)">{{ s.step.label }}</template>
         </a>

@@ -40,9 +40,19 @@ export const appRoutes: Record<string, string> = {
   'ecrans-types--types': '/types-objets',
   'ecrans-requetes--requetes': '/requetes',
   'ecrans-utilisateurs--utilisateurs': '/utilisateurs',
+  'ecrans-modeles-de-carte--modeles-de-carte': '/modeles-carte',
+  'ecrans-diagrammes-bpmn--diagrammes-bpmn': '/diagrammes',
+  'ecrans-journal--journal': '/journal',
 }
 
 let appNavigate: ((path: string) => void) | null = null
+
+/** Préfixe de l'application en ligne (« /app/ ») ; « / » en local et dans Storybook. */
+const BASE = (import.meta.env.BASE_URL ?? '/').replace(/\/$/, '')
+/** Adresse d'application (« /carte ») → lien réel, préfixe compris (« /app/carte »). */
+export const withBase = (path: string) => BASE + path
+/** Inverse : l'adresse ouverte, sans le préfixe. */
+export const withoutBase = (pathname: string) => (BASE && pathname.startsWith(BASE + '/') ? pathname.slice(BASE.length) : pathname === BASE ? '/' : pathname)
 
 /** Appelé par l'application au démarrage. */
 export function registerAppNavigator(fn: (path: string) => void) {
@@ -63,7 +73,7 @@ export function navigateInApp(storyId: string): boolean {
 
 /** Adresse à mettre dans un lien : la route de l'application, ou la story. */
 export function hrefFor(storyId: string): string {
-  return appNavigate && appRoutes[storyId] ? appRoutes[storyId] : `/?path=/story/${storyId}`
+  return appNavigate && appRoutes[storyId] ? withBase(appRoutes[storyId]) : `/?path=/story/${storyId}`
 }
 
 const storyForPath = (path: string) => Object.keys(appRoutes).find((id) => appRoutes[id] === path)
@@ -85,10 +95,11 @@ export function goPath(path: string) {
 
 /** Lien vers un écran par son adresse d'application. */
 export function pathHref(path: string): string {
-  if (appNavigate) return path
+  if (appNavigate) return withBase(path)
   const fiche = FICHE_PATH.exec(path)
   if (fiche) return ficheStoryHref(fiche[1])
-  const id = storyForPath(path === '/fiche' ? '/fiche/apogee' : path)
+  const bare = path.split('?')[0]
+  const id = storyForPath(bare === '/fiche' ? '/fiche/apogee' : bare)
   return id ? `/?path=/story/${id}` : '#'
 }
 
@@ -115,3 +126,10 @@ export async function copyLink(path?: string): Promise<boolean> {
     return false
   }
 }
+
+/** Valeur d'un paramètre de l'adresse ouverte (« ?depuis=modeles »). Vide dans Storybook, qui ne les transmet pas. */
+export function queryParam(name: string): string {
+  if (typeof window === 'undefined') return ''
+  return new URLSearchParams(window.location.search).get(name) ?? ''
+}
+

@@ -1,3 +1,31 @@
 html, body, #app { margin: 0; min-height: 100%; }
 body { background: var(--canvas); color: var(--ink); font-family: var(--font-sans); font-size: 14px; line-height: 20px; }
 *, *::before, *::after { box-sizing: border-box; }
+
+/* ---------- Passage carte ↔ administration (voir main.ts) ----------
+   Le logo sert de point fixe : il glisse juste de sa place dans la barre à sa place dans le menu.
+   La barre s'efface vers le haut, le menu entre par la gauche ; l'écran quitté recule légèrement
+   pendant que le nouveau monte. Au retour, le menu ressort par la gauche et la barre redescend. */
+[data-nav-morph] .mc-appbar { view-transition-name: mc-bar; }
+[data-nav-morph] .mc-side { view-transition-name: mc-side; }
+[data-nav-morph] .mc-appbar .brand,
+[data-nav-morph] .mc-side .mc-scr-logo { view-transition-name: mc-logo; }
+
+::view-transition-old(mc-bar) { animation: mc-vt-up 180ms ease-in both; }
+::view-transition-new(mc-bar) { animation: mc-vt-down 260ms cubic-bezier(.2, .8, .2, 1) 160ms both; }
+::view-transition-new(mc-side) { animation: mc-vt-slide 380ms cubic-bezier(.2, .8, .2, 1) 60ms both; }
+::view-transition-old(mc-side) { animation: mc-vt-slide 280ms ease-in reverse both; }
+
+/* Le logo est présent des deux côtés : il glisse de quelques pixels, sans fondu. */
+::view-transition-group(mc-logo) { z-index: 1; animation-duration: 380ms; animation-timing-function: cubic-bezier(.2, .8, .2, 1); }
+::view-transition-old(mc-logo) { animation: none; display: none; }
+::view-transition-new(mc-logo) { animation: none; }
+
+::view-transition-old(root) { animation: mc-vt-recede 260ms ease-in both; }
+::view-transition-new(root) { animation: mc-vt-rise 320ms cubic-bezier(.2, .8, .2, 1) 200ms both; }
+
+@keyframes mc-vt-up { to { opacity: 0; translate: 0 -8px; } }
+@keyframes mc-vt-down { from { opacity: 0; translate: 0 -8px; } }
+@keyframes mc-vt-slide { from { translate: -100% 0; } }
+@keyframes mc-vt-recede { to { opacity: 0; scale: .97; } }
+@keyframes mc-vt-rise { from { opacity: 0; translate: 0 10px; } }

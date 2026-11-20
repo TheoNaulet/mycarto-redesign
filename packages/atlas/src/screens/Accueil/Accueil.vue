@@ -298,8 +298,8 @@ function followPath(e: MouseEvent, path: string) {
 
 <style>
 .mc-scr-acc { position: relative; min-height: 100vh; display: flex; flex-direction: column; color: var(--ink); font-family: var(--font-sans); box-sizing: border-box; padding-bottom: 24px; }
-.mc-scr-acc-bar { position: sticky; top: 16px; z-index: 20; margin: 16px 16px 0; }
-.mc-scr-acc-main { flex: 1; display: flex; flex-direction: column; gap: 22px; padding: 24px 24px 0; min-height: 0; width: 100%; max-width: 1760px; margin-inline: auto; box-sizing: border-box; }
+.mc-scr-acc-bar { position: sticky; top: 16px; z-index: 20; margin: 16px var(--page-inset) 0; }
+.mc-scr-acc-main { flex: 1; display: flex; flex-direction: column; gap: 22px; padding: 24px var(--page-pad) 0; min-height: 0; width: 100%; max-width: var(--page-w); margin-inline: auto; box-sizing: border-box; }
 
 .mc-scr-acc-hero { display: flex; align-items: flex-end; gap: 32px; flex-wrap: wrap; }
 .mc-scr-acc-title { flex: 1 1 360px; min-width: 0; }
@@ -331,9 +331,8 @@ function followPath(e: MouseEvent, path: string) {
 .mc-scr-thumb { position: relative; width: 64px; height: 44px; border-radius: 8px; flex: none; box-sizing: border-box; background-color: var(--canvas); background-image: radial-gradient(var(--canvas-dot) 1px, transparent 1.2px); background-size: 6px 6px; border: 1px solid var(--line); overflow: hidden; }
 .mc-scr-thumb i { position: absolute; border-radius: 2px; background: var(--lc); opacity: .75; }
 
-/* Grands écrans : la page reste centrée (1760px au plus), barre alignée sur le contenu, colonne latérale un peu plus large. */
+/* Grands écrans : le contenu reste centré (1760px au plus) sous une barre pleine largeur, colonne latérale un peu plus large. */
 @media (min-width: 1792px) {
-  .mc-scr-acc-bar { width: 1728px; max-width: calc(100% - 32px); margin-inline: auto; box-sizing: border-box; }
   .mc-scr-acc-side { max-width: 400px; }
 }
 /* Écrans hauts : les couches gardent leur hauteur naturelle au lieu de s'étirer jusqu'en bas. */

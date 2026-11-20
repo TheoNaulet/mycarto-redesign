@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
 import McIcon from '../../icons/McIcon.vue'
+import McLogo from '../../logos/McLogo.vue'
 import McStatusChip from '../McStatusChip/McStatusChip.vue'
 import McSkeleton from '../McSkeleton/McSkeleton.vue'
 import type { RelationGroup, RelationItem } from './types'
@@ -57,7 +58,8 @@ const toggle = (g: RelationGroup) => {
       <ul v-else class="mc-rel-items">
         <li v-for="item in shownItems(g)" :key="item.id ?? item.name">
           <button type="button" class="row" :class="`l-${item.layer}`" @click="emit('open', item, g.verb)">
-            <span class="tile"><McIcon :name="item.icon" /></span>
+            <span v-if="item.logo" class="tile has-logo"><McLogo :logo="item.logo" :size="14" /></span>
+            <span v-else class="tile"><McIcon :name="item.icon" /></span>
             <span class="grow">{{ item.name }}<span v-if="item.meta" class="mc-cap"> · {{ item.meta }}</span></span>
             <McStatusChip v-if="item.status && item.statusLabel" :status="item.status" size="sm">{{ item.statusLabel }}</McStatusChip>
             <McIcon name="chevron-right" size="sm" class="go" />

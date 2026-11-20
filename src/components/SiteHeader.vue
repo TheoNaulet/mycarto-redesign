@@ -7,6 +7,8 @@ import { navGroups, type NavGroup } from '../data/nav'
 import BaseButton from './ui/BaseButton.vue'
 
 const route = useRoute()
+/** L'application myCarto (vue connectée) : /app/ en ligne, son serveur de développement en local. */
+const appHref = import.meta.env.DEV ? 'http://localhost:6007/' : '/app/'
 const drawer = ref(false)
 const openId = ref<string | null>(null)
 const headerEl = ref<HTMLElement | null>(null)
@@ -150,6 +152,7 @@ onBeforeUnmount(() => {
         </ul>
         <div class="header__actions">
           <BaseButton class="header__contact" to="/contact" variant="ghost" size="s">Contact commercial</BaseButton>
+          <BaseButton :href="appHref" variant="ghost" size="s">Se connecter</BaseButton>
           <BaseButton to="/demo" size="s">Demander une démo</BaseButton>
         </div>
       </nav>

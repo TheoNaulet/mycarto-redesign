@@ -156,9 +156,9 @@ async function shareInspected() {
 }
 
 /* ---------- Barre du haut ---------- */
-const trail: TrailStep[] = [{ label: 'Accueil' }, { label: 'Couche métier', layer: 'metier' }, { label: 'Traitements' }]
+const trail: TrailStep[] = [{ label: 'Accueil' }, { label: 'Traitements' }]
 function onTrail(_s: TrailStep, i: number) {
-  if (i <= 1) goPath('/')
+  if (i === 0) goPath('/')
 }
 function onHome(e: MouseEvent) {
   if (e.metaKey || e.ctrlKey || e.shiftKey) return
@@ -183,6 +183,8 @@ function voirDonnees() {
 }
 const sensibleCount = traitements.filter((t) => sensibiliteOf(t) === 'sensible').length
 const aipdMissing = traitements.filter((t) => sensibiliteOf(t) === 'sensible' && !t.aipd)
+// Sans sélection, l'inspecteur résume ce que montre la liste.
+const summary = computed<KeyValueItem[]>(() => [{ key: 'Traitements', value: bySearch.value.length }, ...focusKeys.map((k) => ({ key: FOCUS[k].label, value: counts.value[k] }))])
 </script>
 
 <template>
@@ -194,7 +196,7 @@ const aipdMissing = traitements.filter((t) => sensibiliteOf(t) === 'sensible' &&
       </template>
     </McAppBar>
 
-    <div class="mc-scr-trt-wrap" :class="{ 'has-insp': inspected }">
+    <div class="mc-scr-trt-wrap">
       <main class="mc-scr-trt-main">
         <header class="mc-scr-trt-head">
           <div class="mc-scr-trt-titles">
@@ -254,22 +256,26 @@ const aipdMissing = traitements.filter((t) => sensibiliteOf(t) === 'sensible' &&
       </main>
 
       <McInspector
-        v-if="inspected"
-        :key="inspected.id"
-        class="mc-scr-trt-insp"
-        :object="{ name: inspected.name, type: 'Traitement', layer: 'metier', icon: 'shield', description: inspected.finalite }"
+        :key="inspected?.id ?? 'resume'"
+        class="mc-insp-dock mc-scr-trt-insp"
+        :object="inspected ? { name: inspected.name, type: 'Traitement', layer: 'metier', icon: 'shield', description: inspected.finalite } : undefined"
+        empty-title="Sélectionnez un traitement"
+        empty-text="Sa finalité, ses données et ses applications s’affichent ici."
         @close="inspectedId = null"
       >
-        <template #statuses>
+        <template #empty><McKeyValueList :items="summary" /></template>
+        <template v-if="inspected" #statuses>
           <McStatusChip :status="SENSIBILITES[sensibiliteOf(inspected)].status" size="sm">Données {{ SENSIBILITES[sensibiliteOf(inspected)].label.toLowerCase() }}s</McStatusChip>
           <McStatusChip v-if="inspected.horsUE" status="warn" size="sm">Transfert hors UE</McStatusChip>
         </template>
-        <template #actions>
+        <template v-if="inspected" #actions>
           <McButton size="sm" icon="database" :disabled="!inspected.categories.length" @click="voirDonnees">Voir les données</McButton>
           <McIconButton size="sm" icon="link" label="Copier le lien du traitement" @click="shareInspected" />
         </template>
-        <McKeyValueList :items="kv" />
-        <McRelationList :groups="groups" :visible="6" @open="openRelation" />
+        <template v-if="inspected">
+          <McKeyValueList :items="kv" />
+          <McRelationList :groups="groups" :visible="6" @open="openRelation" />
+        </template>
       </McInspector>
     </div>
 
@@ -280,9 +286,8 @@ const aipdMissing = traitements.filter((t) => sensibiliteOf(t) === 'sensible' &&
 
 <style>
 .mc-scr-trt { position: relative; min-height: 100vh; background: var(--canvas); color: var(--ink); font-family: var(--font-sans); box-sizing: border-box; }
-.mc-scr-trt-bar { position: sticky; top: 16px; z-index: 20; margin: 16px 16px 0; }
-.mc-scr-trt-wrap { max-width: 1280px; margin: 0 auto; padding: 24px 32px 40px; box-sizing: border-box; display: flex; gap: 20px; align-items: flex-start; }
-.mc-scr-trt-wrap.has-insp { max-width: 1520px; }
+.mc-scr-trt-bar { position: sticky; top: 16px; z-index: 20; margin: 16px var(--page-inset) 0; }
+.mc-scr-trt-wrap { max-width: var(--page-w); margin: 0 auto; padding: 24px var(--page-pad) 40px; box-sizing: border-box; display: flex; gap: 20px; align-items: flex-start; }
 .mc-scr-trt-main { flex: 1; min-width: 0; display: grid; gap: 16px; }
 .mc-scr-trt-head { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
 .mc-scr-trt-titles { flex: 1; min-width: 200px; }
@@ -303,13 +308,9 @@ const aipdMissing = traitements.filter((t) => sensibiliteOf(t) === 'sensible' &&
 .mc-scr-trt-data { display: inline-flex; align-items: center; gap: 8px; }
 .mc-scr-trt-note { margin: 0; }
 .mc-scr-trt-insp .body { grid-template-columns: minmax(0, 1fr); }
-.mc-scr-trt-insp { position: sticky; top: 92px; flex: none; max-height: calc(100vh - 108px); }
 @media (min-width: 1800px) {
-  .mc-scr-trt-wrap, .mc-scr-trt-wrap.has-insp { max-width: 1760px; padding-inline: 40px; }
-  .mc-scr-trt-bar { width: 1728px; max-width: calc(100% - 32px); margin-inline: auto; box-sizing: border-box; }
 }
 @media (max-width: 1180px) {
-  .mc-scr-trt-wrap { padding-inline: 24px; }
   .mc-scr-trt-titles { flex-basis: 100%; }
   .mc-scr-trt-search, .mc-scr-trt-base { flex: 1 1 220px; width: auto; }
 }

@@ -279,56 +279,58 @@ defineExpose({ open: openList, close: closeList, focus: () => trigger.value?.foc
       <McIcon name="chevron-down" class="mc-select-chev" />
     </button>
 
-    <div v-if="open" class="mc-pop mc-select-pop" @keydown="onListKey">
-      <div v-if="hasSearch" class="mc-input search sm mc-select-search">
-        <McIcon name="search" size="sm" />
-        <input
-          ref="searchInput"
-          v-model="query"
-          type="text"
-          role="combobox"
-          aria-autocomplete="list"
-          :aria-expanded="true"
-          :aria-controls="`${id}-list`"
-          :aria-activedescendant="activeId"
-          aria-label="Filtrer les valeurs"
-          placeholder="Filtrer les valeurs"
-          autocomplete="off"
-          spellcheck="false"
-        />
-      </div>
-      <ul
-        :id="`${id}-list`"
-        ref="list"
-        class="mc-select-list"
-        role="listbox"
-        :tabindex="hasSearch ? undefined : -1"
-        :aria-labelledby="label ? `${id}-label` : undefined"
-        :aria-label="label ? undefined : ariaLabel"
-        :aria-activedescendant="hasSearch ? undefined : activeId"
-      >
-        <li
-          v-for="(row, i) in rows"
-          :id="optionId(i)"
-          :key="String(row.value)"
-          role="option"
-          class="mc-select-option"
-          :class="{ 'is-active': i === active, 'is-on': isSelected(row), 'is-disabled': row.disabled, 'is-empty': row.value === EMPTY }"
-          :aria-selected="isSelected(row)"
-          :aria-disabled="row.disabled || undefined"
-          @pointerenter="!row.disabled && (active = i)"
-          @click="choose(row)"
+    <Transition name="mc-pop">
+      <div v-if="open" class="mc-pop mc-select-pop" @keydown="onListKey">
+        <div v-if="hasSearch" class="mc-input search sm mc-select-search">
+          <McIcon name="search" size="sm" />
+          <input
+            ref="searchInput"
+            v-model="query"
+            type="text"
+            role="combobox"
+            aria-autocomplete="list"
+            :aria-expanded="true"
+            :aria-controls="`${id}-list`"
+            :aria-activedescendant="activeId"
+            aria-label="Filtrer les valeurs"
+            placeholder="Filtrer les valeurs"
+            autocomplete="off"
+            spellcheck="false"
+          />
+        </div>
+        <ul
+          :id="`${id}-list`"
+          ref="list"
+          class="mc-select-list"
+          role="listbox"
+          :tabindex="hasSearch ? undefined : -1"
+          :aria-labelledby="label ? `${id}-label` : undefined"
+          :aria-label="label ? undefined : ariaLabel"
+          :aria-activedescendant="hasSearch ? undefined : activeId"
         >
-          <McDicpBadge v-if="row.criticity !== undefined" v-bind="dicp(row.criticity)" />
-          <span class="grow">
-            <McStatusChip v-if="row.status" :status="row.status" size="sm">{{ row.label }}</McStatusChip>
-            <template v-else>{{ row.label }}</template>
-          </span>
-          <McIcon v-if="isSelected(row)" name="check" class="mc-select-check" />
-        </li>
-        <li v-if="!rows.length" class="mc-select-none" role="presentation">Aucune valeur ne correspond à « {{ query }} ».</li>
-      </ul>
-    </div>
+          <li
+            v-for="(row, i) in rows"
+            :id="optionId(i)"
+            :key="String(row.value)"
+            role="option"
+            class="mc-select-option"
+            :class="{ 'is-active': i === active, 'is-on': isSelected(row), 'is-disabled': row.disabled, 'is-empty': row.value === EMPTY }"
+            :aria-selected="isSelected(row)"
+            :aria-disabled="row.disabled || undefined"
+            @pointerenter="!row.disabled && (active = i)"
+            @click="choose(row)"
+          >
+            <McDicpBadge v-if="row.criticity !== undefined" v-bind="dicp(row.criticity)" />
+            <span class="grow">
+              <McStatusChip v-if="row.status" :status="row.status" size="sm">{{ row.label }}</McStatusChip>
+              <template v-else>{{ row.label }}</template>
+            </span>
+            <McIcon v-if="isSelected(row)" name="check" class="mc-select-check" />
+          </li>
+          <li v-if="!rows.length" class="mc-select-none" role="presentation">Aucune valeur ne correspond à « {{ query }} ».</li>
+        </ul>
+      </div>
+    </Transition>
     </div>
 
     <span v-if="error" :id="`${id}-err`" class="mc-field-error" role="alert"><McIcon name="alert-octagon" size="sm" />{{ error }}</span>
@@ -342,7 +344,9 @@ defineExpose({ open: openList, close: closeList, focus: () => trigger.value?.foc
 .mc-select-trigger:focus-visible { outline: 0; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
 .mc-select-trigger.is-error:focus-visible { border-color: var(--status-critical); box-shadow: 0 0 0 3px var(--status-critical-soft); }
 .mc-select-trigger[disabled] { cursor: not-allowed; }
-.mc-select-trigger .val { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: flex; align-items: center; }
+.mc-select-trigger .val { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: flex; align-items: center; }
+/* Texte seul : bloc, pour que les points de suspension s'affichent (un conteneur flex ne les montre pas). */
+.mc-select-trigger .val:not(:has(> *)) { display: block; }
 .mc-select-trigger .mc-select-chev { margin-left: auto; transition: transform var(--dur-fast, .12s); }
 .mc-select.is-open .mc-select-chev { transform: rotate(180deg); }
 .mc-select-pop { position: absolute; z-index: 30; top: calc(100% + 4px); left: 0; min-width: 100%; box-sizing: border-box; padding: 6px; display: grid; gap: 6px; }

@@ -1,7 +1,27 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "pnpm build && pnpm build-storybook --quiet -o dist/storybook",
+  "buildCommand": "pnpm build && pnpm build-storybook --quiet -o dist/storybook && pnpm build:atlas:site",
   "outputDirectory": "dist",
-  "redirects": [{ "source": "/storybook", "destination": "/storybook/", "permanent": true }],
-  "rewrites": [{ "source": "/((?!storybook/).*)", "destination": "/index.html" }]
+  "redirects": [
+    {
+      "source": "/storybook",
+      "destination": "/storybook/",
+      "permanent": true
+    },
+    {
+      "source": "/app",
+      "destination": "/app/",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/app/(.*)",
+      "destination": "/app/index.html"
+    },
+    {
+      "source": "/((?!storybook/|app/).*)",
+      "destination": "/index.html"
+    }
+  ]
 }

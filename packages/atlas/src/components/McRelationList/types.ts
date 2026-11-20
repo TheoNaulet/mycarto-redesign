@@ -1,4 +1,5 @@
 import type { IconName } from '../../icons/icons'
+import type { LogoName } from '../../logos/logos'
 import type { Layer, Status } from '../../utils/types'
 
 /** Un objet lié, montré comme un mini-nœud. */
@@ -11,6 +12,8 @@ export interface RelationItem {
   layer: Layer
   /** Pictogramme de son type. */
   icon: IconName
+  /** Logo de marque à la place du pictogramme. */
+  logo?: LogoName
   /** État éventuel, montré en puce à droite. */
   status?: Status | 'neutral'
   /** Libellé de la puce d'état : « Tomcat 5 », « Fin de support 2027 ». */

@@ -6,7 +6,7 @@ import McSideNav, { type SideNavItem } from '../../components/McSideNav/McSideNa
 import McButton from '../../components/McButton/McButton.vue'
 import McIcon from '../../icons/McIcon.vue'
 import { adminSections, logoSvg, navPaths, notifications, readNotifications, type Notification } from './shell'
-import { goPath } from '../bridge'
+import { goPath, pathHref, withoutBase } from '../bridge'
 
 const props = defineProps<{ /** Libellé de la page courante. */ active: string }>()
 
@@ -26,7 +26,7 @@ onMounted(() => {
 onBeforeUnmount(() => mq?.removeEventListener('change', onMq))
 
 /** L'adresse ouverte (sans l'éventuel préfixe Storybook) : on ne recharge pas la page où l'on est déjà. */
-const currentPath = () => (typeof window !== 'undefined' ? window.location.pathname + window.location.search : '')
+const currentPath = () => (typeof window !== 'undefined' ? withoutBase(window.location.pathname) + window.location.search : '')
 
 function onSelect(item: SideNavItem | Omit<SideNavItem, 'children' | 'icon'>) {
   const to = navPaths[item.label]
@@ -101,7 +101,7 @@ const notifLabel = computed(() => (unread.value ? `Notifications (${unread.value
         <span v-else-if="unread" class="mc-scr-side-dot" aria-hidden="true" />
       </a>
       <a
-        href="/utilisateurs"
+        :href="pathHref('/utilisateurs')"
         :title="collapsed ? 'Théo Naulet, votre profil' : undefined"
         :aria-label="collapsed ? 'Théo Naulet, votre profil' : undefined"
         @click.prevent="onSelect({ label: 'Utilisateurs' })"

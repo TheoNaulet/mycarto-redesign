@@ -119,41 +119,43 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', onDocDown, tru
 </script>
 
 <template>
-  <div
-    v-if="open"
-    ref="el"
-    class="mc-menu mc-ctx"
-    :class="{ 'is-placed': !inline }"
-    role="menu"
-    :aria-label="ariaLabel ?? header"
-    :style="{ width: `${width}px`, ...(inline ? {} : { left: `${x}px`, top: `${y}px` }) }"
-    @keydown="onKey"
-    @contextmenu.prevent
-  >
-    <div v-if="header" :id="`${id}-h`" class="head" aria-hidden="true">{{ header }}</div>
-    <template v-for="(it, i) in items" :key="i">
-      <div v-if="it === 'separator'" class="sep" role="separator" />
-      <div
-        v-else
-        class="it"
-        role="menuitem"
-        tabindex="-1"
-        :data-i="i"
-        :class="{ 'is-on': active === i, danger: it.danger, 'is-disabled': it.disabled }"
-        :aria-disabled="it.disabled || undefined"
-        :aria-haspopup="it.children?.length ? 'menu' : undefined"
-        :aria-keyshortcuts="it.shortcut"
-        @mouseenter="!it.disabled && (active = i)"
-        @mouseleave="active = -1"
-        @click="choose(it)"
-      >
-        <McIcon v-if="it.icon" :name="it.icon" size="sm" />
-        <span class="grow">{{ it.label }}</span>
-        <span v-if="it.shortcut" class="k">{{ it.shortcut }}</span>
-        <McIcon v-if="it.children?.length" name="chevron-right" size="sm" />
-      </div>
-    </template>
-  </div>
+  <Transition name="mc-pop">
+    <div
+      v-if="open"
+      ref="el"
+      class="mc-menu mc-ctx"
+      :class="{ 'is-placed': !inline }"
+      role="menu"
+      :aria-label="ariaLabel ?? header"
+      :style="{ width: `${width}px`, ...(inline ? {} : { left: `${x}px`, top: `${y}px` }) }"
+      @keydown="onKey"
+      @contextmenu.prevent
+    >
+      <div v-if="header" :id="`${id}-h`" class="head" aria-hidden="true">{{ header }}</div>
+      <template v-for="(it, i) in items" :key="i">
+        <div v-if="it === 'separator'" class="sep" role="separator" />
+        <div
+          v-else
+          class="it"
+          role="menuitem"
+          tabindex="-1"
+          :data-i="i"
+          :class="{ 'is-on': active === i, danger: it.danger, 'is-disabled': it.disabled }"
+          :aria-disabled="it.disabled || undefined"
+          :aria-haspopup="it.children?.length ? 'menu' : undefined"
+          :aria-keyshortcuts="it.shortcut"
+          @mouseenter="!it.disabled && (active = i)"
+          @mouseleave="active = -1"
+          @click="choose(it)"
+        >
+          <McIcon v-if="it.icon" :name="it.icon" size="sm" />
+          <span class="grow">{{ it.label }}</span>
+          <span v-if="it.shortcut" class="k">{{ it.shortcut }}</span>
+          <McIcon v-if="it.children?.length" name="chevron-right" size="sm" />
+        </div>
+      </template>
+    </div>
+  </Transition>
 </template>
 
 <style>

@@ -2,6 +2,7 @@
 // Écran « POS complet » : le plan d'occupation des sols, zone par zone, lu par la lentille
 // « Couverture applicative » : chaque îlot est teinté selon son nombre d'applications, les îlots vides sont les trous du SI.
 import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
+import McPanelTransition from '../../components/McPanelTransition/McPanelTransition.vue'
 import McAppBar from '../../components/McAppBar/McAppBar.vue'
 import type { TrailStep } from '../../components/McMapTrail/McMapTrail.vue'
 import McAvatarStack, { type McAvatarPerson } from '../../components/McAvatar/McAvatarStack.vue'
@@ -33,6 +34,8 @@ import McIcon from '../../icons/McIcon.vue'
 import McIconButton from '../../components/McIconButton/McIconButton.vue'
 import MapAnnotations from '../Infrastructure/MapAnnotations.vue'
 import MapShareDialog from '../Infrastructure/MapShareDialog.vue'
+import MapEditBar from '../shared/MapEditBar.vue'
+import { useMapEdit } from '../shared/mapEdit'
 import type { ExportItem } from '../shared/SharePanel.vue'
 import { applications } from '../../data/applications'
 import { noteTexts } from '../../data/annotations'
@@ -144,6 +147,11 @@ const ZONES = reactive<Zone[]>([
     ],
   },
 ])
+
+/* ---------- Mode modification (sur place) ---------- */
+// « Modifier » rend le plan modifiable ici même : ajouter, renommer ou supprimer un quartier, gérer ses îlots.
+const edit = useMapEdit<Zone[]>({ name: 'POS complet', get: () => ZONES, set: (v) => ZONES.splice(0, ZONES.length, ...v) })
+const editing = edit.on
 
 const appsOf = (q: Quartier) => q.ilots.reduce((s, x) => s + x.n, 0)
 const ilotCount = (q: Quartier) => q.ilots.length + q.moreEmpty
@@ -298,6 +306,7 @@ function attach() {
   const name = pickerApp.value
   if (!c || !x || !name) return
   const before = { apps: x.apps ? [...x.apps] : undefined, n: x.n }
+  edit.record()
   x.apps = [...(x.apps ?? []), name]
   x.n += 1
   pickerOpen.value = false
@@ -346,6 +355,7 @@ function saveEdit() {
   const c = current.value
   if (!c || editError.value) return
   const q = c.q
+  edit.record()
   const byName = Object.fromEntries(q.ilots.map((x) => [x.name, x]))
   const added = editForm.ilots.filter((r) => !r.orig && r.name.trim()).length
   q.ilots = editForm.ilots
@@ -357,6 +367,37 @@ function saveEdit() {
   if (renamed) selected.value = q.name
   editOpen.value = false
   toast.success(`Quartier ${q.name} enregistré${added ? ` · ${plural(added, 'îlot ajouté', 'îlots ajoutés')}` : ''}`)
+}
+
+/** Ajoute un quartier vide à une zone, puis ouvre sa fiche pour le nommer. */
+function addQuartier(z?: Zone) {
+  const zone = z ?? (current.value?.zone ?? ZONES[0])
+  edit.record()
+  let name = 'Nouveau quartier'
+  for (let k = 2; allQuartiers.value.some((x) => x.q.name === name); k++) name = `Nouveau quartier ${k}`
+  zone.quartiers.push({ name, ilots: [], moreEmpty: 0 })
+  collapsed.value[zone.name] = false
+  selected.value = name
+  nextTick(() => openEdit(true))
+}
+function removeQuartier() {
+  const c = current.value
+  if (!c) return
+  edit.record()
+  c.zone.quartiers.splice(c.zone.quartiers.indexOf(c.q), 1)
+  editOpen.value = false
+  selected.value = null
+  toast.success(`Quartier ${c.q.name} supprimé`, { actionLabel: 'Annuler', onAction: edit.undo })
+}
+/** En modification, un clic sur un quartier ouvre directement sa fiche. */
+function onQuartier(q: Quartier) {
+  if (!editing.value) return select(q)
+  selected.value = q.name
+  nextTick(() => openEdit())
+}
+function onAddIlot(q: Quartier) {
+  selected.value = q.name
+  nextTick(() => openEdit(true))
 }
 
 /* ---------- Exporter, post-its, commentaires ---------- */
@@ -374,19 +415,18 @@ function placeNote() {
   const c = viewCenter()
   annotations.value?.placeNote(c.x, c.y)
 }
+/** Le bouton Commentaire arme le mode placement : le prochain clic sur la carte pose l'épingle. */
 function placeComment() {
-  const c = viewCenter()
-  annotations.value?.placeComment(c.x + 40, c.y - 40)
+  annotations.value?.armComment()
 }
 function select(q: Quartier) {
   selected.value = selected.value === q.name ? null : q.name
 }
 
 /* ---------- Barre du haut ---------- */
-const trail: TrailStep[] = [{ label: 'Accueil', href: pathHref('/') }, { label: 'Couche fonctionnelle', layer: 'fonctionnel' }, { label: 'POS complet' }]
+const trail: TrailStep[] = [{ label: 'Accueil', href: pathHref('/') }, { label: 'POS complet' }]
 function onTrail(_s: TrailStep, idx: number) {
-  // L'accueil range les objets par couche : la couche fonctionnelle y est.
-  if (idx === 0 || idx === 1) goPath('/')
+  if (idx === 0) goPath('/')
 }
 function onHome(e: MouseEvent) {
   e.preventDefault()
@@ -442,7 +482,7 @@ const minimapBlocks = computed<McMinimapBlock[]>(() => zoneBoxes.value.map((b) =
     ref="root"
     class="mc-scr-pos mc-scr-map"
     :style="vars"
-    :class="{ 'is-hand': tool === 'hand', 'is-lens': lensOn }"
+    :class="{ 'is-hand': tool === 'hand', 'is-lens': lensOn, 'is-editing': editing }"
     @pointerdown="handlers.onPointerDown"
     @pointermove="handlers.onPointerMove"
     @pointerup="handlers.onPointerUp"
@@ -472,7 +512,7 @@ const minimapBlocks = computed<McMinimapBlock[]>(() => zoneBoxes.value.map((b) =
                 class="mc-scr-pos-q"
                 :class="{ 'is-sel': selected === q.name, 'is-dim': quartierDim(q) }"
                 :aria-pressed="selected === q.name"
-                @click.stop="select(q)"
+                @click.stop="onQuartier(q)"
               >
                 <span class="mc-scr-pos-qh">
                   <span class="mc-scr-pos-qn">{{ q.name }}</span>
@@ -491,8 +531,10 @@ const minimapBlocks = computed<McMinimapBlock[]>(() => zoneBoxes.value.map((b) =
                   </span>
                   <span v-if="showEmpty && q.moreEmpty" class="mc-scr-pos-ilot more" :class="{ 'is-dim': isolated === 'ilot-occupe' }">+{{ q.moreEmpty }} vides</span>
                   <span v-if="!showEmpty && !appsOf(q)" class="mc-scr-pos-ilot more">{{ plural(emptyCount(q), 'îlot vide masqué', 'îlots vides masqués') }}</span>
+                  <span v-if="editing" class="mc-scr-pos-ilot add" role="button" tabindex="0" :aria-label="`Ajouter un îlot à ${q.name}`" @click.stop="onAddIlot(q)" @keydown.enter.stop.prevent="onAddIlot(q)">+ îlot</span>
                 </span>
               </button>
+              <button v-if="editing" type="button" class="mc-scr-pos-q mc-scr-pos-qadd" @click.stop="addQuartier(z)">+ Ajouter un quartier</button>
             </div>
           </McContainer>
         </div>
@@ -505,7 +547,8 @@ const minimapBlocks = computed<McMinimapBlock[]>(() => zoneBoxes.value.map((b) =
             <template #actions>
               <McAvatarStack :people="people" label="3 personnes sur la carte" />
               <McButton variant="outline" icon="export" class="mc-scr-map-ico" title="Exporter" @click="shareOpen = true"><span class="mc-scr-map-lbl">Exporter</span></McButton>
-              <McButton variant="primary" icon="pencil" :href="pathHref('/editeur')" @click.prevent="goPath('/editeur')">Modifier</McButton>
+              <McButton v-if="!editing" variant="primary" icon="pencil" @click="edit.begin()">Modifier</McButton>
+              <McButton v-else variant="primary" icon="check" @click="edit.finish()">Terminer</McButton>
             </template>
           </McAppBar>
           <div class="mc-scr-pos-bar">
@@ -522,35 +565,39 @@ const minimapBlocks = computed<McMinimapBlock[]>(() => zoneBoxes.value.map((b) =
       </template>
 
       <template #right>
-        <McLegend v-if="legend" v-model:isolated="isolated" title="Couverture applicative" :sections="legendSections" :sort="false" @close="legend = false" />
-        <McInspector v-if="inspected" :object="inspected" @close="selected = null">
-          <template #statuses>
-            <template v-if="currentIlot">
-              <McStatusChip v-if="currentIlot.n" size="sm">{{ plural(currentIlot.n, 'application') }}</McStatusChip>
-              <McStatusChip v-else status="unknown" size="sm">Aucune application</McStatusChip>
+        <McPanelTransition>
+          <McLegend v-if="legend" v-model:isolated="isolated" title="Couverture applicative" :sections="legendSections" :sort="false" @close="legend = false" />
+        </McPanelTransition>
+        <McPanelTransition>
+          <McInspector v-if="inspected" :object="inspected" @close="selected = null">
+            <template #statuses>
+              <template v-if="currentIlot">
+                <McStatusChip v-if="currentIlot.n" size="sm">{{ plural(currentIlot.n, 'application') }}</McStatusChip>
+                <McStatusChip v-else status="unknown" size="sm">Aucune application</McStatusChip>
+              </template>
+              <template v-else>
+                <McStatusChip v-if="current && appsOf(current.q)" size="sm">{{ plural(appsOf(current.q), 'application') }}</McStatusChip>
+                <McStatusChip v-else status="unknown" size="sm">Aucune application</McStatusChip>
+              </template>
             </template>
-            <template v-else>
-              <McStatusChip v-if="current && appsOf(current.q)" size="sm">{{ plural(appsOf(current.q), 'application') }}</McStatusChip>
-              <McStatusChip v-else status="unknown" size="sm">Aucune application</McStatusChip>
+            <template #actions>
+              <McButton size="sm" variant="secondary" icon="plus" @click="openPicker">Rattacher une application</McButton>
+              <McButton v-if="currentIlot" size="sm" variant="outline" icon="pos" @click="selectedIlot = null">Voir le quartier</McButton>
+              <McButton v-else size="sm" variant="outline" icon="pencil" @click="openEdit()">Modifier</McButton>
             </template>
-          </template>
-          <template #actions>
-            <McButton size="sm" variant="secondary" icon="plus" @click="openPicker">Rattacher une application</McButton>
-            <McButton v-if="currentIlot" size="sm" variant="outline" icon="pos" @click="selectedIlot = null">Voir le quartier</McButton>
-            <McButton v-else size="sm" variant="outline" icon="pencil" @click="openEdit()">Modifier</McButton>
-          </template>
-          <template #default>
-            <template v-if="currentIlot && current">
-              <McKeyValueList :items="[{ key: 'Quartier', value: current.q.name }, { key: 'Zone', value: current.zone.name }, { key: 'Applications', value: currentIlot.n }]" />
-              <p v-if="!currentIlot.n" class="mc-scr-pos-note">Aucune application n’occupe cet îlot : c’est un trou du SI. Rattachez l’application qui couvre ce besoin.</p>
-              <McRelationList :groups="ilotGroups" @open="openRelation" />
+            <template #default>
+              <template v-if="currentIlot && current">
+                <McKeyValueList :items="[{ key: 'Quartier', value: current.q.name }, { key: 'Zone', value: current.zone.name }, { key: 'Applications', value: currentIlot.n }]" />
+                <p v-if="!currentIlot.n" class="mc-scr-pos-note">Aucune application n’occupe cet îlot : c’est un trou du SI. Rattachez l’application qui couvre ce besoin.</p>
+                <McRelationList :groups="ilotGroups" @open="openRelation" />
+              </template>
+              <template v-else>
+                <McKeyValueList :items="infos" />
+                <McRelationList :groups="groups" @open="openRelation" />
+              </template>
             </template>
-            <template v-else>
-              <McKeyValueList :items="infos" />
-              <McRelationList :groups="groups" @open="openRelation" />
-            </template>
-          </template>
-        </McInspector>
+          </McInspector>
+        </McPanelTransition>
       </template>
 
       <template #bottom-left>
@@ -558,7 +605,11 @@ const minimapBlocks = computed<McMinimapBlock[]>(() => zoneBoxes.value.map((b) =
       </template>
 
       <template #bottom>
-        <McToolbar v-model:tool="tool" v-model:zoom="zoom" v-model:legend="legend" @fit="fit" @filter="legend = true" @sticky="placeNote" @comment="placeComment">
+        <MapEditBar v-if="editing" :count="edit.count.value" :count-label="edit.countLabel.value" hint="Cliquez sur un quartier pour le renommer et gérer ses îlots" @undo="edit.undo" @discard="edit.discard" @finish="edit.finish">
+          <McButton variant="ghost" icon="plus" @click="addQuartier()">Quartier</McButton>
+          <McButton variant="ghost" icon="app" :disabled="!current" @click="openPicker">Rattacher une application</McButton>
+        </MapEditBar>
+        <McToolbar v-else v-model:tool="tool" v-model:zoom="zoom" v-model:legend="legend" @fit="fit" @filter="legend = true" @sticky="placeNote" @comment="placeComment" :commenting="annotations?.placing ?? false">
           <template #lens><McLensPicker v-model:lens="lens" :lenses="LENSES" /></template>
         </McToolbar>
       </template>
@@ -617,11 +668,12 @@ const minimapBlocks = computed<McMinimapBlock[]>(() => zoneBoxes.value.map((b) =
           <div v-for="(r, k) in editForm.ilots" :key="k" class="mc-scr-pos-edit-ilot">
             <McTextField v-model="r.name" size="sm" :aria-label="`Nom de l’îlot ${k + 1}`" :placeholder="r.orig ? r.orig : 'ex. Recrutement'" />
             <span class="mc-scr-pos-edit-n">{{ r.orig ? (r.n ? plural(r.n, 'appli.', 'appli.') : 'vide') : 'nouveau' }}</span>
-            <McIconButton v-if="!r.orig" size="sm" icon="x" label="Retirer cet îlot" @click="removeIlotRow(k)" />
+            <McIconButton v-if="!r.orig || !r.n" size="sm" icon="x" label="Retirer cet îlot" @click="removeIlotRow(k)" />
           </div>
           <McButton variant="ghost" size="sm" icon="plus" class="mc-scr-pos-edit-add" @click="addIlotRow">Ajouter un îlot</McButton>
           <p v-if="current?.q.moreEmpty" class="mc-scr-pos-note">{{ plural(current.q.moreEmpty, 'autre îlot vide', 'autres îlots vides') }} sans nom sur le plan.</p>
         </div>
+        <McButton v-if="editing" variant="ghost" size="sm" icon="trash" class="mc-scr-pos-edit-del" :disabled="!!(current && appsOf(current.q))" :title="current && appsOf(current.q) ? 'Détachez d’abord ses applications' : undefined" @click="removeQuartier">Supprimer ce quartier</McButton>
       </div>
     </McModal>
     <SearchPalette v-model:open="paletteOpen" />
@@ -663,6 +715,12 @@ const minimapBlocks = computed<McMinimapBlock[]>(() => zoneBoxes.value.map((b) =
 .mc-scr-pos-ilot.d0 { background: transparent; border: 1px dashed var(--line-strong); color: var(--ink-subtle); }
 .mc-scr-pos-ilot.more { background: transparent; color: var(--ink-subtle); padding: 0 2px; }
 .mc-scr-pos-ilot.is-dim { opacity: .25; }
+.mc-scr-pos-ilot.add { background: transparent; border: 1px dashed var(--accent); color: var(--accent); font-weight: 600; cursor: pointer; }
+.mc-scr-pos-ilot.add:hover { background: var(--accent-soft); }
+.mc-scr-pos.is-editing .mc-scr-pos-q:not(.is-sel):hover { border-style: dashed; border-color: var(--accent); }
+.mc-scr-pos-qadd { place-content: center; min-height: 64px; border-style: dashed; color: var(--accent); font: 600 12px/16px var(--font-sans); text-align: center; background: transparent; }
+.mc-scr-pos-qadd:hover { background: var(--accent-soft); }
+.mc-scr-pos-edit-del { justify-self: start; color: var(--status-critical); }
 /* Lentille allumée : la teinte dit le nombre d'applications. */
 .mc-scr-pos.is-lens .mc-scr-pos-ilot.d1 { background: var(--crit-1); color: var(--ink); }
 .mc-scr-pos.is-lens .mc-scr-pos-ilot.d2 { background: var(--crit-2); color: var(--ink); }
@@ -675,7 +733,7 @@ const minimapBlocks = computed<McMinimapBlock[]>(() => zoneBoxes.value.map((b) =
 
 .mc-scr-pos .mc-canvas-right { align-items: stretch; }
 .mc-scr-pos .mc-canvas-right > .mc-legend { flex: none; }
-.mc-scr-pos .mc-canvas-right > .mc-insp { flex: 0 1 auto; min-height: 0; overflow: auto; }
+.mc-scr-pos .mc-canvas-right > .mc-insp { flex: 0 1 auto; min-height: 0; overflow: hidden auto; }
 .mc-scr-pos .mc-insp .body { grid-template-columns: minmax(0, 1fr); }
 .mc-scr-pos-ilots .mc-scr-pos-ilot:not(.more) { cursor: pointer; }
 .mc-scr-pos-ilots .mc-scr-pos-ilot:not(.more):hover { box-shadow: 0 0 0 1px var(--line-strong); }

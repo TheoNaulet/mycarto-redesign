@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { useId } from 'vue'
+import { ref, useId, watch } from 'vue'
 import McIcon from '../../icons/McIcon.vue'
 import McButton from '../McButton/McButton.vue'
 import McTabs, { type TabItem } from '../McTabs/McTabs.vue'
 import type { IconName } from '../../icons/icons'
+import McLogo from '../../logos/McLogo.vue'
+import type { LogoName } from '../../logos/logos'
 import type { Layer } from '../../utils/types'
 
 /** L'objet inspecté. */
@@ -16,6 +18,10 @@ export interface InspectedObject {
   layer: Layer
   /** Pictogramme du type. */
   icon: IconName
+  /** Logo de marque à la place du pictogramme dans la tuile. */
+  logo?: LogoName
+  /** Sans logo : initiales du nom dans la tuile. */
+  monogram?: boolean
   /** Une phrase qui dit à quoi il sert. */
   description?: string
 }
@@ -32,9 +38,29 @@ const props = withDefaults(
     error?: string
     /** Hauteur max du panneau ; le corps défile au-delà. */
     maxHeight?: string
+    /** Titre de l'état vide (inspecteur toujours affiché d'un écran en liste : « Sélectionnez un logiciel »). */
+    emptyTitle?: string
+    /** Phrase sous le titre de l'état vide. */
+    emptyText?: string
   }>(),
-  { object: undefined, tabs: () => [], loading: false, error: undefined, maxHeight: undefined },
+  {
+    object: undefined,
+    tabs: () => [],
+    loading: false,
+    error: undefined,
+    maxHeight: undefined,
+    emptyTitle: 'Sélectionnez un objet sur la carte',
+    emptyText: 'Sa fiche, ses relations et ses cartes s’affichent ici.',
+  },
 )
+
+/** Passage d'un objet à un autre, panneau ouvert : le contenu se renouvelle en fondu court, sans glisser. */
+const swapping = ref(false)
+watch(() => props.object?.name, (now, before) => {
+  if (!now || !before || now === before) return
+  swapping.value = false
+  requestAnimationFrame(() => (swapping.value = true))
+})
 
 /** Onglet actif, restitué au retour sur l'objet. */
 const tab = defineModel<string>('tab')
@@ -59,7 +85,7 @@ const state = () => (props.loading ? 'loading' : props.error ? 'error' : props.o
 <template>
   <aside
     class="mc-float mc-insp"
-    :class="object && `l-${object.layer}`"
+    :class="[object && `l-${object.layer}`, { 'is-swapping': swapping }]"
     :aria-labelledby="object ? `${id}-t` : undefined"
     :aria-label="object ? undefined : 'Inspecteur'"
     :aria-busy="loading || undefined"
@@ -97,15 +123,19 @@ const state = () => (props.loading ? 'loading' : props.error ? 'error' : props.o
     <div v-else-if="state() === 'empty'" class="mc-insp-state">
       <div class="mc-empty">
         <span class="art"><McIcon name="cursor" size="xl" /></span>
-        <b>Sélectionnez un objet sur la carte</b>
-        <p>Sa fiche, ses relations et ses cartes s’affichent ici.</p>
+        <b>{{ emptyTitle }}</b>
+        <p>{{ emptyText }}</p>
       </div>
+      <!-- Sous le message : un résumé de ce que montre l'écran (totaux, alertes). -->
+      <div v-if="$slots.empty" class="body mc-insp-summary"><slot name="empty" /></div>
     </div>
 
     <!-- Objet -->
     <template v-else-if="object">
       <div class="hd">
-        <span class="tile"><McIcon :name="object.icon" size="lg" /></span>
+        <span v-if="object.logo" class="tile has-logo"><McLogo :logo="object.logo" :size="24" /></span>
+        <span v-else-if="object.monogram" class="tile"><McLogo :label="object.name" :size="24" /></span>
+        <span v-else class="tile"><McIcon :name="object.icon" size="lg" /></span>
         <div class="grow">
           <h2 :id="`${id}-t`" class="title mc-insp-name">{{ object.name }}</h2>
           <div class="mc-row" style="gap: 6px">
@@ -127,7 +157,7 @@ const state = () => (props.loading ? 'loading' : props.error ? 'error' : props.o
 
 <style>
 .mc-insp { box-sizing: border-box; }
-.mc-insp .body { overflow-y: auto; min-height: 0; }
+.mc-insp .body { overflow: hidden auto; min-height: 0; }
 .mc-insp .hd .grow .mc-skel { display: block; }
 .mc-insp .tile.mc-skel { background-color: var(--surface-sunken); }
 .mc-insp .body > .mc-skel { display: block; }

@@ -11,6 +11,7 @@ import { getApplication } from '../../data/applications'
 import { computed, ref, watch } from 'vue'
 import type { IconName } from '../../icons/icons'
 import type { Criticity, Layer, Status } from '../../utils/types'
+import McPanelTransition from '../../components/McPanelTransition/McPanelTransition.vue'
 import McAppBar from '../../components/McAppBar/McAppBar.vue'
 import type { TrailStep } from '../../components/McMapTrail/McMapTrail.vue'
 import McAvatarStack, { type McAvatarPerson } from '../../components/McAvatar/McAvatarStack.vue'
@@ -245,9 +246,9 @@ function placeNote() {
   const c = viewCenter()
   annotations.value?.placeNote(c.x, c.y)
 }
+/** Le bouton Commentaire arme le mode placement : le prochain clic sur la carte pose l'épingle. */
 function placeComment() {
-  const c = viewCenter()
-  annotations.value?.placeComment(c.x + 40, c.y - 40)
+  annotations.value?.armComment()
 }
 /** Double-clic sur un objet : sa fiche, la machine dans l'écran Machines, le partenaire sur la carte des flux. */
 function openNode(n: ImpactNode) {
@@ -352,7 +353,6 @@ const colHeads = computed(() => [
             <template #actions>
               <McAvatarStack :people="people" label="3 personnes sur la carte" />
               <McButton variant="outline" icon="export" class="mc-scr-map-ico" title="Exporter" @click="exportReport"><span class="mc-scr-map-lbl">Exporter</span></McButton>
-              <McButton variant="primary" icon="pencil" :href="pathHref('/editeur')" @click.prevent="goPath('/editeur')">Modifier</McButton>
             </template>
           </McAppBar>
           <div class="mc-scr-chips">
@@ -363,7 +363,9 @@ const colHeads = computed(() => [
       </template>
 
       <template #right>
-        <McLegend v-if="legend" v-model:isolated="isolated" :sections="legendSections" @close="legend = false" />
+        <McPanelTransition>
+          <McLegend v-if="legend" v-model:isolated="isolated" :sections="legendSections" @close="legend = false" />
+        </McPanelTransition>
         <McInspector :object="simulation" class="mc-scr-sim" @close="stopSimulation">
           <template #statuses>
             <span class="mc-scr-cap">Rien n’est modifié</span>
@@ -406,7 +408,7 @@ const colHeads = computed(() => [
       </template>
 
       <template #bottom>
-        <McToolbar v-model:tool="tool" v-model:zoom="zoom" v-model:legend="legend" @fit="fit" @filter="legend = true" @sticky="placeNote" @comment="placeComment">
+        <McToolbar v-model:tool="tool" v-model:zoom="zoom" v-model:legend="legend" @fit="fit" @filter="legend = true" @sticky="placeNote" @comment="placeComment" :commenting="annotations?.placing ?? false">
           <template #lens><McLensPicker v-model:lens="lens" :lenses="lenses" @change="(l) => (legend = l.id !== NO_LENS)" /></template>
         </McToolbar>
       </template>

@@ -198,95 +198,139 @@ watch(panel, (el) => {
 })
 onBeforeUnmount(() => popObserver?.disconnect())
 
+/** Section choisie au clic : elle reste active pendant le défilement qu'elle déclenche,
+ * même si le formulaire bute en bas avant qu'elle n'atteigne le haut (dernières sections courtes). */
+let pinned: string | null = null
+let pinTimer: ReturnType<typeof setTimeout> | undefined
 function goSection(s: ModalSection) {
   section.value = s.id
   const target = form.value?.querySelector<HTMLElement>(`[data-section="${CSS.escape(s.id)}"]`)
-  if (target && form.value) form.value.scrollTo({ top: target.offsetTop - 20, behavior: 'smooth' })
+  if (!target || !form.value) return
+  const el = form.value
+  const top = Math.min(target.offsetTop - 20, el.scrollHeight - el.clientHeight)
+  if (Math.abs(top - el.scrollTop) < 2) return
+  pinned = s.id
+  clearTimeout(pinTimer)
+  pinTimer = setTimeout(() => (pinned = null), 1000)
+  el.scrollTo({ top, behavior: 'smooth' })
 }
 function onScroll() {
   if (!form.value || !props.sections) return
-  const top = form.value.scrollTop + 32
+  if (pinned) {
+    // Le défilement programmé continue : on attend qu'il s'arrête avant de rendre la main à l'utilisateur.
+    clearTimeout(pinTimer)
+    pinTimer = setTimeout(() => (pinned = null), 150)
+    return
+  }
+  const el = form.value
+  const top = el.scrollTop + 32
   let cur = props.sections[0].id
   for (const s of props.sections) {
-    const el = form.value.querySelector<HTMLElement>(`[data-section="${CSS.escape(s.id)}"]`)
-    if (el && el.offsetTop <= top) cur = s.id
+    const node = el.querySelector<HTMLElement>(`[data-section="${CSS.escape(s.id)}"]`)
+    if (node && node.offsetTop <= top) cur = s.id
   }
   section.value = cur
 }
+onBeforeUnmount(() => clearTimeout(pinTimer))
+
+/* Espace sous la dernière section : juste ce qu'il faut pour que son titre puisse monter en haut.
+ * Sans lui, les dernières sections, courtes, ne deviennent jamais actives au défilement. */
+const tail = ref(0)
+function measureTail() {
+  const el = form.value
+  if (!el || !props.sections?.length) return
+  const last = el.querySelector<HTMLElement>(`[data-section="${CSS.escape(props.sections[props.sections.length - 1].id)}"]`)
+  if (!last) return
+  const content = el.scrollHeight - tail.value
+  tail.value = Math.max(0, Math.ceil(last.offsetTop - 20 + el.clientHeight - content))
+}
+let tailObserver: ResizeObserver | null = null
+watch(form, (el) => {
+  tailObserver?.disconnect()
+  tailObserver = null
+  if (!el || typeof ResizeObserver === 'undefined') return
+  tailObserver = new ResizeObserver(() => measureTail())
+  tailObserver.observe(el)
+  for (const child of Array.from(el.children)) tailObserver.observe(child)
+  nextTick(measureTail)
+})
+onBeforeUnmount(() => tailObserver?.disconnect())
 </script>
 
 <template>
-  <div v-if="open" class="mc-scrim mc-modal-layer" :class="{ contained }" @click.self="closeOnScrim && requestClose()" @keydown="onKey">
-    <div
-      ref="panel"
-      class="mc-modal"
-      :class="{ lg: size === 'lg', 'has-nav': hasNav, 'is-danger': danger, 'is-popping': popping }"
-      :role="danger ? 'alertdialog' : 'dialog'"
-      aria-modal="true"
-      :aria-labelledby="`${id}-t`"
-      :aria-describedby="danger ? `${id}-b` : undefined"
-      tabindex="-1"
-    >
-      <div class="hd" :class="{ 'mc-modal-hd-tile': hasNav }">
-        <slot name="header">
-          <span v-if="hasNav && type" class="mc-modal-tile" :class="`l-${type.layer}`"><McIcon :name="type.icon" size="lg" /></span>
-          <span v-else-if="danger" class="mc-modal-tile mc-modal-tile-danger"><McIcon name="alert-triangle" size="lg" /></span>
-          <div class="grow mc-modal-titles">
-            <slot v-if="!hasNav" name="chip">
-              <span v-if="type" class="mc-chip type" :class="`l-${type.layer}`"><span class="sw"><McIcon :name="type.icon" /></span>{{ type.label }}</span>
-            </slot>
-            <h2 :id="`${id}-t`" class="title-lg">{{ title }}</h2>
-            <div v-if="hasNav && (type || subtitle)" class="mc-row" style="gap: 6px">
-              <slot name="chip">
-                <span v-if="type" class="mc-chip sm type" :class="`l-${type.layer}`"><span class="sw"><McIcon :name="type.icon" /></span>{{ type.label }}</span>
+  <Transition name="mc-overlay">
+    <div v-if="open" class="mc-scrim mc-modal-layer" :class="{ contained }" @click.self="closeOnScrim && requestClose()" @keydown="onKey" @wheel.stop>
+      <div
+        ref="panel"
+        class="mc-modal"
+        :class="{ lg: size === 'lg', 'has-nav': hasNav, 'is-danger': danger, 'is-popping': popping }"
+        :role="danger ? 'alertdialog' : 'dialog'"
+        aria-modal="true"
+        :aria-labelledby="`${id}-t`"
+        :aria-describedby="danger ? `${id}-b` : undefined"
+        tabindex="-1"
+      >
+        <div class="hd" :class="{ 'mc-modal-hd-tile': hasNav }">
+          <slot name="header">
+            <span v-if="hasNav && type" class="mc-modal-tile" :class="`l-${type.layer}`"><McIcon :name="type.icon" size="lg" /></span>
+            <span v-else-if="danger" class="mc-modal-tile mc-modal-tile-danger"><McIcon name="alert-triangle" size="lg" /></span>
+            <div class="grow mc-modal-titles">
+              <slot v-if="!hasNav" name="chip">
+                <span v-if="type" class="mc-chip type" :class="`l-${type.layer}`"><span class="sw"><McIcon :name="type.icon" /></span>{{ type.label }}</span>
               </slot>
-              <span v-if="subtitle" class="mc-cap">{{ subtitle }}</span>
+              <h2 :id="`${id}-t`" class="title-lg">{{ title }}</h2>
+              <div v-if="hasNav && (type || subtitle)" class="mc-row" style="gap: 6px">
+                <slot name="chip">
+                  <span v-if="type" class="mc-chip sm type" :class="`l-${type.layer}`"><span class="sw"><McIcon :name="type.icon" /></span>{{ type.label }}</span>
+                </slot>
+                <span v-if="subtitle" class="mc-cap">{{ subtitle }}</span>
+              </div>
+              <span v-else-if="subtitle" class="mc-cap">{{ subtitle }}</span>
             </div>
-            <span v-else-if="subtitle" class="mc-cap">{{ subtitle }}</span>
-          </div>
-        </slot>
-        <button type="button" class="mc-ibtn" aria-label="Fermer" @click="requestClose"><McIcon name="x" /></button>
-      </div>
+          </slot>
+          <button type="button" class="mc-ibtn" aria-label="Fermer" @click="requestClose"><McIcon name="x" /></button>
+        </div>
 
-      <div v-if="hasNav" class="mc-modal-split">
-        <nav class="mc-modal-nav" aria-label="Sections">
-          <button
-            v-for="s in sections"
-            :key="s.id"
-            type="button"
-            :class="{ 'is-on': section === s.id }"
-            :aria-current="section === s.id ? 'true' : undefined"
-            @click="goSection(s)"
-          >
-            <McIcon v-if="s.icon" :name="s.icon" size="sm" />{{ s.label }}
-            <span v-if="s.error" class="err"><McIcon name="alert-octagon" size="sm" label="À corriger" /></span>
-            <span v-else-if="s.modified" class="dot" role="img" aria-label="Modifiée" />
-          </button>
-        </nav>
-        <div ref="form" class="mc-modal-body mc-modal-form" @scroll.passive="onScroll"><slot /></div>
-      </div>
-      <div v-else :id="`${id}-b`" class="bd mc-modal-body"><slot /></div>
+        <div v-if="hasNav" class="mc-modal-split">
+          <nav class="mc-modal-nav" aria-label="Sections">
+            <button
+              v-for="s in sections"
+              :key="s.id"
+              type="button"
+              :class="{ 'is-on': section === s.id }"
+              :aria-current="section === s.id ? 'true' : undefined"
+              @click="goSection(s)"
+            >
+              <McIcon v-if="s.icon" :name="s.icon" size="sm" />{{ s.label }}
+              <span v-if="s.error" class="err"><McIcon name="alert-octagon" size="sm" label="À corriger" /></span>
+              <span v-else-if="s.modified" class="dot" role="img" aria-label="Modifiée" />
+            </button>
+          </nav>
+          <div ref="form" class="mc-modal-body mc-modal-form" @scroll.passive="onScroll"><slot /><div v-if="sections?.length" class="mc-modal-tail" :style="{ height: tail + 'px' }" aria-hidden="true" /></div>
+        </div>
+        <div v-else :id="`${id}-b`" class="bd mc-modal-body"><slot /></div>
 
-      <div class="ft">
-        <template v-if="asking">
-          <span class="left mc-modal-ask" role="alert"><McIcon name="alert-triangle" size="sm" />Des modifications ne sont pas enregistrées.</span>
-          <McButton variant="outline" @click="asking = false">Continuer la saisie</McButton>
-          <McButton variant="danger" @click="close">Fermer sans enregistrer</McButton>
-        </template>
-        <slot v-else name="footer" :close="requestClose">
-          <span v-if="footerNote" class="left"><McIcon name="info" size="sm" />{{ footerNote }}</span>
-          <McButton ref="cancelBtn" variant="outline" @click="cancel">{{ cancelLabel }}</McButton>
-          <McButton
-            :variant="danger ? 'danger' : 'primary'"
-            :icon="confirmIcon ?? (danger ? 'trash' : undefined)"
-            :disabled="confirmDisabled"
-            :loading="loading"
-            @click="emit('confirm')"
-          >{{ confirmLabel }}</McButton>
-        </slot>
+        <div class="ft">
+          <template v-if="asking">
+            <span class="left mc-modal-ask" role="alert"><McIcon name="alert-triangle" size="sm" />Des modifications ne sont pas enregistrées.</span>
+            <McButton variant="outline" @click="asking = false">Continuer la saisie</McButton>
+            <McButton variant="danger" @click="close">Fermer sans enregistrer</McButton>
+          </template>
+          <slot v-else name="footer" :close="requestClose">
+            <span v-if="footerNote" class="left"><McIcon name="info" size="sm" />{{ footerNote }}</span>
+            <McButton ref="cancelBtn" variant="outline" @click="cancel">{{ cancelLabel }}</McButton>
+            <McButton
+              :variant="danger ? 'danger' : 'primary'"
+              :icon="confirmIcon ?? (danger ? 'trash' : undefined)"
+              :disabled="confirmDisabled"
+              :loading="loading"
+              @click="emit('confirm')"
+            >{{ confirmLabel }}</McButton>
+          </slot>
+        </div>
       </div>
     </div>
-  </div>
+  </Transition>
 </template>
 
 <style>

@@ -18,10 +18,12 @@ import McToastHost from '../../components/McToast/McToastHost.vue'
 import { useToast } from '../../components/McToast/useToast'
 import { ficheHref, goFiche, goPath, pathHref } from '../bridge'
 import { openPaletteItem, paletteItems } from '../Accueil/nav'
-import { applications, type Application } from '../../data/applications'
+import { applications, getApplication, type Application } from '../../data/applications'
 import { composants, getMachine, osOf } from '../../data/infrastructure'
 import { echeanceOf, frDate, getLogiciel, type Logiciel } from '../../data/logiciels'
 import { exportCsv } from '../../data/a-texte'
+import AppInspector from '../shared/AppInspector.vue'
+import type { KeyValueItem } from '../../components/McKeyValueList/types'
 
 const toast = useToast()
 const plural = (n: number, one: string, many: string) => `${n} ${n > 1 ? many : one}`
@@ -126,11 +128,17 @@ function exportList() {
 }
 
 /* ---------- Navigation ---------- */
+// Clic : l'application s'affiche dans l'inspecteur à droite ; double-clic ou ⌘/Ctrl-clic : sa fiche.
 function open(a: Application, e: MouseEvent) {
   if (e.metaKey || e.ctrlKey) return
   e.preventDefault()
-  goFiche(a.slug)
+  inspectedSlug.value = inspectedSlug.value === a.slug ? null : a.slug
 }
+const inspectedSlug = ref<string | null>(null)
+const inspected = computed(() => getApplication(inspectedSlug.value))
+/** Sans sélection, l'inspecteur résume ce que montre la liste. */
+const summary = computed<KeyValueItem[]>(() => [{ key: 'Applications concernées', value: bySearch.value.length }, { key: 'Infra obsolète', value: counts.value.critical }, { key: 'Fin de support proche', value: counts.value.warn }, { key: 'Logiciels en cause', value: softwareCount.value }])
+
 const logicielPath = (l: Logiciel) => `/logiciels?id=${l.id}`
 const machinePath = (m: string) => `/machines?id=${m}`
 function go(path: string, e: MouseEvent) {
@@ -141,9 +149,9 @@ function go(path: string, e: MouseEvent) {
 const lifeLabel = (r: Raison) => (r.logiciel?.finEtendue ? 'Support étendu jusqu’au' : 'Fin de support le')
 
 /* ---------- Barre du haut ---------- */
-const trail: TrailStep[] = [{ label: 'Accueil' }, { label: 'Couche applicative', layer: 'applicatif' }, { label: 'Applications obsolètes' }]
+const trail: TrailStep[] = [{ label: 'Accueil' }, { label: 'Applications obsolètes' }]
 function onTrail(_s: TrailStep, i: number) {
-  if (i === 0 || i === 1) goPath('/')
+  if (i === 0) goPath('/')
 }
 function onHome(e: MouseEvent) {
   if (e.metaKey || e.ctrlKey || e.shiftKey) return
@@ -165,7 +173,8 @@ const searchCount = computed(() => (query.value.trim() ? (bySearch.value.length 
       </template>
     </McAppBar>
 
-    <main class="mc-scr-obso-wrap">
+    <div class="mc-scr-obso-wrap">
+    <main class="mc-scr-obso-main">
       <header class="mc-scr-obso-head">
         <div class="mc-scr-obso-titles">
           <p class="mc-over">Couche applicative · Obsolescence</p>
@@ -199,10 +208,10 @@ const searchCount = computed(() => (query.value.trim() ? (bySearch.value.length 
       </div>
 
       <ol v-if="shown.length" class="mc-scr-obso-list">
-        <li v-for="x in shown" :key="x.app.slug" class="mc-scr-obso-card" :class="`is-${x.status}`">
+        <li v-for="x in shown" :key="x.app.slug" class="mc-scr-obso-card" :class="[`is-${x.status}`, { 'is-sel': inspectedSlug === x.app.slug }]">
           <div class="mc-scr-obso-top">
             <span class="mc-scr-obso-tile"><McIcon name="app" /></span>
-            <a class="mc-scr-obso-app" :href="ficheHref(x.app.slug)" @click="open(x.app, $event)">{{ x.app.name }}</a>
+            <a class="mc-scr-obso-app" :aria-current="inspectedSlug === x.app.slug || undefined" :href="ficheHref(x.app.slug)" @click="open(x.app, $event)" @dblclick="goFiche(x.app.slug)">{{ x.app.name }}</a>
             <span class="mc-scr-obso-dom">{{ x.app.domaines[0] ?? x.app.description ?? '' }}</span>
             <span class="mc-scr-obso-grow" />
             <McButton
@@ -255,6 +264,8 @@ const searchCount = computed(() => (query.value.trim() ? (bySearch.value.length 
         <template #action><McButton variant="outline" size="sm" icon="x" @click="clearAll">Tout effacer</McButton></template>
       </McEmptyState>
     </main>
+    <AppInspector :app="inspected" :summary="summary" @close="inspectedSlug = null" @inspect="(a) => (inspectedSlug = a.slug)" />
+    </div>
 
     <McCommandPalette v-model:open="paletteOpen" :items="paletteItems" @select="onPalette" />
     <McToastHost />
@@ -263,8 +274,9 @@ const searchCount = computed(() => (query.value.trim() ? (bySearch.value.length 
 
 <style>
 .mc-scr-obso { position: relative; min-height: 100vh; background: var(--canvas); color: var(--ink); font-family: var(--font-sans); box-sizing: border-box; }
-.mc-scr-obso-bar { position: sticky; top: 16px; z-index: 20; margin: 16px 16px 0; }
-.mc-scr-obso-wrap { max-width: 1280px; margin: 0 auto; padding: 24px 32px 40px; box-sizing: border-box; display: grid; gap: 16px; }
+.mc-scr-obso-bar { position: sticky; top: 16px; z-index: 20; margin: 16px var(--page-inset) 0; }
+.mc-scr-obso-wrap { max-width: var(--page-w); margin: 0 auto; padding: 24px var(--page-pad) 40px; box-sizing: border-box; display: flex; gap: 20px; align-items: flex-start; }
+.mc-scr-obso-main { flex: 1; min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
 .mc-scr-obso-head { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
 .mc-scr-obso-titles { flex: 1; min-width: 280px; }
 .mc-scr-obso-titles .mc-over { margin: 0 0 2px; }
@@ -284,6 +296,7 @@ const searchCount = computed(() => (query.value.trim() ? (bySearch.value.length 
 .mc-scr-obso-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
 .mc-scr-obso-card { display: grid; gap: 8px; padding: 12px 14px; border-radius: var(--radius-md); background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--status-warn); box-shadow: var(--shadow-node); }
 .mc-scr-obso-card.is-critical { border-left-color: var(--status-critical); }
+.mc-scr-obso-card.is-sel { border-top-color: var(--accent); border-right-color: var(--accent); border-bottom-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), var(--shadow-node); }
 .mc-scr-obso-top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .mc-scr-obso-tile { width: 26px; height: 26px; border-radius: var(--radius-xs); background: var(--layer-applicatif-soft); color: var(--layer-applicatif); display: inline-flex; align-items: center; justify-content: center; flex: none; }
 .mc-scr-obso-app { font: 700 15px/20px var(--font-display); color: var(--ink); text-decoration: none; }
@@ -301,12 +314,9 @@ const searchCount = computed(() => (query.value.trim() ? (bySearch.value.length 
 .mc-scr-obso-arrow { color: var(--ink-subtle); }
 .mc-scr-obso-step .mc-life { font-size: 12px; }
 @media (min-width: 1800px) {
-  .mc-scr-obso-wrap { max-width: 1760px; padding-inline: 40px; }
-  .mc-scr-obso-bar { width: 1728px; max-width: calc(100% - 32px); margin-inline: auto; box-sizing: border-box; }
   .mc-scr-obso-list { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
 }
 @media (max-width: 1280px) {
-  .mc-scr-obso-wrap { padding-inline: 24px; }
   .mc-scr-obso-search { flex: 1 1 260px; width: auto; }
   .mc-scr-obso-chains { padding-left: 0; }
 }

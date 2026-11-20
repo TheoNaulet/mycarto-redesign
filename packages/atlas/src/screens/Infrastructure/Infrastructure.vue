@@ -4,6 +4,7 @@
 import { computed, reactive, ref, watch } from 'vue'
 import type { IconName } from '../../icons/icons'
 import type { Status } from '../../utils/types'
+import McPanelTransition from '../../components/McPanelTransition/McPanelTransition.vue'
 import McAppBar from '../../components/McAppBar/McAppBar.vue'
 import type { TrailStep } from '../../components/McMapTrail/McMapTrail.vue'
 import McAvatarStack, { type McAvatarPerson } from '../../components/McAvatar/McAvatarStack.vue'
@@ -28,6 +29,7 @@ import type { RelationGroup, RelationItem } from '../../components/McRelationLis
 import McFilterChip from '../../components/McFilterChip/McFilterChip.vue'
 import { ficheHref, goFiche, goPath, pathHref } from '../bridge'
 import McToastHost from '../../components/McToast/McToastHost.vue'
+import AppEditModal from '../shared/AppEditModal.vue'
 import { useToast } from '../../components/McToast/useToast'
 import SearchPalette from '../Accueil/SearchPalette.vue'
 import McModal from '../../components/McModal/McModal.vue'
@@ -38,17 +40,22 @@ import MapShareDialog from './MapShareDialog.vue'
 import type { ExportItem } from '../shared/SharePanel.vue'
 import { OBSOLESCENCE, echeanceOf, frDate, getLogiciel, logiciels } from '../../data/logiciels'
 import { noteTexts } from '../../data/annotations'
+import { machines as parcMachines, machineObsolescence, osOf } from '../../data/infrastructure'
+import McIconButton from '../../components/McIconButton/McIconButton.vue'
+import MapEditBar from '../shared/MapEditBar.vue'
+import { useMapEdit } from '../shared/mapEdit'
 
 const toast = useToast()
 const paletteOpen = ref(false)
-/** Modifier l'objet sélectionné : APOGEE dans le formulaire de l'explorateur, une machine dans l'écran Machines,
+const appEdit = ref<InstanceType<typeof AppEditModal>>()
+/** Modifier l'objet sélectionné : APOGEE dans sa fenêtre de modification, ici même ; une machine dans l'écran Machines,
  *  un composant ou un environnement dans sa fenêtre de modification (la carte suit). */
 function editSelected() {
   const s = selected.value
   if (!s) return
-  if (s === 'APOGEE') return goPath('/explorateur?modifier=apogee')
+  if (s === 'APOGEE') return void appEdit.value?.openApp('APOGEE')
   if (s === 'PROD' || s === 'DEV') return openEnvEdit(s)
-  const n = byId[s]
+  const n = byId.value[s]
   if (n?.kind === 'machine') goPath(machinePath(n.id))
   else if (n) openCompEdit(n)
 }
@@ -132,10 +139,11 @@ const NODES = reactive<InfraNode[]>([
   machine('pythagore', 'VM', 'cloud', 547, 'Ubuntu 22.04', 'warn', 'Ubuntu 22.04 · fin 30/04/2027', 'Machine virtuelle du cluster philosophe.'),
   machine('cupidon', 'VM', 'cloud', DEV_Y + NODE_H / 2, 'Debian 12', 'ok', 'Debian 12 · supporté', 'Machine virtuelle de développement.'),
 ])
-const byId = Object.fromEntries(NODES.map((n) => [n.id, n])) as Record<string, InfraNode>
-const components = NODES.filter((n) => n.kind === 'composant')
-const machines = NODES.filter((n) => n.kind === 'machine')
-const hostedBy = (m: string) => components.filter((c) => c.host === m)
+// Dérivés de NODES : ils suivent les ajouts et retraits du mode modification.
+const byId = computed(() => Object.fromEntries(NODES.map((n) => [n.id, n])) as Record<string, InfraNode>)
+const components = computed(() => NODES.filter((n) => n.kind === 'composant'))
+const machines = computed(() => NODES.filter((n) => n.kind === 'machine'))
+const hostedBy = (m: string) => components.value.filter((c) => c.host === m)
 const machineSub = (m: InfraNode) => `${m.software} · héberge ${hostedBy(m.id).length} composant${hostedBy(m.id).length > 1 ? 's' : ''}`
 
 /** Coude des liens de la colonne de droite : un par lien, pour qu'aucun segment vertical n'en recouvre un autre. */
@@ -143,21 +151,21 @@ const RIGHT_MID: Record<string, number> = { 'Oracle Reports': 750, 'Services Web
 
 /** Noms des environnements, modifiables. */
 const envNames = reactive<Record<Env, string>>({ PROD: 'Production', DEV: 'Développement' })
-const envCount = (e: Env) => components.filter((c) => c.env === e).length
+const envCount = (e: Env) => components.value.filter((c) => c.env === e).length
 
 /* ---------- Sélection ---------- */
 const selected = ref<string | null>('sophocle')
 const related = computed(() => {
   const s = selected.value
   const set = new Set<string>()
-  if (!s || !byId[s]) return set
+  if (!s || !byId.value[s]) return set
   set.add(s)
-  const n = byId[s]
+  const n = byId.value[s]
   if (n.host) set.add(n.host)
   if (n.kind === 'machine') hostedBy(s).forEach((c) => set.add(c.id))
   return set
 })
-const nodeSelected = computed(() => !!selected.value && !!byId[selected.value])
+const nodeSelected = computed(() => !!selected.value && !!byId.value[selected.value])
 
 /* ---------- Lentille ---------- */
 const LENSES = MC_LENSES.filter((l) => l.id === NO_LENS || l.id === 'obsolescence')
@@ -187,8 +195,8 @@ const legendSections = computed<McLegendSection[]>(() => {
   sections.push({
     title: 'Types',
     items: [
-      { id: 'type-composant', label: 'Composant', count: components.length, layer: 'technique' },
-      { id: 'type-machine', label: 'Machine et VM', count: machines.length, layer: 'technique' },
+      { id: 'type-composant', label: 'Composant', count: components.value.length, layer: 'technique' },
+      { id: 'type-machine', label: 'Machine et VM', count: machines.value.length, layer: 'technique' },
     ],
   })
   return sections
@@ -204,21 +212,22 @@ const subOf = (n: InfraNode) => (lensOn.value ? n.reason : n.kind === 'machine' 
 
 /* ---------- Liens d'hébergement ---------- */
 const edges = computed<McEdgeSpec[]>(() =>
-  components.map((c) => {
-    const m = byId[c.host!]
-    const midX = c.box.x === COL[0] ? LEFT_MID : RIGHT_MID[c.id]
+  components.value.flatMap((c) => {
+    const m = c.host ? byId.value[c.host] : undefined
+    if (!m) return []
+    const midX = c.box.x === COL[0] ? LEFT_MID : (RIGHT_MID[c.id] ?? 762)
     const on = nodeSelected.value && related.value.has(c.id) && related.value.has(m.id)
-    return { id: `h-${c.id}`, ...edgeBetween(c.box, m.box), midX, kind: 'host', selected: on }
+    return [{ id: `h-${c.id}`, ...edgeBetween(c.box, m.box), midX, kind: 'host' as const, selected: on }]
   }),
 )
 function onEdgeSelect(id: string) {
-  const c = byId[id.replace(/^h-/, '')]
+  const c = byId.value[id.replace(/^h-/, '')]
   if (c?.host) selected.value = c.host
 }
 
 /* ---------- Inspecteur ---------- */
 const inspected = computed<InspectedObject | undefined>(() => {
-  const n = selected.value ? byId[selected.value] : undefined
+  const n = selected.value ? byId.value[selected.value] : undefined
   if (n) return { name: n.id, type: n.type === 'Machine' ? 'Machine physique' : n.type === 'VM' ? 'Machine virtuelle' : n.type, layer: 'technique', icon: n.icon, description: n.description }
   if (selected.value === 'APOGEE') return { name: 'APOGEE', type: 'Application', layer: 'applicatif', icon: 'app', description: 'Gestion des étudiants et des enseignements.' }
   if (selected.value === 'PROD' || selected.value === 'DEV')
@@ -226,13 +235,13 @@ const inspected = computed<InspectedObject | undefined>(() => {
   return undefined
 })
 const headerChip = computed(() => {
-  const n = selected.value ? byId[selected.value] : undefined
+  const n = selected.value ? byId.value[selected.value] : undefined
   if (!n) return undefined
   if (n.id === 'sophocle') return { status: 'critical' as Status, label: 'Plus supporté : Tomcat 5' }
   return { status: n.status, label: n.status === 'ok' ? 'Supporté' : n.reason }
 })
 const infos = computed<KeyValueItem[]>(() => {
-  const n = selected.value ? byId[selected.value] : undefined
+  const n = selected.value ? byId.value[selected.value] : undefined
   if (!n) return []
   if (n.kind === 'machine')
     return [
@@ -259,11 +268,11 @@ const rel = (n: InfraNode, withStatus = true): RelationItem => ({
     : { meta: n.kind === 'machine' ? n.type : n.software }),
 })
 const relations = computed<RelationGroup[]>(() => {
-  const n = selected.value ? byId[selected.value] : undefined
+  const n = selected.value ? byId.value[selected.value] : undefined
   if (!n) return []
   if (n.kind === 'machine') return [{ verb: 'Héberge', items: hostedBy(n.id).map((c) => rel(c)) }]
   return [
-    { verb: 'Hébergé sur', items: [rel(byId[n.host!])] },
+    { verb: 'Hébergé sur', items: n.host && byId.value[n.host] ? [rel(byId.value[n.host])] : [] },
     { verb: 'Composant de', items: [{ name: 'APOGEE', layer: 'applicatif', icon: 'app' }] },
   ]
 })
@@ -273,16 +282,16 @@ const apogeeRelations = computed<RelationGroup[]>(() => [
     verb: 'Environnements',
     items: (['PROD', 'DEV'] as Env[]).map((e) => ({ id: e, name: envNames[e], layer: 'technique' as const, icon: 'layers' as IconName, meta: plural(envCount(e), 'composant') })),
   },
-  { verb: 'Hébergée sur', items: machines.map((m) => rel(m)) },
+  { verb: 'Hébergée sur', items: machines.value.map((m) => rel(m)) },
 ])
 /** Composants d'un environnement sélectionné. */
 const envRelations = computed<RelationGroup[]>(() => {
   const e = selected.value === 'PROD' || selected.value === 'DEV' ? (selected.value as Env) : null
   if (!e) return []
-  return [{ verb: 'Composants', items: components.filter((c) => c.env === e).map((c) => rel(c)) }]
+  return [{ verb: 'Composants', items: components.value.filter((c) => c.env === e).map((c) => rel(c)) }]
 })
 function openRelation(item: RelationItem) {
-  if (byId[item.name]) selected.value = item.name
+  if (byId.value[item.name]) selected.value = item.name
   else if (item.name === 'APOGEE') selected.value = 'APOGEE'
   else if (item.id === 'PROD' || item.id === 'DEV') selected.value = item.id
 }
@@ -291,7 +300,11 @@ function openRelation(item: RelationItem) {
 const logicielOptions: McSelectOption[] = [...logiciels]
   .sort((a, b) => a.name.localeCompare(b.name))
   .map((l) => ({ value: l.name, label: l.name, status: OBSOLESCENCE[l.obsolescence].status }))
-const machineOptions = computed<McSelectOption[]>(() => machines.map((m) => ({ value: m.id, label: `${m.id} · ${m.software}` })))
+// Les machines de la carte d'abord, puis le reste du parc (choisie, elle s'ajoute à la carte).
+const machineOptions = computed<McSelectOption[]>(() => [
+  ...machines.value.map((m) => ({ value: m.id, label: `${m.id} · ${m.software}` })),
+  ...parcMachines.filter((m) => !byId.value[m.name]).map((m) => ({ value: m.name, label: `${m.name} · ${osOf(m).name}` })),
+])
 const envOptions = computed<McSelectOption[]>(() => (['PROD', 'DEV'] as Env[]).map((e) => ({ value: e, label: envNames[e] })))
 const compModal = ref(false)
 const compForm = reactive({ id: '', software: null as string | number | null, host: null as string | number | null, env: 'PROD' as string | number | null, description: '' })
@@ -312,19 +325,22 @@ function obsolescenceOf(name: string): { status: Status; reason: string } {
   return { status: 'ok', reason: l.name }
 }
 function saveComp() {
-  const n = byId[compForm.id]
+  const n = byId.value[compForm.id]
   if (!n) return
+  edit.record()
   const before = { software: n.software, status: n.status, reason: n.reason, host: n.host, env: n.env, description: n.description, box: { ...n.box } }
   const software = compForm.software ? String(compForm.software) : 'Version non renseignée'
   const { status, reason } = obsolescenceOf(software)
   Object.assign(n, { software, status, reason, host: String(compForm.host ?? n.host), description: compForm.description.trim() || n.description })
   const env = (compForm.env ?? 'PROD') as Env
   if (env !== n.env) {
+    // Le composant passe dans l'autre environnement : il prend sa première place libre.
+    const slot = freeSlot(env)
+    if (!slot) return toast.info(`Plus de place libre en ${envNames[env]}`)
     n.env = env
-    // Le composant passe dans l'autre environnement : il prend la première place libre de sa colonne.
-    if (env === 'DEV') n.box = { ...n.box, x: COL[1], y: DEV_Y }
-    else n.box = { ...n.box, x: COL[1], y: ROW_Y[4] }
+    n.box = { ...n.box, ...slot }
   }
+  ensureHostOnMap(n.host)
   compModal.value = false
   toast.success(`Composant ${n.id} modifié${status !== before.status ? ` : ${LEVELS[status].toLowerCase()}` : ''}`, {
     actionLabel: 'Annuler',
@@ -342,9 +358,104 @@ function openEnvEdit(e: Env) {
 function saveEnv() {
   const name = envForm.name.trim()
   if (!name) return
+  edit.record()
   envNames[envForm.id] = name
   envModal.value = false
   toast.success(`Environnement renommé : ${name}`)
+}
+
+/* ---------- Mode modification ----------
+ * « Modifier » rend cette carte modifiable sur place : ajouter un composant ou une machine du parc,
+ * retirer un objet (×). Chaque pas s'annule ; Abandonner revient à l'état d'entrée. */
+const edit = useMapEdit({
+  name: 'Machines nécessaires à APOGEE',
+  get: () => ({ nodes: NODES, envNames }),
+  set: (v: { nodes: InfraNode[]; envNames: Record<Env, string> }) => {
+    NODES.splice(0, NODES.length, ...v.nodes)
+    Object.assign(envNames, v.envNames)
+    if (selected.value && !byId.value[selected.value] && !['APOGEE', 'PROD', 'DEV'].includes(selected.value)) selected.value = null
+  },
+})
+/** Production : deux colonnes, cinq rangées. Développement : deux colonnes, qui s'allonge vers le bas. */
+function freeSlot(env: Env): { x: number; y: number } | null {
+  const taken = new Set(components.value.filter((c) => c.env === env).map((c) => `${c.box.x}:${c.box.y}`))
+  const rows = env === 'PROD' ? ROW_Y : Array.from({ length: 20 }, (_, k) => DEV_Y + k * 80)
+  for (const y of rows) for (const x of COL) if (!taken.has(`${x}:${y}`)) return { x, y }
+  return null
+}
+/** Rangées de l'environnement de développement (pour la hauteur de son cadre). */
+const devRows = computed(() => Math.max(1, ...components.value.filter((c) => c.env === 'DEV').map((c) => Math.round((c.box.y - DEV_Y) / 80) + 1)))
+/** Machine du parc posée sous les autres, si elle n'est pas déjà sur la carte. */
+function ensureHostOnMap(name?: string) {
+  if (!name || byId.value[name]) return
+  const x = parcMachines.find((m) => m.name === name)
+  if (!x) return
+  const os = osOf(x)
+  const o = machineObsolescence(x)
+  const cy = Math.max(...machines.value.map((m) => m.box.y + NODE_H / 2), ROW_Y[0]) + 80
+  NODES.push(machine(x.name, x.kind, x.kind === 'Machine' ? 'server' : 'cloud', cy, os.name, o.status, o.status === 'ok' ? `${os.name} · supporté` : o.reason, x.description))
+}
+const parcOptions = computed<McSelectOption[]>(() => parcMachines.map((m) => ({ value: m.name, label: `${m.name} · ${osOf(m).name}` })))
+
+const addCompOpen = ref(false)
+const addComp = reactive({ name: '', software: null as string | number | null, env: 'PROD' as string | number | null, host: null as string | number | null })
+function openAddComp() {
+  Object.assign(addComp, { name: '', software: null, env: 'PROD', host: null })
+  addCompOpen.value = true
+}
+const addCompError = computed(() => {
+  const n = addComp.name.trim()
+  if (!n) return 'Donnez un nom au composant.'
+  if (byId.value[n] || n === 'APOGEE') return 'Un objet de la carte porte déjà ce nom.'
+  if (!addComp.host) return 'Choisissez la machine qui l’héberge.'
+  if (!freeSlot((addComp.env ?? 'PROD') as Env)) return 'Plus de place libre dans cet environnement.'
+  return ''
+})
+function saveAddComp() {
+  if (addCompError.value) return
+  const env = (addComp.env ?? 'PROD') as Env
+  const slot = freeSlot(env)!
+  const software = addComp.software ? String(addComp.software) : 'Version non renseignée'
+  const { status, reason } = obsolescenceOf(software)
+  edit.record()
+  const host = String(addComp.host)
+  ensureHostOnMap(host)
+  NODES.push({ ...comp(addComp.name.trim(), 0, 0, software, status, reason, host, ''), env, box: { x: slot.x, y: slot.y, w: NODE_W, h: NODE_H } })
+  addCompOpen.value = false
+  selected.value = addComp.name.trim()
+  toast.success(`Composant ${addComp.name.trim()} ajouté en ${envNames[env]}`, { actionLabel: 'Annuler', onAction: edit.undo })
+}
+
+const addMachOpen = ref(false)
+const addMach = reactive({ machine: null as string | number | null, comp: null as string | number | null })
+const parcFree = computed<McSelectOption[]>(() => parcOptions.value.filter((o) => !byId.value[String(o.value)]))
+const compOptions = computed<McSelectOption[]>(() => components.value.map((c) => ({ value: c.id, label: `${c.id} · ${envNames[c.env ?? 'PROD']}` })))
+function openAddMach() {
+  Object.assign(addMach, { machine: null, comp: null })
+  addMachOpen.value = true
+}
+function saveAddMach() {
+  if (!addMach.machine || !addMach.comp) return
+  const c = byId.value[String(addMach.comp)]
+  if (!c) return
+  edit.record()
+  ensureHostOnMap(String(addMach.machine))
+  c.host = String(addMach.machine)
+  addMachOpen.value = false
+  selected.value = String(addMach.machine)
+  toast.success(`${addMach.machine} ajoutée : elle héberge ${c.id}`, { actionLabel: 'Annuler', onAction: edit.undo })
+}
+
+/** Retirer un objet de la carte. Une machine qui héberge encore des composants reste : il faut d'abord les déplacer. */
+function removeNode(n: InfraNode) {
+  if (n.kind === 'machine' && hostedBy(n.id).length) {
+    toast.info(`${n.id} héberge ${plural(hostedBy(n.id).length, 'composant')} : déplacez-les d’abord sur une autre machine.`)
+    return
+  }
+  edit.record()
+  NODES.splice(NODES.indexOf(n), 1)
+  if (selected.value === n.id) selected.value = null
+  toast.success(`${n.id} retiré de la carte`, { actionLabel: 'Annuler', onAction: edit.undo })
 }
 
 /* ---------- Exporter, post-its, commentaires ---------- */
@@ -359,9 +470,9 @@ function placeNote() {
   const c = viewCenter()
   annotations.value?.placeNote(c.x, c.y)
 }
+/** Le bouton Commentaire arme le mode placement : le prochain clic sur la carte pose l'épingle. */
 function placeComment() {
-  const c = viewCenter()
-  annotations.value?.placeComment(c.x + 40, c.y - 40)
+  annotations.value?.armComment()
 }
 /** Double-clic : une machine s'ouvre dans l'écran Machines, un composant dans sa fenêtre de modification. */
 function openNode(n: InfraNode) {
@@ -425,7 +536,7 @@ const pos = (b: McBox) => ({ left: b.x + 'px', top: b.y + 'px', width: b.w + 'px
   <div
     ref="root"
     class="mc-scr-infra mc-scr-map"
-    :class="{ 'is-hand': tool === 'hand' }"
+    :class="{ 'is-hand': tool === 'hand', 'is-editing': edit.on.value }"
     :style="vars"
     @pointerdown="handlers.onPointerDown"
     @pointermove="handlers.onPointerMove"
@@ -472,7 +583,7 @@ const pos = (b: McBox) => ({ left: b.x + 'px', top: b.y + 'px', width: b.w + 'px
           class="mc-scr-infra-env"
           @select="selected = 'DEV'"
         >
-          <div class="mc-scr-infra-spacer" style="height: 82px" @click.self="selected = null" />
+          <div class="mc-scr-infra-spacer" :style="{ height: 82 + (devRows - 1) * 80 + 'px' }" @click.self="selected = null" />
         </McContainer>
       </McContainer>
 
@@ -494,6 +605,18 @@ const pos = (b: McBox) => ({ left: b.x + 'px', top: b.y + 'px', width: b.w + 'px
         @select="selected = n.id"
         @open="openNode(n)"
       />
+      <template v-if="edit.on.value">
+        <McIconButton
+          v-for="n in NODES"
+          :key="`rm-${n.id}`"
+          size="sm"
+          icon="x"
+          class="mc-scr-infra-rm"
+          :style="{ left: n.box.x + n.box.w - 14 + 'px', top: n.box.y + 'px' }"
+          :label="`Retirer ${n.id} de la carte`"
+          @click.stop="removeNode(n)"
+        />
+      </template>
       <MapAnnotations ref="annotations" screen="infrastructure" :zoom="zoom" />
 
       <template #top>
@@ -502,7 +625,8 @@ const pos = (b: McBox) => ({ left: b.x + 'px', top: b.y + 'px', width: b.w + 'px
             <template #actions>
               <McAvatarStack :people="people" label="3 personnes sur la carte" />
               <McButton variant="outline" icon="export" class="mc-scr-map-ico" title="Exporter" @click="shareOpen = true"><span class="mc-scr-map-lbl">Exporter</span></McButton>
-              <McButton variant="primary" icon="pencil" :href="pathHref('/editeur')" @click.prevent="goPath('/editeur')">Modifier</McButton>
+              <McButton v-if="edit.on.value" variant="primary" icon="check" @click="edit.finish()">Terminer</McButton>
+              <McButton v-else variant="primary" icon="pencil" @click="edit.begin()">Modifier</McButton>
             </template>
           </McAppBar>
           <div class="mc-scr-infra-views">
@@ -513,46 +637,50 @@ const pos = (b: McBox) => ({ left: b.x + 'px', top: b.y + 'px', width: b.w + 'px
       </template>
 
       <template #right>
-        <McLegend v-if="legend" v-model:isolated="isolated" :sections="legendSections" @close="legend = false" />
-        <McInspector v-if="inspected" :object="inspected" @close="selected = null">
-          <template v-if="headerChip" #statuses>
-            <McStatusChip :status="headerChip.status" size="sm">{{ headerChip.label }}</McStatusChip>
-          </template>
-          <template #actions>
-            <McButton v-if="selected === 'sophocle'" size="sm" variant="secondary" icon="impact" @click="goPath('/impact')">Voir l’impact d’un arrêt</McButton>
-            <McButton v-else-if="selected && byId[selected]?.kind === 'machine'" size="sm" variant="secondary" icon="server" :href="pathHref(machinePath(selected))" @click.prevent="goPath(machinePath(selected))">Ouvrir dans Machines</McButton>
-            <McButton v-else-if="selected === 'APOGEE'" size="sm" variant="secondary" icon="external" :href="ficheHref('APOGEE')" @click.prevent="goFiche('APOGEE')">Ouvrir la fiche</McButton>
-            <McButton size="sm" variant="outline" icon="pencil" @click="editSelected">Modifier</McButton>
-          </template>
-          <template #default>
-            <template v-if="selected === 'APOGEE'">
-              <McKeyValueList :items="[{ key: 'Composants', value: components.length }, { key: 'Machines', value: machines.length }, { key: 'Éditeur', value: 'AMUE' }]">
-                <template #value="{ item }">
-                  <a v-if="item.key === 'Éditeur'" :href="pathHref('/fournisseurs')" class="mc-scr-infra-link" @click.prevent="goPath('/fournisseurs')">{{ item.value }}</a>
-                  <span v-else>{{ item.value }}</span>
-                </template>
-              </McKeyValueList>
-              <McRelationList :groups="apogeeRelations" @open="openRelation" />
+        <McPanelTransition>
+          <McLegend v-if="legend" v-model:isolated="isolated" :sections="legendSections" @close="legend = false" />
+        </McPanelTransition>
+        <McPanelTransition>
+          <McInspector v-if="inspected" :object="inspected" @close="selected = null">
+            <template v-if="headerChip" #statuses>
+              <McStatusChip :status="headerChip.status" size="sm">{{ headerChip.label }}</McStatusChip>
             </template>
-            <template v-else-if="selected && byId[selected]">
-              <p v-if="selected === 'sophocle'" class="mc-scr-infra-note">
-                <b>sophocle</b> héberge Tomcat 5, plus supporté depuis le 30/09/2012. Son arrêt toucherait les écrans Forms et les services web de APOGEE.
-              </p>
-              <McKeyValueList :items="infos">
-                <template #value="{ item }">
-                  <a v-if="(item.key === 'Logiciel' || item.key === 'Système') && logicielPath(String(item.value))" :href="pathHref(logicielPath(String(item.value))!)" class="mc-scr-infra-link" @click.prevent="goPath(logicielPath(String(item.value))!)">{{ item.value }}</a>
-                  <a v-else-if="item.key === 'Machine'" :href="pathHref(machinePath(String(item.value)))" class="mc-scr-infra-link" @click.prevent="goPath(machinePath(String(item.value)))">{{ item.value }}</a>
-                  <span v-else>{{ item.value }}</span>
-                </template>
-              </McKeyValueList>
-              <McRelationList :groups="relations" @open="openRelation" />
+            <template #actions>
+              <McButton v-if="selected === 'sophocle'" size="sm" variant="secondary" icon="impact" @click="goPath('/impact')">Voir l’impact d’un arrêt</McButton>
+              <McButton v-else-if="selected && byId[selected]?.kind === 'machine'" size="sm" variant="secondary" icon="server" :href="pathHref(machinePath(selected))" @click.prevent="goPath(machinePath(selected))">Ouvrir dans Machines</McButton>
+              <McButton v-else-if="selected === 'APOGEE'" size="sm" variant="secondary" icon="external" :href="ficheHref('APOGEE')" @click.prevent="goFiche('APOGEE')">Ouvrir la fiche</McButton>
+              <McButton size="sm" variant="outline" icon="pencil" @click="editSelected">Modifier</McButton>
             </template>
-            <template v-else>
-              <p class="mc-scr-infra-note">Regroupement sans objet : il range les composants de APOGEE par environnement.</p>
-              <McRelationList :groups="envRelations" @open="openRelation" />
+            <template #default>
+              <template v-if="selected === 'APOGEE'">
+                <McKeyValueList :items="[{ key: 'Composants', value: components.length }, { key: 'Machines', value: machines.length }, { key: 'Éditeur', value: 'AMUE' }]">
+                  <template #value="{ item }">
+                    <a v-if="item.key === 'Éditeur'" :href="pathHref('/fournisseurs')" class="mc-scr-infra-link" @click.prevent="goPath('/fournisseurs')">{{ item.value }}</a>
+                    <span v-else>{{ item.value }}</span>
+                  </template>
+                </McKeyValueList>
+                <McRelationList :groups="apogeeRelations" @open="openRelation" />
+              </template>
+              <template v-else-if="selected && byId[selected]">
+                <p v-if="selected === 'sophocle'" class="mc-scr-infra-note">
+                  <b>sophocle</b> héberge Tomcat 5, plus supporté depuis le 30/09/2012. Son arrêt toucherait les écrans Forms et les services web de APOGEE.
+                </p>
+                <McKeyValueList :items="infos">
+                  <template #value="{ item }">
+                    <a v-if="(item.key === 'Logiciel' || item.key === 'Système') && logicielPath(String(item.value))" :href="pathHref(logicielPath(String(item.value))!)" class="mc-scr-infra-link" @click.prevent="goPath(logicielPath(String(item.value))!)">{{ item.value }}</a>
+                    <a v-else-if="item.key === 'Machine'" :href="pathHref(machinePath(String(item.value)))" class="mc-scr-infra-link" @click.prevent="goPath(machinePath(String(item.value)))">{{ item.value }}</a>
+                    <span v-else>{{ item.value }}</span>
+                  </template>
+                </McKeyValueList>
+                <McRelationList :groups="relations" @open="openRelation" />
+              </template>
+              <template v-else>
+                <p class="mc-scr-infra-note">Regroupement sans objet : il range les composants de APOGEE par environnement.</p>
+                <McRelationList :groups="envRelations" @open="openRelation" />
+              </template>
             </template>
-          </template>
-        </McInspector>
+          </McInspector>
+        </McPanelTransition>
       </template>
 
       <template #bottom-left>
@@ -560,7 +688,19 @@ const pos = (b: McBox) => ({ left: b.x + 'px', top: b.y + 'px', width: b.w + 'px
       </template>
 
       <template #bottom>
-        <McToolbar v-model:tool="tool" v-model:zoom="zoom" v-model:legend="legend" @fit="fit" @filter="legend = true" @sticky="placeNote" @comment="placeComment">
+        <MapEditBar
+          v-if="edit.on.value"
+          :count="edit.count.value"
+          :count-label="edit.countLabel.value"
+          hint="Ajoutez un composant ou une machine ; retirez un objet avec ×"
+          @undo="edit.undo()"
+          @discard="edit.discard()"
+          @finish="edit.finish()"
+        >
+          <McButton variant="ghost" icon="plus" @click="openAddComp">Composant</McButton>
+          <McButton variant="ghost" icon="server" @click="openAddMach">Machine</McButton>
+        </MapEditBar>
+        <McToolbar v-else v-model:tool="tool" v-model:zoom="zoom" v-model:legend="legend" @fit="fit" @filter="legend = true" @sticky="placeNote" @comment="placeComment" :commenting="annotations?.placing ?? false">
           <template #lens><McLensPicker v-model:lens="lens" :lenses="LENSES" /></template>
         </McToolbar>
       </template>
@@ -586,7 +726,43 @@ const pos = (b: McBox) => ({ left: b.x + 'px', top: b.y + 'px', width: b.w + 'px
     <McModal v-model:open="envModal" title="Renommer l’environnement" :type="{ label: 'Environnement', icon: 'layers', layer: 'technique' }" :confirm-disabled="!envForm.name.trim()" @confirm="saveEnv">
       <McTextField v-model="envForm.name" label="Nom" required placeholder="ex. Recette" />
     </McModal>
+    <McModal
+      v-model:open="addCompOpen"
+      title="Ajouter un composant"
+      :type="{ label: 'Composant', icon: 'chip', layer: 'technique' }"
+      subtitle="Composant de APOGEE"
+      confirm-label="Ajouter"
+      confirm-icon="plus"
+      :confirm-disabled="!!addCompError"
+      :footer-note="addComp.name.trim() ? addCompError || undefined : undefined"
+      @confirm="saveAddComp"
+    >
+      <div class="mc-scr-infra-form">
+        <McTextField v-model="addComp.name" label="Nom" required placeholder="ex. Serveur de recette" />
+        <McSelect v-model="addComp.software" label="Logiciel" clearable :options="logicielOptions" />
+        <div class="mc-grid2">
+          <McSelect v-model="addComp.env" label="Environnement" required :options="envOptions" />
+          <McSelect v-model="addComp.host" label="Hébergé sur" required :options="machineOptions" />
+        </div>
+      </div>
+    </McModal>
+    <McModal
+      v-model:open="addMachOpen"
+      title="Ajouter une machine du parc"
+      :type="{ label: 'Machine', icon: 'server', layer: 'technique' }"
+      subtitle="Elle rejoint la carte avec le composant qu’elle héberge"
+      confirm-label="Ajouter"
+      confirm-icon="plus"
+      :confirm-disabled="!addMach.machine || !addMach.comp"
+      @confirm="saveAddMach"
+    >
+      <div class="mc-scr-infra-form">
+        <McSelect v-model="addMach.machine" label="Machine" required :options="parcFree" />
+        <McSelect v-model="addMach.comp" label="Héberge le composant" required :options="compOptions" help="Le composant quitte sa machine actuelle pour celle-ci." />
+      </div>
+    </McModal>
     <SearchPalette v-model:open="paletteOpen" />
+    <AppEditModal ref="appEdit" />
     <McToastHost contained :offset="96" />
   </div>
 </template>
@@ -599,7 +775,7 @@ const pos = (b: McBox) => ({ left: b.x + 'px', top: b.y + 'px', width: b.w + 'px
 .mc-scr-infra-env.is-prod { --gbg: color-mix(in srgb, var(--layer-technique-soft) 70%, transparent); }
 .mc-scr-infra .mc-canvas-right { align-items: stretch; }
 .mc-scr-infra .mc-canvas-right > .mc-legend { flex: none; }
-.mc-scr-infra .mc-canvas-right > .mc-insp { flex: 0 1 auto; min-height: 0; overflow: auto; }
+.mc-scr-infra .mc-canvas-right > .mc-insp { flex: 0 1 auto; min-height: 0; overflow: hidden auto; }
 /* Le corps de l’inspecteur garde sa largeur : les longues valeurs passent à la ligne. */
 .mc-scr-infra .mc-insp .body { grid-template-columns: minmax(0, 1fr); }
 .mc-scr-infra-top { display: flex; flex-direction: column; gap: 12px; pointer-events: none; }
@@ -610,4 +786,7 @@ const pos = (b: McBox) => ({ left: b.x + 'px', top: b.y + 'px', width: b.w + 'px
 .mc-scr-infra-note b { color: var(--ink); }
 .mc-scr-infra-link { color: var(--accent); }
 .mc-scr-infra-form { display: grid; gap: 16px; }
+.mc-scr-infra-rm { position: absolute; z-index: 3; background: var(--surface); box-shadow: var(--shadow-node); border-radius: 999px; }
+.mc-scr-infra.is-editing .mc-canvas-layer > .mc-node { outline: 1px dashed transparent; outline-offset: 3px; border-radius: var(--radius-md); }
+.mc-scr-infra.is-editing .mc-canvas-layer > .mc-node:hover { outline-color: var(--accent); }
 </style>

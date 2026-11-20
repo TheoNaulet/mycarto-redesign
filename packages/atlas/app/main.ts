@@ -1,14 +1,15 @@
 // Application myCarto (concept) : les écrans d'Atlas, reliés par un vrai routeur.
-import { createApp } from 'vue'
+import { createApp, nextTick } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import '../src/styles/atlas.css'
 import './app.css'
 import App from './App.vue'
-import { registerAppNavigator } from '../src/screens/bridge'
+import { registerAppNavigator, withoutBase } from '../src/screens/bridge'
 import { getApplication } from '../src/data/applications'
 
 const router = createRouter({
-  history: createWebHistory(),
+  // En ligne, l'application vit sous /app/ (le site vitrine occupe la racine) ; en local, à la racine.
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     { path: '/', component: () => import('../src/screens/Accueil/Accueil.vue'), meta: { title: 'Accueil' } },
     { path: '/carte', component: () => import('../src/screens/Carte/Carte.vue'), meta: { title: 'Applications et flux de Scolarité' } },
@@ -45,6 +46,9 @@ const router = createRouter({
     { path: '/corbeille', component: () => import('../src/screens/Corbeille/Corbeille.vue'), meta: { title: 'Corbeille' } },
     { path: '/types-objets', component: () => import('../src/screens/Types/Types.vue'), meta: { title: "Types d'objets" } },
     { path: '/requetes', component: () => import('../src/screens/Requetes/Requetes.vue'), meta: { title: 'Modèles de requête' } },
+    { path: '/journal', component: () => import('../src/screens/Journal/Journal.vue'), meta: { title: 'Historique' } },
+    { path: '/modeles-carte', component: () => import('../src/screens/ModelesCarte/ModelesCarte.vue'), meta: { title: 'Modèles de carte' } },
+    { path: '/diagrammes', component: () => import('../src/screens/Diagrammes/Diagrammes.vue'), meta: { title: 'Diagrammes BPMN' } },
     { path: '/utilisateurs', component: () => import('../src/screens/Utilisateurs/Utilisateurs.vue'), meta: { title: 'Utilisateurs et groupes' } },
     { path: '/:any(.*)*', redirect: '/' },
   ],
@@ -57,6 +61,38 @@ router.afterEach((to) => {
   document.title = `${title} · myCarto`
 })
 
+// Passage carte ↔ administration : le logo reste en place, la barre s'efface et le menu glisse depuis la gauche
+// (et inversement). L'API View Transitions fige l'ancien écran, le routeur affiche le nouveau, puis le navigateur
+// joue les animations décrites dans app.css (barre « mc-bar », menu « mc-side », logo « mc-logo »).
+// Sans l'API, ou animations réduites : changement direct, comme avant.
+const ADMIN = ['/explorateur', '/tableau-de-bord', '/tableaux-de-bord', '/dictionnaires', '/journal', '/corbeille', '/types-objets', '/modeles-carte', '/diagrammes', '/reglages', '/requetes', '/utilisateurs']
+const isAdmin = (path: string) => ADMIN.includes(path)
+const calm = window.matchMedia('(prefers-reduced-motion: reduce)')
+let pending: (() => void) | null = null
+
+router.beforeResolve((to, from) => {
+  if (!from.matched.length || isAdmin(to.path) === isAdmin(from.path)) return
+  if (!('startViewTransition' in document) || calm.matches) return
+  document.documentElement.dataset.navMorph = isAdmin(to.path) ? 'to-side' : 'to-top'
+  return new Promise<void>((resolve) => {
+    const vt = document.startViewTransition(() => {
+      resolve()
+      // Le nouvel écran est dessiné au prochain tour du routeur : on attend qu'il soit dans la page.
+      return new Promise<void>((done) => { pending = done })
+    })
+    vt.finished.finally(() => delete document.documentElement.dataset.navMorph)
+  })
+})
+router.afterEach(async () => {
+  if (!pending) return
+  const done = pending
+  pending = null
+  // L'écran (chargé à la demande) est déjà prêt à ce stade : un tour de Vue suffit pour qu'il soit dans la page.
+  // Pas de requestAnimationFrame ici : le navigateur suspend le rendu pendant la transition, il ne viendrait jamais.
+  await nextTick()
+  done()
+})
+
 registerAppNavigator((path) => router.push(path))
 
 // Les liens internes (<a href="/carte">) passent par le routeur, sans recharger la page.
@@ -64,10 +100,21 @@ document.addEventListener('click', (e) => {
   const a = (e.target as HTMLElement | null)?.closest?.('a')
   if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || a.target === '_blank') return
   const href = a.getAttribute('href')
-  if (href && href.startsWith('/') && !href.startsWith('//') && router.resolve(href).matched.length) {
+  if (!href || !href.startsWith('/') || href.startsWith('//')) return
+  const path = withoutBase(href)
+  if (router.resolve(path).matched.length) {
     e.preventDefault()
-    router.push(href)
+    router.push(path)
   }
 })
 
 createApp(App).use(router).mount('#app')
+
+// Aide au développeur : Alt + clic droit sur un élément → menu du composant (éditeur, story, test, copier).
+// Chargée en développement seulement : le build ne la contient pas.
+if (import.meta.env.DEV) {
+  import('./dev/DevInspector.vue').then(({ default: DevInspector }) => {
+    const host = document.body.appendChild(document.createElement('div'))
+    createApp(DevInspector).mount(host)
+  })
+}

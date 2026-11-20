@@ -6,6 +6,7 @@ import { computed, onMounted, reactive, ref, watch } from 'vue'
 import McIcon from '../../icons/McIcon.vue'
 import type { IconName } from '../../icons/icons'
 import type { Layer, Status } from '../../utils/types'
+import McPanelTransition from '../../components/McPanelTransition/McPanelTransition.vue'
 import McAppBar from '../../components/McAppBar/McAppBar.vue'
 import type { TrailStep } from '../../components/McMapTrail/McMapTrail.vue'
 import McAvatarStack, { type McAvatarPerson } from '../../components/McAvatar/McAvatarStack.vue'
@@ -33,6 +34,7 @@ import McStickyNote from '../../components/McStickyNote/McStickyNote.vue'
 import McPresenceCursor from '../../components/McPresenceCursor/McPresenceCursor.vue'
 import McContextMenu, { type ContextMenuItem } from '../../components/McContextMenu/McContextMenu.vue'
 import McToastHost from '../../components/McToast/McToastHost.vue'
+import AppEditModal from '../shared/AppEditModal.vue'
 import { useToast } from '../../components/McToast/useToast'
 import { useCanvasView } from '../Infrastructure/canvasView'
 import SearchPalette from '../Accueil/SearchPalette.vue'
@@ -421,7 +423,7 @@ const apogeeRelations: RelationGroup[] = [
     verb: 'Hébergée sur',
     items: [
       { name: 'sophocle', layer: 'technique', icon: 'cloud', status: 'critical', statusLabel: 'Voir l’impact', meta: 'VM' },
-      { name: 'Tomcat 5', layer: 'technique', icon: 'software', status: 'critical', statusLabel: 'Plus supporté' },
+      { name: 'Tomcat 5', layer: 'technique', icon: 'software', logo: 'apachetomcat', status: 'critical', statusLabel: 'Plus supporté' },
     ],
   },
   { verb: 'Appartient à', items: [{ name: 'Scolarité', layer: 'fonctionnel', icon: 'folder' }] },
@@ -486,7 +488,7 @@ function openFiche(id: string) {
   if (isApp(id)) goFiche(id)
 }
 
-/** Modifier l'objet sélectionné : une application s'ouvre dans le formulaire de l'explorateur, un domaine dans sa liste,
+/** Modifier l'objet sélectionné : une application s'ouvre dans sa fenêtre de modification, ici même ; un domaine dans sa liste,
  *  un flux dans sa fenêtre de modification ; le partenaire se modifie dans l'éditeur de la carte. */
 function editSelected() {
   const s = selected.value
@@ -495,10 +497,11 @@ function editSelected() {
   if (f) return openFluxEdit(f)
   if (isDomain(s)) return goPath(`/explorateur?domaine=${encodeURIComponent(s)}`)
   const a = getApplication(s)
-  if (a?.inventaire) goPath(`/explorateur?modifier=${a.slug}`)
-  else if (a) goFiche(a.name)
+  if (a) appEdit.value?.openApp(a.name)
   else goPath('/editeur')
 }
+const appEdit = ref<InstanceType<typeof AppEditModal>>()
+
 const isDomain = (s: string) => s === 'Scolarité' || rightDomains.some((d) => d.name === s)
 /** Double-clic sur l'en-tête d'un domaine : Scolarité est la carte ouverte ; les autres ouvrent la liste de leurs applications. */
 function openDomain(name: string) {
@@ -624,9 +627,9 @@ function placeNote() {
   const c = viewCenter()
   annotations.value?.placeNote(c.x, c.y)
 }
+/** Le bouton Commentaire arme le mode placement : le prochain clic sur la carte pose l'épingle. */
 function placeComment() {
-  const c = viewCenter()
-  annotations.value?.placeComment(c.x + 40, c.y - 40)
+  annotations.value?.armComment()
 }
 const people: McAvatarPerson[] = [
   { name: 'Théo Naulet', initials: 'TN', color: 1 },
@@ -813,64 +816,68 @@ function select(id: string) {
       </template>
 
       <template #right>
-        <McLegend v-if="legend" v-model:isolated="isolated" :sections="legendSections" @close="legend = false" />
+        <McPanelTransition>
+          <McLegend v-if="legend" v-model:isolated="isolated" :sections="legendSections" @close="legend = false" />
+        </McPanelTransition>
         <a v-if="legend && lens === 'dicp'" class="mc-float mc-scr-carte-more" :href="pathHref('/criticite')" @click.prevent="goPath('/criticite')">
           <McIcon name="shield" size="sm" />Voir toutes les applications par criticité<McIcon name="arrow-right" size="sm" />
         </a>
-        <McInspector v-if="inspected" v-model:tab="inspTab" :object="inspected" :tabs="selected === 'APOGEE' ? apogeeTabs : []" @close="selected = null">
-          <template v-if="headerChip" #statuses>
-            <McStatusChip :status="headerChip.status" size="sm">{{ headerChip.label }}</McStatusChip>
-          </template>
-          <template #actions>
-            <template v-if="selected === 'APOGEE'">
-              <McButton size="sm" icon="external" @click="openFiche('APOGEE')">Ouvrir la fiche</McButton>
-              <McButton size="sm" variant="outline" icon="impact" @click="goPath('/impact')">Voir l’impact</McButton>
-              <button type="button" class="mc-ibtn sm" aria-label="Plus d’actions" @click="openMenu($event, 'APOGEE')"><McIcon name="more" size="sm" /></button>
+        <McPanelTransition>
+          <McInspector v-if="inspected" v-model:tab="inspTab" :object="inspected" :tabs="selected === 'APOGEE' ? apogeeTabs : []" @close="selected = null">
+            <template v-if="headerChip" #statuses>
+              <McStatusChip :status="headerChip.status" size="sm">{{ headerChip.label }}</McStatusChip>
             </template>
-            <template v-else>
-              <McButton v-if="isApp(selected)" size="sm" icon="external" @click="openFiche(selected!)">Ouvrir la fiche</McButton>
-              <McButton size="sm" variant="outline" icon="pencil" @click="editSelected">Modifier</McButton>
-              <button type="button" class="mc-ibtn sm" aria-label="Plus d’actions" @click="openMenu($event, selected!)"><McIcon name="more" size="sm" /></button>
-            </template>
-          </template>
-          <template #default="{ tab }">
-            <template v-if="selected === 'APOGEE'">
-              <template v-if="tab === 'infos'">
-                <McKeyValueList :items="apogeeInfos">
-                  <template #value="{ item }">
-                    <McStatusChip v-if="item.key === 'Statut'" size="sm">Active</McStatusChip>
-                    <McDicpBadge v-else-if="item.key === 'Sécurité'" :d="2" :i="4" :c="3" :p="4" />
-                    <a v-else-if="item.href" :href="item.href" class="mc-scr-link" @click.prevent="goPath('/fournisseurs')">{{ item.value }}</a>
-                    <span v-else>{{ item.value }}</span>
-                  </template>
-                </McKeyValueList>
-                <hr class="mc-hr" />
-                <McRelationList :groups="apogeeReferents" @open="openRelation" />
+            <template #actions>
+              <template v-if="selected === 'APOGEE'">
+                <McButton size="sm" icon="external" @click="openFiche('APOGEE')">Ouvrir la fiche</McButton>
+                <McButton size="sm" variant="outline" icon="impact" @click="goPath('/impact')">Voir l’impact</McButton>
+                <button type="button" class="mc-ibtn sm" aria-label="Plus d’actions" @click="openMenu($event, 'APOGEE')"><McIcon name="more" size="sm" /></button>
               </template>
-              <McRelationList v-else-if="tab === 'relations'" :groups="apogeeRelations" @open="openRelation" />
-              <div v-else class="mc-scr-carte-maps">
-                <p class="mc-scr-note">4 cartes montrent APOGEE.</p>
-                <button type="button" class="mc-scr-carte-map is-on" aria-current="true" @click="fit"><McIcon name="flow" size="sm" />Applications et flux<span>Carte ouverte</span></button>
-                <a v-for="m in OTHER_MAPS" :key="m.path" class="mc-scr-carte-map" :href="pathHref(m.path)" @click.prevent="goPath(m.path)"><McIcon :name="m.icon" size="sm" />{{ m.label }}<McIcon name="arrow-right" size="sm" /></a>
-              </div>
+              <template v-else>
+                <McButton v-if="isApp(selected)" size="sm" icon="external" @click="openFiche(selected!)">Ouvrir la fiche</McButton>
+                <McButton size="sm" variant="outline" icon="pencil" @click="editSelected">Modifier</McButton>
+                <button type="button" class="mc-ibtn sm" aria-label="Plus d’actions" @click="openMenu($event, selected!)"><McIcon name="more" size="sm" /></button>
+              </template>
             </template>
-            <template v-else-if="N[selected!]">
-              <McKeyValueList :items="shortInfos" />
-              <McRelationList :groups="neighbourGroups" @open="openRelation" />
+            <template #default="{ tab }">
+              <template v-if="selected === 'APOGEE'">
+                <template v-if="tab === 'infos'">
+                  <McKeyValueList :items="apogeeInfos">
+                    <template #value="{ item }">
+                      <McStatusChip v-if="item.key === 'Statut'" size="sm">Active</McStatusChip>
+                      <McDicpBadge v-else-if="item.key === 'Sécurité'" :d="2" :i="4" :c="3" :p="4" />
+                      <a v-else-if="item.href" :href="item.href" class="mc-scr-link" @click.prevent="goPath('/fournisseurs')">{{ item.value }}</a>
+                      <span v-else>{{ item.value }}</span>
+                    </template>
+                  </McKeyValueList>
+                  <hr class="mc-hr" />
+                  <McRelationList :groups="apogeeReferents" @open="openRelation" />
+                </template>
+                <McRelationList v-else-if="tab === 'relations'" :groups="apogeeRelations" @open="openRelation" />
+                <div v-else class="mc-scr-carte-maps">
+                  <p class="mc-scr-note">4 cartes montrent APOGEE.</p>
+                  <button type="button" class="mc-scr-carte-map is-on" aria-current="true" @click="fit"><McIcon name="flow" size="sm" />Applications et flux<span>Carte ouverte</span></button>
+                  <a v-for="m in OTHER_MAPS" :key="m.path" class="mc-scr-carte-map" :href="pathHref(m.path)" @click.prevent="goPath(m.path)"><McIcon :name="m.icon" size="sm" />{{ m.label }}<McIcon name="arrow-right" size="sm" /></a>
+                </div>
+              </template>
+              <template v-else-if="N[selected!]">
+                <McKeyValueList :items="shortInfos" />
+                <McRelationList :groups="neighbourGroups" @open="openRelation" />
+              </template>
+              <template v-else-if="fluxOf(selected)">
+                <McKeyValueList :items="fluxInfos" />
+                <McRelationList :groups="fluxGroups" @open="openRelation" />
+                <McButton size="sm" variant="ghost" icon="pencil" class="mc-scr-carte-fluxedit" @click="openFluxEdit(fluxOf(selected)!)">Modifier la liaison, la fréquence ou les données</McButton>
+              </template>
+              <template v-else>
+                <p class="mc-scr-note">
+                  Domaine fonctionnel{{ selected === 'Scolarité' ? ' : c’est la carte ouverte.' : '. Double-cliquez sur son en-tête pour voir ses applications.' }}
+                </p>
+                <McButton size="sm" variant="outline" icon="app" @click="goPath(`/explorateur?domaine=${encodeURIComponent(selected!)}`)">Voir les applications de {{ selected }}</McButton>
+              </template>
             </template>
-            <template v-else-if="fluxOf(selected)">
-              <McKeyValueList :items="fluxInfos" />
-              <McRelationList :groups="fluxGroups" @open="openRelation" />
-              <McButton size="sm" variant="ghost" icon="pencil" class="mc-scr-carte-fluxedit" @click="openFluxEdit(fluxOf(selected)!)">Modifier la liaison, la fréquence ou les données</McButton>
-            </template>
-            <template v-else>
-              <p class="mc-scr-note">
-                Domaine fonctionnel{{ selected === 'Scolarité' ? ' : c’est la carte ouverte.' : '. Double-cliquez sur son en-tête pour voir ses applications.' }}
-              </p>
-              <McButton size="sm" variant="outline" icon="app" @click="goPath(`/explorateur?domaine=${encodeURIComponent(selected!)}`)">Voir les applications de {{ selected }}</McButton>
-            </template>
-          </template>
-        </McInspector>
+          </McInspector>
+        </McPanelTransition>
       </template>
 
       <template #bottom-left>
@@ -878,7 +885,7 @@ function select(id: string) {
       </template>
 
       <template #bottom>
-        <McToolbar v-model:tool="tool" v-model:zoom="zoom" v-model:legend="legend" @fit="fit" @filter="legend = true" @sticky="placeNote" @comment="placeComment">
+        <McToolbar v-model:tool="tool" v-model:zoom="zoom" v-model:legend="legend" @fit="fit" @filter="legend = true" @sticky="placeNote" @comment="placeComment" :commenting="annotations?.placing ?? false">
           <template #lens><McLensPicker v-model:lens="lens" @change="(l) => (legend = l.id !== NO_LENS)" /></template>
         </McToolbar>
       </template>
@@ -905,6 +912,7 @@ function select(id: string) {
     </McModal>
     <McContextMenu v-model:open="menu.open" :items="menuItems" :header="menu.target" :x="menu.x" :y="menu.y" @select="onMenu" />
     <SearchPalette v-model:open="paletteOpen" />
+    <AppEditModal ref="appEdit" />
     <McToastHost />
   </div>
 </template>
@@ -927,7 +935,7 @@ function select(id: string) {
 .mc-scr-carte .mc-canvas-right > .mc-insp { flex: 1 1 auto; min-height: 0; overflow: hidden; }
 .mc-scr-link { color: var(--accent); }
 .mc-scr-note { margin: 0; color: var(--ink-muted); font-size: 13px; line-height: 18px; }
-.mc-scr-carte-more { flex: none; align-self: flex-end; display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; font-size: 13px; line-height: 16px; font-weight: 600; color: var(--accent); text-decoration: none; }
+.mc-scr-carte-more { flex: none; align-self: flex-end; width: var(--panel-w); box-sizing: border-box; display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; font-size: 13px; line-height: 16px; font-weight: 600; color: var(--accent); text-decoration: none; }
 .mc-scr-carte-more:hover { text-decoration: underline; }
 .mc-scr-carte-maps { display: grid; gap: 4px; }
 .mc-scr-carte-maps .mc-scr-note { margin-bottom: 4px; }

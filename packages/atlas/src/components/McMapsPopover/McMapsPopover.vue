@@ -106,37 +106,39 @@ const count = () => `${props.maps.length} ${props.maps.length > 1 ? 'cartes' : '
 <template>
   <span ref="host" class="mc-maps-host" :class="{ 'is-inline': inline }">
     <slot name="trigger" :open="open" :toggle="toggle" :aria="{ 'aria-haspopup': 'dialog', 'aria-expanded': open, 'aria-controls': `${id}-pop` }" />
-    <div
-      v-if="open || inline"
-      :id="`${id}-pop`"
-      ref="pop"
-      class="mc-pop mc-maps"
-      :class="{ 'is-placed': !inline, end: align === 'end' }"
-      role="dialog"
-      :aria-labelledby="`${id}-t`"
-      @keydown="onKey"
-    >
-      <div class="head" :class="`l-${object.layer}`">
-        <span class="mc-chip type"><span class="sw"><McIcon :name="object.icon" /></span>{{ object.name }}</span>
-        <span :id="`${id}-t`" class="mc-sr">Cartes associées à {{ object.name }} ({{ object.type }})</span>
-        <span class="mc-cap" style="margin-left: auto">{{ count() }}</span>
-      </div>
-      <a
-        v-for="(m, i) in maps"
-        :key="m.title"
-        class="it"
-        :class="[`l-${object.layer}`, { 'is-on': i === active && !inline }]"
-        :href="m.href ?? '#'"
-        @focus="active = i"
-        @mouseenter="active = i"
-        @click="choose($event, m)"
+    <Transition name="mc-pop">
+      <div
+        v-if="open || inline"
+        :id="`${id}-pop`"
+        ref="pop"
+        class="mc-pop mc-maps"
+        :class="{ 'is-placed': !inline, end: align === 'end' }"
+        role="dialog"
+        :aria-labelledby="`${id}-t`"
+        @keydown="onKey"
       >
-        <span class="th"><McIcon :name="m.icon" /></span>
-        <span class="tx"><b>{{ m.title }}</b><span v-if="m.description">{{ m.description }}</span></span>
-        <span class="go"><McIcon name="arrow-right" size="sm" /></span>
-      </a>
-      <p v-if="!maps.length" class="mc-cap mc-maps-empty">Aucune carte ne montre encore {{ object.name }}.</p>
-    </div>
+        <div class="head" :class="`l-${object.layer}`">
+          <span class="mc-chip type"><span class="sw"><McIcon :name="object.icon" /></span>{{ object.name }}</span>
+          <span :id="`${id}-t`" class="mc-sr">Cartes associées à {{ object.name }} ({{ object.type }})</span>
+          <span class="mc-cap" style="margin-left: auto">{{ count() }}</span>
+        </div>
+        <a
+          v-for="(m, i) in maps"
+          :key="m.title"
+          class="it"
+          :class="[`l-${object.layer}`, { 'is-on': i === active && !inline }]"
+          :href="m.href ?? '#'"
+          @focus="active = i"
+          @mouseenter="active = i"
+          @click="choose($event, m)"
+        >
+          <span class="th"><McIcon :name="m.icon" /></span>
+          <span class="tx"><b>{{ m.title }}</b><span v-if="m.description">{{ m.description }}</span></span>
+          <span class="go"><McIcon name="arrow-right" size="sm" /></span>
+        </a>
+        <p v-if="!maps.length" class="mc-cap mc-maps-empty">Aucune carte ne montre encore {{ object.name }}.</p>
+      </div>
+    </Transition>
   </span>
 </template>
 

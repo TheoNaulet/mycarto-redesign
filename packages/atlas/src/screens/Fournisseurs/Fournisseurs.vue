@@ -1,6 +1,8 @@
 <script setup lang="ts">
 // Écran « Fournisseurs » : glossaire des fournisseurs de la couche applicative.
 // Grille de nœuds (ou liste), recherche, tri, filtres d'état du contrat, index alphabétique, inspecteur.
+import { appLogo } from '../../logos/appLogo'
+import { logoFor } from '../../logos/logoFor'
 import { computed, getCurrentInstance, nextTick, reactive, ref, watch } from 'vue'
 import McAppBar from '../../components/McAppBar/McAppBar.vue'
 import type { TrailStep } from '../../components/McMapTrail/McMapTrail.vue'
@@ -320,10 +322,9 @@ watch(
 )
 
 /* ---------- Barre du haut ---------- */
-const trail: TrailStep[] = [{ label: 'Accueil' }, { label: 'Couche applicative', layer: 'applicatif' }, { label: 'Fournisseurs' }]
+const trail: TrailStep[] = [{ label: 'Accueil' }, { label: 'Fournisseurs' }]
 function onTrail(_s: TrailStep, i: number) {
-  // L'accueil range les objets par couche : la couche applicative y est.
-  if (i === 0 || i === 1) goPath('/')
+  if (i === 0) goPath('/')
 }
 function onHome(e: MouseEvent) {
   if (e.metaKey || e.ctrlKey || e.shiftKey) return
@@ -340,6 +341,8 @@ function onPalette(item: PaletteItem) {
   openPaletteItem(item)
 }
 const searchCount = computed(() => (query.value.trim() ? (bySearch.value.length ? plural(bySearch.value.length, 'résultat', 'résultats') : 'Aucun résultat') : undefined))
+// Sans sélection, l'inspecteur résume ce que montre la liste.
+const summary = computed<KeyValueItem[]>(() => [{ key: 'Fournisseurs', value: bySearch.value.length }, ...(Object.keys(ETATS) as Etat[]).map((e) => ({ key: ETATS[e].label, value: counts.value[e] }))])
 </script>
 
 <template>
@@ -351,7 +354,7 @@ const searchCount = computed(() => (query.value.trim() ? (bySearch.value.length 
       </template>
     </McAppBar>
 
-    <div class="mc-scr-four-wrap" :class="{ 'has-insp': inspected }">
+    <div class="mc-scr-four-wrap">
       <main class="mc-scr-four-main">
         <header class="mc-scr-four-head">
           <div class="mc-scr-four-titles">
@@ -407,6 +410,8 @@ const searchCount = computed(() => (query.value.trim() ? (bySearch.value.length 
                 <McNode
                   layer="applicatif"
                   icon="building"
+                  :logo="logoFor(f.name)"
+                  monogram
                   type="Fournisseur"
                   :name="f.name"
                   :subtitle="plural(f.apps.length, 'application', 'applications')"
@@ -453,6 +458,7 @@ const searchCount = computed(() => (query.value.trim() ? (bySearch.value.length 
                   type="Application"
                   layer="applicatif"
                   icon="app"
+                  :logo="appLogo(a)"
                   density="compact"
                   :title="hasApplication(a) ? `Ouvrir la fiche ${de(a)}` : a"
                   @select="openApp(f, a)"
@@ -472,6 +478,8 @@ const searchCount = computed(() => (query.value.trim() ? (bySearch.value.length 
             :rows="rows"
             row-key="id"
             icon="building"
+            :logo="(r: Row) => logoFor(r.name)"
+            :monogram="(r: Row) => r.name"
             layer="applicatif"
             caption="Fournisseurs"
             :local-sort="false"
@@ -496,22 +504,26 @@ const searchCount = computed(() => (query.value.trim() ? (bySearch.value.length 
       </main>
 
       <McInspector
-        v-if="inspected"
-        :key="inspected.id"
-        class="mc-scr-four-insp"
-        :object="{ name: inspected.name, type: 'Fournisseur', layer: 'applicatif', icon: 'building' }"
+        :key="inspected?.id ?? 'resume'"
+        class="mc-insp-dock mc-scr-four-insp"
+        :object="inspected ? { name: inspected.name, type: 'Fournisseur', layer: 'applicatif', icon: 'building', logo: logoFor(inspected.name), monogram: true } : undefined"
+        empty-title="Sélectionnez un fournisseur"
+        empty-text="Ses contrats et les applications qu’il fournit s’affichent ici."
         @close="inspectedId = null"
       >
-        <template #statuses>
+        <template #empty><McKeyValueList :items="summary" /></template>
+        <template v-if="inspected" #statuses>
           <McStatusChip :status="ETATS[inspected.etat].status" size="sm">{{ ETATS[inspected.etat].label }}</McStatusChip>
         </template>
-        <template #actions>
+        <template v-if="inspected" #actions>
           <McButton size="sm" icon="contract" @click="goPath('/contrats')">Voir les contrats</McButton>
           <McIconButton size="sm" icon="map" label="Voir sur la carte des fournisseurs" @click="showOnMap(inspected.id)" />
           <McIconButton size="sm" icon="more" label="Plus d’actions" :aria-expanded="menu.open" @click="openMenu" />
         </template>
-        <McKeyValueList :items="kv" />
-        <McRelationList :groups="groups" :visible="6" @open="openRelation" @add="openContract" />
+        <template v-if="inspected">
+          <McKeyValueList :items="kv" />
+          <McRelationList :groups="groups" :visible="6" @open="openRelation" @add="openContract" />
+        </template>
       </McInspector>
     </div>
 
@@ -541,9 +553,8 @@ const searchCount = computed(() => (query.value.trim() ? (bySearch.value.length 
 
 <style>
 .mc-scr-four { position: relative; min-height: 100vh; background: var(--canvas); color: var(--ink); font-family: var(--font-sans); box-sizing: border-box; }
-.mc-scr-four-bar { position: sticky; top: 16px; z-index: 20; margin: 16px 16px 0; }
-.mc-scr-four-wrap { max-width: 1280px; margin: 0 auto; padding: 24px 32px 40px; box-sizing: border-box; display: flex; gap: 20px; align-items: flex-start; }
-.mc-scr-four-wrap.has-insp { max-width: 1440px; }
+.mc-scr-four-bar { position: sticky; top: 16px; z-index: 20; margin: 16px var(--page-inset) 0; }
+.mc-scr-four-wrap { max-width: var(--page-w); margin: 0 auto; padding: 24px var(--page-pad) 40px; box-sizing: border-box; display: flex; gap: 20px; align-items: flex-start; }
 .mc-scr-four-main { flex: 1; min-width: 0; display: grid; gap: 16px; }
 .mc-scr-four-head { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
 .mc-scr-four-titles { flex: 1; min-width: 180px; }
@@ -568,28 +579,24 @@ const searchCount = computed(() => (query.value.trim() ? (bySearch.value.length 
 .mc-scr-four-alpha span { color: var(--line-strong); }
 .mc-scr-four-results { scroll-margin-top: 96px; }
 /* Autant de colonnes que la largeur le permet : 4 à 1440, 3 à 1024, 5 ou 6 sur les grands écrans. */
-.mc-scr-four-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 4px 14px; }
+.mc-scr-four-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px 14px; }
 .mc-scr-four-cell { position: relative; min-width: 0; }
 .mc-scr-four-cell > .mc-node { width: auto; padding-right: 128px; }
 .mc-scr-four-st { position: absolute; right: 10px; top: calc(14px + 15px); pointer-events: none; }
 .mc-scr-four-note { margin: 0; }
 .mc-scr-four-map { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px 14px; align-items: start; padding-top: 16px; }
 .mc-scr-four-mapc { cursor: pointer; scroll-margin: 120px; }
-.mc-scr-four-mapc > .gb { display: grid; gap: 6px; }
+.mc-scr-four-mapc > .gb { display: grid; gap: 12px; }
 .mc-scr-four-mapc .mc-node { width: auto; cursor: pointer; }
 .mc-scr-four-mapst { justify-self: start; padding: 0; border: 0; background: transparent; cursor: pointer; border-radius: 999px; }
 .mc-scr-four-mapst:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .mc-scr-four-share { position: fixed; top: 84px; right: 24px; z-index: 40; }
 .mc-scr-four-form { display: grid; gap: 14px; }
-.mc-scr-four-insp { position: sticky; top: 92px; flex: none; max-height: calc(100vh - 108px); }
-/* Grands écrans : la page s'élargit jusqu'à 1760px, barre alignée. */
+/* Grands écrans : le contenu s'élargit jusqu'à 1760px sous une barre pleine largeur. */
 @media (min-width: 1800px) {
-  .mc-scr-four-wrap, .mc-scr-four-wrap.has-insp { max-width: 1760px; padding-inline: 40px; }
-  .mc-scr-four-bar { width: 1728px; max-width: calc(100% - 32px); margin-inline: auto; box-sizing: border-box; }
 }
 /* Petits écrans : la barre d'outils passe sur deux lignes, recherche et tri se partagent la largeur. */
 @media (max-width: 1180px) {
-  .mc-scr-four-wrap { padding-inline: 24px; }
   .mc-scr-four-titles { flex-basis: 100%; }
   .mc-scr-four-search, .mc-scr-four-sort { flex: 1 1 200px; width: auto; }
 }

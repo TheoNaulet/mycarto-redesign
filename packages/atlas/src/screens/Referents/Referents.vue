@@ -194,14 +194,9 @@ function openApp(e: MouseEvent, name: string) {
 
 /* ---------- Barre du haut ---------- */
 const trailLabel = computed(() => (onglet.value === 'tous' ? 'Référents' : TYPES_REFERENT[onglet.value].plural))
-const trail = computed<TrailStep[]>(() => {
-  const o = onglet.value
-  return o === 'tous'
-    ? [{ label: 'Accueil' }, { label: 'Référents' }]
-    : [{ label: 'Accueil' }, { label: o === 'metier' ? 'Couche métier' : o === 'fonctionnel' ? 'Couche fonctionnelle' : 'Couche technique', layer: TYPES_REFERENT[o].layer }, { label: trailLabel.value }]
-})
+const trail = computed<TrailStep[]>(() => [{ label: 'Accueil' }, { label: trailLabel.value }])
 function onTrail(_s: TrailStep, i: number) {
-  if (i === 0 || (onglet.value !== 'tous' && i === 1)) goPath('/')
+  if (i === 0) goPath('/')
 }
 function onHome(e: MouseEvent) {
   if (e.metaKey || e.ctrlKey || e.shiftKey) return
@@ -209,6 +204,8 @@ function onHome(e: MouseEvent) {
   goPath('/')
 }
 const paletteOpen = ref(false)
+// Sans sélection, l'inspecteur résume ce que montre la liste.
+const summary = computed<KeyValueItem[]>(() => [{ key: 'Personnes', value: filtered.value.length }, ...(onglet.value === 'tous' ? [] : [{ key: 'Applications sans référent', value: missing.value.length }])])
 </script>
 
 <template>
@@ -219,7 +216,7 @@ const paletteOpen = ref(false)
       </template>
     </McAppBar>
 
-    <div class="mc-scr-ref-wrap" :class="{ 'has-insp': inspected }">
+    <div class="mc-scr-ref-wrap">
       <main class="mc-scr-ref-main">
         <header class="mc-scr-ref-head">
           <div class="mc-scr-ref-titles">
@@ -280,21 +277,25 @@ const paletteOpen = ref(false)
       </main>
 
       <McInspector
-        v-if="inspected"
-        :key="inspected.name"
-        class="mc-scr-ref-insp"
-        :object="{ name: inspected.name, type: 'Référent', layer: TYPES_REFERENT[inspected.types[0]].layer, icon: 'user', description: inspected.fonction }"
+        :key="inspected?.name ?? 'resume'"
+        class="mc-insp-dock mc-scr-ref-insp"
+        :object="inspected ? { name: inspected.name, type: 'Référent', layer: TYPES_REFERENT[inspected.types[0]].layer, icon: 'user', description: inspected.fonction } : undefined"
+        empty-title="Sélectionnez une personne"
+        empty-text="Ses rôles et les applications dont elle est référente s’affichent ici."
         @close="inspectedName = null"
       >
-        <template #statuses>
+        <template #empty><McKeyValueList :items="summary" /></template>
+        <template v-if="inspected" #statuses>
           <McTypeChip v-for="t in inspected.types" :key="t" :type="TYPES_REFERENT[t].label" :layer="TYPES_REFERENT[t].layer" icon="user" size="sm" />
         </template>
-        <template #actions>
+        <template v-if="inspected" #actions>
           <McButton size="sm" icon="comment" @click="write(inspected.email)">Écrire</McButton>
           <McIconButton size="sm" icon="copy" label="Copier l’adresse" @click="copyEmail(inspected.email)" />
         </template>
-        <McKeyValueList :items="kv" />
-        <McRelationList :groups="groups" :visible="8" @open="openRelation" />
+        <template v-if="inspected">
+          <McKeyValueList :items="kv" />
+          <McRelationList :groups="groups" :visible="8" @open="openRelation" />
+        </template>
       </McInspector>
     </div>
 
@@ -305,9 +306,8 @@ const paletteOpen = ref(false)
 
 <style>
 .mc-scr-ref { position: relative; min-height: 100vh; background: var(--canvas); color: var(--ink); font-family: var(--font-sans); box-sizing: border-box; }
-.mc-scr-ref-bar { position: sticky; top: 16px; z-index: 20; margin: 16px 16px 0; }
-.mc-scr-ref-wrap { max-width: 1280px; margin: 0 auto; padding: 24px 32px 40px; box-sizing: border-box; display: flex; gap: 20px; align-items: flex-start; }
-.mc-scr-ref-wrap.has-insp { max-width: 1520px; }
+.mc-scr-ref-bar { position: sticky; top: 16px; z-index: 20; margin: 16px var(--page-inset) 0; }
+.mc-scr-ref-wrap { max-width: var(--page-w); margin: 0 auto; padding: 24px var(--page-pad) 40px; box-sizing: border-box; display: flex; gap: 20px; align-items: flex-start; }
 .mc-scr-ref-main { flex: 1; min-width: 0; display: grid; gap: 16px; }
 .mc-scr-ref-head { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
 .mc-scr-ref-titles { flex: 1; min-width: 200px; }
@@ -340,13 +340,9 @@ const paletteOpen = ref(false)
 .mc-scr-ref-mail:hover { text-decoration: underline; }
 .mc-scr-ref-note { margin: 0; }
 .mc-scr-ref-insp .body { grid-template-columns: minmax(0, 1fr); }
-.mc-scr-ref-insp { position: sticky; top: 92px; flex: none; max-height: calc(100vh - 108px); }
 @media (min-width: 1800px) {
-  .mc-scr-ref-wrap, .mc-scr-ref-wrap.has-insp { max-width: 1760px; padding-inline: 40px; }
-  .mc-scr-ref-bar { width: 1728px; max-width: calc(100% - 32px); margin-inline: auto; box-sizing: border-box; }
 }
 @media (max-width: 1180px) {
-  .mc-scr-ref-wrap { padding-inline: 24px; }
   .mc-scr-ref-titles { flex-basis: 100%; }
   .mc-scr-ref-search, .mc-scr-ref-sort { flex: 1 1 220px; width: auto; }
 }

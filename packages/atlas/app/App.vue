@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, onBeforeUnmount } from 'vue'
+import TransitionGuide from '../src/screens/shared/transition/TransitionGuide.vue'
 
 // Thème : clair par défaut (quel que soit le système). Alt+T bascule en sombre si besoin.
 const root = document.documentElement
@@ -25,4 +26,6 @@ onBeforeUnmount(() => {
 
 <template>
   <RouterView />
+  <!-- Guide de la nouvelle interface : « avant / maintenant » pour chaque écran, en bas à gauche. -->
+  <TransitionGuide />
 </template>

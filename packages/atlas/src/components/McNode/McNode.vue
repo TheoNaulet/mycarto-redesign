@@ -2,6 +2,8 @@
 import { computed } from 'vue'
 import McIcon from '../../icons/McIcon.vue'
 import type { IconName } from '../../icons/icons'
+import McLogo from '../../logos/McLogo.vue'
+import type { LogoName } from '../../logos/logos'
 import { statusIcon, type Layer, type Status } from '../../utils/types'
 
 const props = withDefaults(
@@ -14,6 +16,10 @@ const props = withDefaults(
     layer: Layer
     /** Pictogramme du type. */
     icon: IconName
+    /** Logo de marque à la place du pictogramme (Apache, Debian, Oracle…) : les objets se distinguent d'un coup d'œil. */
+    logo?: LogoName
+    /** Sans logo connu : initiales du nom à la place du pictogramme (logiciels, fournisseurs). */
+    monogram?: boolean
     /** Un fait, pas le type (déjà dans l'onglet) : « 32 utilisateurs ». */
     subtitle?: string
     /** État affiché à droite (icône), quand une lentille ou une règle s'applique. */
@@ -36,7 +42,7 @@ const props = withDefaults(
     /** Étiquette d'appartenance en pointillé sous le nœud : « Cluster philosophe ». */
     member?: string
   }>(),
-  { density: 'default', subtitle: undefined, status: undefined, member: undefined },
+  { density: 'default', subtitle: undefined, status: undefined, member: undefined, logo: undefined },
 )
 
 defineEmits<{ select: [event: MouseEvent]; open: [event: MouseEvent] }>()
@@ -67,7 +73,9 @@ const classes = computed(() => [
     @keydown.enter="$emit('open', $event as unknown as MouseEvent)"
   >
     <span class="mc-tab">{{ type }}</span>
-    <span class="tile"><McIcon :name="error ? 'alert-octagon' : icon" /></span>
+    <span v-if="!error && logo" class="tile has-logo"><McLogo :logo="logo" :size="18" /></span>
+    <span v-else-if="!error && monogram" class="tile"><McLogo :label="name" :size="18" /></span>
+    <span v-else class="tile"><McIcon :name="error ? 'alert-octagon' : icon" /></span>
     <span class="tx">
       <b><span v-if="main" style="color: var(--data-2)" aria-label="Objet principal">★ </span>{{ loading ? 'Chargement' : name }}</b>
       <span v-if="error">Introuvable : supprimé ou sans droits</span>

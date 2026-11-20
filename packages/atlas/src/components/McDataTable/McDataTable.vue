@@ -1,6 +1,8 @@
 <script setup lang="ts" generic="T extends object">
 import { computed } from 'vue'
 import McIcon from '../../icons/McIcon.vue'
+import McLogo from '../../logos/McLogo.vue'
+import type { LogoName } from '../../logos/logos'
 import type { IconName } from '../../icons/icons'
 import type { Layer } from '../../utils/types'
 import McSkeleton from '../McSkeleton/McSkeleton.vue'
@@ -20,6 +22,10 @@ const props = withDefaults(
     selectable?: boolean
     /** Pictogramme de la tuile en première colonne : un nom, ou une fonction par ligne. Absent : pas de tuile (sauf slot `tile`). */
     icon?: IconName | ((row: T) => IconName)
+    /** Logo de marque par ligne, à la place du pictogramme (Apache, Debian…). Sans logo : le pictogramme, ou les initiales avec `monogram`. */
+    logo?: (row: T) => LogoName | undefined
+    /** Sans logo : initiales de `monogram(row)` à la place du pictogramme. */
+    monogram?: (row: T) => string
     /** Couche du type affiché : couleur de la tuile en première colonne. */
     layer?: Layer
     /** Titre du tableau, lu par les lecteurs d'écran : « Applications ». */
@@ -52,6 +58,8 @@ const props = withDefaults(
     rowKey: 'id',
     selectable: false,
     icon: undefined,
+    logo: undefined,
+    monogram: undefined,
     layer: 'applicatif',
     caption: undefined,
     maxHeight: undefined,
@@ -279,7 +287,9 @@ const skelWidths = ['62%', '48%', '75%', '40%', '55%', '68%']
               :style="{ textAlign: col.align }"
             >
               <span class="name" :class="`l-${layer}`">
-                <span v-if="iconOf(row) || $slots.tile" class="tile">
+                <span v-if="logo?.(row)" class="tile has-logo"><McLogo :logo="logo(row)" :size="14" /></span>
+                <span v-else-if="monogram" class="tile"><McLogo :label="monogram(row)" :size="14" /></span>
+                <span v-else-if="iconOf(row) || $slots.tile" class="tile">
                   <slot name="tile" :row="row"><McIcon :name="iconOf(row)!" /></slot>
                 </span>
                 <slot :name="`cell-${col.key}`" :row="row" :value="get(row, col.key)">{{ display(col, row) }}</slot>

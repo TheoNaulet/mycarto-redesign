@@ -2,6 +2,7 @@
 // Écran « Processus » : la cartographie des macro-processus (pilotage, réalisation, support),
 // puis le diagramme BPMN d'un processus, dont les magasins de données sont des applications.
 import { computed, getCurrentInstance, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
+import McPanelTransition from '../../components/McPanelTransition/McPanelTransition.vue'
 import McAppBar from '../../components/McAppBar/McAppBar.vue'
 import type { TrailStep } from '../../components/McMapTrail/McMapTrail.vue'
 import McAvatarStack, { type McAvatarPerson } from '../../components/McAvatar/McAvatarStack.vue'
@@ -34,86 +35,12 @@ import { copyLink, ficheHref, goFiche, goPath, pathHref } from '../bridge'
 import { getApplication, slugOf } from '../../data/applications'
 import { openPaletteItem, paletteItems } from '../Accueil/nav'
 import { maxFitFor } from '../Infrastructure/canvasView'
+import { BPMN_DIAGRAMS, MACROS, type Macro, type Proc } from '../../data/processus'
 
 const toast = useToast()
 
 /* ---------- Macro-processus ---------- */
-interface Proc {
-  code: string
-  name: string
-}
-interface Macro {
-  code: string
-  name: string
-  family: 'pilotage' | 'realisation' | 'support'
-  cols: number
-  processes: Proc[]
-}
-const p = (code: string, name: string, _diagram?: boolean): Proc => ({ code, name })
-const macros = reactive<Macro[]>([
-  {
-    code: 'P1',
-    name: 'Gouvernance et pilotage',
-    family: 'pilotage',
-    cols: 5,
-    processes: [
-      p('P1.1', 'Définition de la stratégie de l’établissement'),
-      p('P1.2', 'Pilotage budgétaire et contrôle de gestion'),
-      p('P1.3', 'Démarche qualité et évaluation'),
-      p('P1.4', 'Gestion des risques et conformité'),
-      p('P1.5', 'Communication institutionnelle'),
-    ],
-  },
-  {
-    code: 'M1',
-    name: 'Formation et vie étudiante',
-    family: 'realisation',
-    cols: 3,
-    processes: [
-      p('M1.1', 'Conception des programmes pédagogiques'),
-      p('M1.2', 'Admissions et inscriptions'),
-      p('M1.3', 'Organisation des cours et examens'),
-      p('M1.4', 'Suivi de la scolarité et délivrance des diplômes'),
-      p('M1.5', 'Accompagnement de la vie étudiante'),
-    ],
-  },
-  {
-    code: 'M2',
-    name: 'Recherche et innovation',
-    family: 'realisation',
-    cols: 2,
-    processes: [
-      p('M2.1', 'Définition des axes de recherche'),
-      p('M2.2', 'Gestion des projets de recherche et partenariats'),
-      p('M2.3', 'Publications, colloques et diffusion'),
-    ],
-  },
-  {
-    code: 'S1',
-    name: 'Support et logistique',
-    family: 'support',
-    cols: 3,
-    processes: [
-      p('S1.1', 'Gestion des infrastructures bâtiments'),
-      p('S1.2', 'Gestion des ressources humaines'),
-      p('S1.3', 'Gestion financière et comptable'),
-      p('S1.4', 'Gestion du système d’information'),
-      p('S1.5', 'Gestion des affaires juridiques'),
-      p('S1.6', 'Gestion des achats et approvisionnements', true),
-    ],
-  },
-  {
-    code: 'S2',
-    name: 'Partenariats et relations extérieures',
-    family: 'support',
-    cols: 2,
-    processes: [
-      p('S2.1', 'Relations avec les entreprises'),
-      p('S2.2', 'Relations internationales'),
-      p('S2.3', 'Relations avec les collectivités'),
-    ],
-  },
-])
+const macros = reactive<Macro[]>(MACROS.map((m) => ({ ...m, processes: m.processes.map((pr) => ({ ...pr })) })))
 const families = [
   { id: 'pilotage', label: 'Pilotage' },
   { id: 'realisation', label: 'Réalisation' },
@@ -192,6 +119,8 @@ function layoutSimple(code: string, laneLabel: string, taskLabels: string[]): Mc
     flows: ids.slice(1).map((to, i) => ({ from: ids[i], to, kind: 'sequence' as const })),
   }
 }
+// Les diagrammes simples enregistrés (liste « Diagrammes BPMN »).
+for (const d of BPMN_DIAGRAMS) if (d.lane && d.tasks) diagrams[d.code] = { title: d.title, model: layoutSimple(d.code, d.lane, d.tasks) }
 /** Diagrammes créés ici : on peut leur ajouter des tâches (5 au plus, pour tenir dans la largeur). */
 const created = reactive(new Set<string>())
 const MAX_TASKS = 5
@@ -611,18 +540,26 @@ function onDiagramSelect(id: string) {
 }
 
 /* ---------- Barre du haut ---------- */
+/** Ouvert depuis la liste « Diagrammes BPMN » (?depuis=diagrammes) : le fil d'Ariane y ramène. */
+const fromList = computed(() => routeQuery.value.depuis === 'diagrammes')
 const trail = computed<TrailStep[]>(() =>
-  view.value === 'macro'
-    ? [{ label: 'Accueil' }, { label: 'Couche métier', layer: 'metier' }, { label: 'Processus' }]
-    : [
-        { label: 'Accueil' },
-        { label: 'Processus', layer: 'metier' },
-        { label: diagramCode.value === 'S1.6' ? 'S1.6 Gestion des achats' : `${diagramCode.value} ${diagramProc.value?.name ?? ''}`, layer: 'metier' },
-        { label: diagram.value.title },
-      ],
+  fromList.value && view.value === 'diagramme'
+    ? [{ label: 'Diagrammes BPMN', icon: 'process' }, { label: diagram.value.title }]
+    : view.value === 'macro'
+      ? [{ label: 'Accueil' }, { label: 'Processus' }]
+      : [
+          { label: 'Accueil' },
+          { label: 'Processus', layer: 'metier' },
+          { label: diagramCode.value === 'S1.6' ? 'S1.6 Gestion des achats' : `${diagramCode.value} ${diagramProc.value?.name ?? ''}`, layer: 'metier' },
+          { label: diagram.value.title },
+        ],
 )
 function onTrail(_s: TrailStep, i: number) {
-  if (i === 0 || (view.value === 'macro' && i === 1)) goPath('/')
+  if (fromList.value && view.value === 'diagramme') {
+    if (i === 0) goPath('/diagrammes')
+    return
+  }
+  if (i === 0) goPath('/')
   else if (view.value === 'diagramme' && i === 1) view.value = 'macro'
   else if (view.value === 'diagramme' && i === 2) {
     view.value = 'macro'
@@ -730,7 +667,7 @@ function deselect() {
     @pointercancel="onPointerUp"
     @wheel="onWheel"
   >
-    <McCanvas fill :zoom="zoom" :pan="pan" :label="view === 'macro' ? 'Cartographie des macro-processus' : 'Diagramme BPMN Achat de fournitures'" @deselect="deselect" @fit="fit">
+    <McCanvas fill :zoom="zoom" :pan="pan" :label="view === 'macro' ? 'Cartographie des macro-processus' : `Diagramme BPMN ${diagram.title}`" @deselect="deselect" @fit="fit">
       <!-- Macro-processus : pilotage, réalisation, support -->
       <div v-if="view === 'macro'" ref="macroEl" class="mc-scr-proc-macro" :style="{ width: macroW + 'px' }" @click.self="selectedProc = null">
         <section v-for="f in shownFamilies" :key="f.id" class="mc-scr-proc-band" :aria-label="f.label">
@@ -802,65 +739,69 @@ function deselect() {
       </template>
 
       <template #right>
-        <McLegend v-if="legend" v-model:isolated="isolated" :sections="legendSections" @close="legend = false" />
-        <McInspector v-if="inspected" :key="view + (selectedStore ?? selectedTask ?? selectedProc ?? diagramCode)" :object="inspected" @close="closeInspector">
-          <!-- Application d'un magasin de données -->
-          <template v-if="view === 'diagramme' && store">
-            <McRelationList :groups="storeGroups" @open="onStoreRelation" />
-          </template>
-          <!-- Tâche du diagramme : son libellé se modifie ici -->
-          <template v-else-if="view === 'diagramme' && taskNode">
-            <McTextField :model-value="taskNode.label" label="Libellé de la tâche" help="Un verbe à l’infinitif et un objet : « Approuver un achat »." @update:model-value="(v) => renameTask(String(v ?? ''))" />
-            <McRelationList :groups="taskStores" @open="onDiagramRelation" />
-            <div v-if="created.has(diagramCode)" class="mc-row mc-scr-proc-acts">
-              <McButton size="sm" variant="outline" icon="chevron-left" @click="selectedTask = null">Tout le diagramme</McButton>
-              <McButton size="sm" variant="ghost" icon="trash" @click="removeTask">Retirer la tâche</McButton>
-            </div>
-          </template>
-          <!-- Le diagramme entier -->
-          <template v-else-if="view === 'diagramme'">
-            <McTextField v-if="created.has(diagramCode)" :model-value="diagram.model.lanes[0]?.label ?? ''" label="Acteur (couloir)" @update:model-value="(v) => renameLane(String(v ?? ''))" />
-            <McRelationList :groups="diagramTasks" @open="onDiagramRelation" @add="addTask" />
-            <p v-if="created.has(diagramCode) && !canAddTask" class="mc-cap">5 tâches au plus dans ce diagramme simple.</p>
-          </template>
-          <!-- Processus sans diagramme -->
-          <template v-else-if="procObj">
-            <McTextField v-if="editing" class="mc-scr-proc-rename" :model-value="procObj.pr.name" label="Nom du processus" @update:model-value="(v) => renameProc(String(v ?? ''))" />
-            <McKeyValueList :items="procInfos" />
-            <McButton v-if="hasDiagram(procObj.code)" size="sm" variant="outline" icon="process" @click="showDiagram(procObj.code)">Ouvrir le diagramme</McButton>
-            <McEmptyState
-              v-else
-              size="compact"
-              icon="process"
-              layer="metier"
-              title="Aucun diagramme BPMN"
-              text="Dessinez le déroulé de ce processus pour relier ses tâches aux applications qui les outillent."
-            >
-              <template #action>
-                <McButton variant="outline" size="sm" icon="plus" @click="createDiagram(procObj.code)">Créer le diagramme</McButton>
-              </template>
-            </McEmptyState>
-          </template>
-          <template #statuses>
-            <McStatusChip v-if="view === 'diagramme' && store" :status="store.statut === 'Active' ? 'ok' : 'neutral'" size="sm">{{ store.statut }}</McStatusChip>
-            <McStatusChip v-else-if="view === 'diagramme' && !taskNode" size="sm">{{ diagramCode }}</McStatusChip>
-          </template>
-          <template #actions>
+        <McPanelTransition>
+          <McLegend v-if="legend" v-model:isolated="isolated" :sections="legendSections" @close="legend = false" />
+        </McPanelTransition>
+        <McPanelTransition>
+          <McInspector v-if="inspected" :key="view + (selectedStore ?? selectedTask ?? selectedProc ?? diagramCode)" :object="inspected" @close="closeInspector">
+            <!-- Application d'un magasin de données -->
             <template v-if="view === 'diagramme' && store">
-              <McButton size="sm" icon="external" :href="ficheHref(store.name)" @click.prevent="goFiche(store.name)">Ouvrir la fiche</McButton>
-              <McIconButton size="sm" icon="more" label="Plus d’actions" @click="openMenu($event, 'store')" />
+              <McRelationList :groups="storeGroups" @open="onStoreRelation" />
             </template>
+            <!-- Tâche du diagramme : son libellé se modifie ici -->
+            <template v-else-if="view === 'diagramme' && taskNode">
+              <McTextField :model-value="taskNode.label" label="Libellé de la tâche" help="Un verbe à l’infinitif et un objet : « Approuver un achat »." @update:model-value="(v) => renameTask(String(v ?? ''))" />
+              <McRelationList :groups="taskStores" @open="onDiagramRelation" />
+              <div v-if="created.has(diagramCode)" class="mc-row mc-scr-proc-acts">
+                <McButton size="sm" variant="outline" icon="chevron-left" @click="selectedTask = null">Tout le diagramme</McButton>
+                <McButton size="sm" variant="ghost" icon="trash" @click="removeTask">Retirer la tâche</McButton>
+              </div>
+            </template>
+            <!-- Le diagramme entier -->
             <template v-else-if="view === 'diagramme'">
-              <McButton v-if="canAddTask" size="sm" variant="outline" icon="plus" @click="addTask">Ajouter une tâche</McButton>
-              <McIconButton size="sm" icon="more" label="Plus d’actions" @click="openMenu($event, 'diagram')" />
+              <McTextField v-if="created.has(diagramCode)" :model-value="diagram.model.lanes[0]?.label ?? ''" label="Acteur (couloir)" @update:model-value="(v) => renameLane(String(v ?? ''))" />
+              <McRelationList :groups="diagramTasks" @open="onDiagramRelation" @add="addTask" />
+              <p v-if="created.has(diagramCode) && !canAddTask" class="mc-cap">5 tâches au plus dans ce diagramme simple.</p>
             </template>
+            <!-- Processus sans diagramme -->
             <template v-else-if="procObj">
+              <McTextField v-if="editing" class="mc-scr-proc-rename" :model-value="procObj.pr.name" label="Nom du processus" @update:model-value="(v) => renameProc(String(v ?? ''))" />
+              <McKeyValueList :items="procInfos" />
               <McButton v-if="hasDiagram(procObj.code)" size="sm" variant="outline" icon="process" @click="showDiagram(procObj.code)">Ouvrir le diagramme</McButton>
-              <McButton v-else size="sm" variant="outline" icon="plus" @click="createDiagram(procObj.code)">Créer le diagramme</McButton>
-              <McIconButton size="sm" icon="more" label="Plus d’actions" @click="openMenu($event, 'proc')" />
+              <McEmptyState
+                v-else
+                size="compact"
+                icon="process"
+                layer="metier"
+                title="Aucun diagramme BPMN"
+                text="Dessinez le déroulé de ce processus pour relier ses tâches aux applications qui les outillent."
+              >
+                <template #action>
+                  <McButton variant="outline" size="sm" icon="plus" @click="createDiagram(procObj.code)">Créer le diagramme</McButton>
+                </template>
+              </McEmptyState>
             </template>
-          </template>
-        </McInspector>
+            <template #statuses>
+              <McStatusChip v-if="view === 'diagramme' && store" :status="store.statut === 'Active' ? 'ok' : 'neutral'" size="sm">{{ store.statut }}</McStatusChip>
+              <McStatusChip v-else-if="view === 'diagramme' && !taskNode" size="sm">{{ diagramCode }}</McStatusChip>
+            </template>
+            <template #actions>
+              <template v-if="view === 'diagramme' && store">
+                <McButton size="sm" icon="external" :href="ficheHref(store.name)" @click.prevent="goFiche(store.name)">Ouvrir la fiche</McButton>
+                <McIconButton size="sm" icon="more" label="Plus d’actions" @click="openMenu($event, 'store')" />
+              </template>
+              <template v-else-if="view === 'diagramme'">
+                <McButton v-if="canAddTask" size="sm" variant="outline" icon="plus" @click="addTask">Ajouter une tâche</McButton>
+                <McIconButton size="sm" icon="more" label="Plus d’actions" @click="openMenu($event, 'diagram')" />
+              </template>
+              <template v-else-if="procObj">
+                <McButton v-if="hasDiagram(procObj.code)" size="sm" variant="outline" icon="process" @click="showDiagram(procObj.code)">Ouvrir le diagramme</McButton>
+                <McButton v-else size="sm" variant="outline" icon="plus" @click="createDiagram(procObj.code)">Créer le diagramme</McButton>
+                <McIconButton size="sm" icon="more" label="Plus d’actions" @click="openMenu($event, 'proc')" />
+              </template>
+            </template>
+          </McInspector>
+        </McPanelTransition>
       </template>
 
       <template #bottom>

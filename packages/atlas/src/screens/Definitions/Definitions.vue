@@ -172,7 +172,7 @@ const paletteOpen = ref(false)
 
 <style>
 .mc-scr-def { position: relative; min-height: 100vh; background: var(--canvas); color: var(--ink); font-family: var(--font-sans); box-sizing: border-box; }
-.mc-scr-def-bar { position: sticky; top: 16px; z-index: 20; margin: 16px 16px 0; }
+.mc-scr-def-bar { position: sticky; top: 16px; z-index: 20; margin: 16px var(--page-inset) 0; }
 .mc-scr-def-wrap { max-width: 1120px; margin: 0 auto; padding: 24px 32px 40px; box-sizing: border-box; }
 .mc-scr-def-main { display: grid; gap: 16px; }
 .mc-scr-def-head { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
@@ -224,7 +224,6 @@ const paletteOpen = ref(false)
 .mc-scr-def-see a:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: var(--radius-xs); }
 @media (min-width: 1800px) {
   .mc-scr-def-wrap { max-width: 1280px; padding-inline: 40px; }
-  .mc-scr-def-bar { width: 1728px; max-width: calc(100% - 32px); margin-inline: auto; box-sizing: border-box; }
 }
 @media (max-width: 1180px) {
   .mc-scr-def-wrap { padding-inline: 24px; }

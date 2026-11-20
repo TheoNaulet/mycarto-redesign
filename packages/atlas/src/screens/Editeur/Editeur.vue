@@ -25,7 +25,10 @@ import McToggleGroup from '../../components/McToggleGroup/McToggleGroup.vue'
 import McEmptyState from '../../components/McEmptyState/McEmptyState.vue'
 import McToastHost from '../../components/McToast/McToastHost.vue'
 import { useToast } from '../../components/McToast/useToast'
-import { goPath } from '../bridge'
+import { goPath, queryParam } from '../bridge'
+
+/** Ouvert depuis la liste « Modèles de carte » (?depuis=modeles) : le retour y ramène. */
+const fromModels = queryParam('depuis') === 'modeles'
 import { publishedMapEdits, publishMap } from '../../data/publication'
 import { domainCount } from '../../data/applications'
 
@@ -723,7 +726,7 @@ const nodeSub = (n: EdNode) => (density.value === 'compact' ? undefined : n.sub 
 
     <!-- Barre du haut -->
     <header class="mc-float mc-scr-ed-top">
-      <McIconButton icon="chevron-left" label="Quitter l’édition" @click="goPath('/carte')" />
+      <McIconButton icon="chevron-left" :label="fromModels ? 'Retour aux modèles de carte' : 'Quitter l’édition'" @click="goPath(fromModels ? '/modeles-carte' : '/carte')" />
       <span class="mc-scr-ed-title">
         <b>Les applications et flux de Scolarité</b>
         <span :class="{ 'is-dirty': dirty }" aria-live="polite">
@@ -919,7 +922,7 @@ const nodeSub = (n: EdNode) => (density.value === 'compact' ? undefined : n.sub 
 </template>
 
 <style>
-.mc-scr-ed { --ed-lw: 248px; --ed-rw: 320px; position: relative; width: 100%; height: 100vh; min-height: 640px; overflow: hidden; background: var(--canvas); color: var(--ink); font-family: var(--font-sans); }
+.mc-scr-ed { --ed-lw: 248px; --ed-rw: var(--panel-w); position: relative; width: 100%; height: 100vh; min-height: 640px; overflow: hidden; background: var(--canvas); color: var(--ink); font-family: var(--font-sans); }
 .mc-scr-ed.is-hand .mc-canvas-layer { cursor: grab; }
 .mc-scr-ed.is-link .mc-canvas-layer .mc-node { cursor: crosshair; }
 .mc-scr-ed.no-grid .mc-canvas-root { background-image: none; }

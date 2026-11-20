@@ -2,6 +2,7 @@
 // Écran « Logiciels » : la vue Obsolescence de myCarto. Les 40 logiciels rangés en trois groupes
 // (obsolète, en voie d'obsolescence, non obsolète), avec leur fin de support et leurs déploiements.
 // Clic sur un logiciel : l'inspecteur montre où il tourne (applications vers leur fiche, machines vers l'écran Machines).
+import { logoFor } from '../../logos/logoFor'
 import { computed, getCurrentInstance, reactive, ref, watch } from 'vue'
 import McAppBar from '../../components/McAppBar/McAppBar.vue'
 import type { TrailStep } from '../../components/McMapTrail/McMapTrail.vue'
@@ -297,9 +298,9 @@ watch(
 )
 
 /* ---------- Barre du haut ---------- */
-const trail: TrailStep[] = [{ label: 'Accueil' }, { label: 'Couche technique', layer: 'technique' }, { label: 'Logiciels' }]
+const trail: TrailStep[] = [{ label: 'Accueil' }, { label: 'Logiciels' }]
 function onTrail(_s: TrailStep, i: number) {
-  if (i === 0 || i === 1) goPath('/')
+  if (i === 0) goPath('/')
 }
 function onHome(e: MouseEvent) {
   if (e.metaKey || e.ctrlKey || e.shiftKey) return
@@ -316,6 +317,8 @@ function onPalette(item: PaletteItem) {
 }
 const searchCount = computed(() => (query.value.trim() ? (bySearch.value.length ? plural(bySearch.value.length, 'résultat', 'résultats') : 'Aucun résultat') : undefined))
 const exposedApps = computed(() => new Set(items.filter((i) => i.l.obsolescence !== 'ok').flatMap((i) => i.apps)).size)
+// Sans sélection, l'inspecteur résume ce que montre la liste.
+const summary = computed<KeyValueItem[]>(() => [{ key: 'Logiciels', value: byFamille.value.length }, ...(Object.keys(counts.value) as Obsolescence[]).map((o) => ({ key: OBSOLESCENCE[o].label, value: counts.value[o] }))])
 </script>
 
 <template>
@@ -327,7 +330,7 @@ const exposedApps = computed(() => new Set(items.filter((i) => i.l.obsolescence 
       </template>
     </McAppBar>
 
-    <div class="mc-scr-logi-wrap" :class="{ 'has-insp': inspected }">
+    <div class="mc-scr-logi-wrap">
       <main class="mc-scr-logi-main">
         <header class="mc-scr-logi-head">
           <div class="mc-scr-logi-titles">
@@ -402,6 +405,8 @@ const exposedApps = computed(() => new Set(items.filter((i) => i.l.obsolescence 
                   <McNode
                     layer="technique"
                     icon="software"
+                    :logo="logoFor(i.l.name, i.l.editeur)"
+                    monogram
                     type="Logiciel"
                     :name="i.l.name"
                     :subtitle="deployLabel(i.deps.length)"
@@ -427,6 +432,8 @@ const exposedApps = computed(() => new Set(items.filter((i) => i.l.obsolescence 
           :rows="rows"
           row-key="id"
           icon="software"
+          :logo="(r: Row) => logoFor(r.name, getLogiciel(r.id)?.editeur)"
+          :monogram="(r: Row) => r.name"
           layer="technique"
           caption="Logiciels"
           :local-sort="false"
@@ -448,16 +455,18 @@ const exposedApps = computed(() => new Set(items.filter((i) => i.l.obsolescence 
       </main>
 
       <McInspector
-        v-if="inspected"
-        :key="inspected.l.id"
-        class="mc-scr-logi-insp"
-        :object="{ name: inspected.l.name, type: 'Logiciel', layer: 'technique', icon: 'software' }"
+        :key="inspected?.l.id ?? 'resume'"
+        class="mc-insp-dock mc-scr-logi-insp"
+        :object="inspected ? { name: inspected.l.name, type: 'Logiciel', layer: 'technique', icon: 'software', logo: logoFor(inspected.l.name, inspected.l.editeur), monogram: true } : undefined"
+        empty-title="Sélectionnez un logiciel"
+        empty-text="Son cycle de vie, les machines où il tourne et les applications exposées s’affichent ici."
         @close="inspectedId = null"
       >
-        <template #statuses>
+        <template #empty><McKeyValueList :items="summary" /></template>
+        <template v-if="inspected" #statuses>
           <McStatusChip :status="OBSOLESCENCE[inspected.l.obsolescence].status" size="sm">{{ OBSOLESCENCE[inspected.l.obsolescence].label }}</McStatusChip>
         </template>
-        <template #actions>
+        <template v-if="inspected" #actions>
           <McButton
             v-if="inspected.l.obsolescence !== 'ok' && inspected.apps.length"
             size="sm"
@@ -471,9 +480,11 @@ const exposedApps = computed(() => new Set(items.filter((i) => i.l.obsolescence 
             <McContextMenu v-model:open="moreOpen" :items="moreItems" :header="inspected.l.name" :x="0" :y="34" class="mc-scr-logi-menu" @select="onMore" />
           </span>
         </template>
-        <McLifecycleDate v-bind="lifeProps(inspected.l)" />
-        <McKeyValueList :items="kv" />
-        <McRelationList :groups="groups" :visible="6" @open="openRelation" />
+        <template v-if="inspected">
+          <McLifecycleDate v-bind="lifeProps(inspected.l)" />
+          <McKeyValueList :items="kv" />
+          <McRelationList :groups="groups" :visible="6" @open="openRelation" />
+        </template>
       </McInspector>
     </div>
 
@@ -504,9 +515,8 @@ const exposedApps = computed(() => new Set(items.filter((i) => i.l.obsolescence 
 
 <style>
 .mc-scr-logi { position: relative; min-height: 100vh; background: var(--canvas); color: var(--ink); font-family: var(--font-sans); box-sizing: border-box; }
-.mc-scr-logi-bar { position: sticky; top: 16px; z-index: 20; margin: 16px 16px 0; }
-.mc-scr-logi-wrap { max-width: 1280px; margin: 0 auto; padding: 24px 32px 40px; box-sizing: border-box; display: flex; gap: 20px; align-items: flex-start; }
-.mc-scr-logi-wrap.has-insp { max-width: 1440px; }
+.mc-scr-logi-bar { position: sticky; top: 16px; z-index: 20; margin: 16px var(--page-inset) 0; }
+.mc-scr-logi-wrap { max-width: var(--page-w); margin: 0 auto; padding: 24px var(--page-pad) 40px; box-sizing: border-box; display: flex; gap: 20px; align-items: flex-start; }
 .mc-scr-logi-main { flex: 1; min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
 .mc-scr-logi-head { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
 .mc-scr-logi-titles { flex: 1; min-width: 180px; }
@@ -539,18 +549,14 @@ const exposedApps = computed(() => new Set(items.filter((i) => i.l.obsolescence 
 .mc-scr-logi-sec + .mc-scr-logi-sec { margin-top: 8px; padding-top: 16px; border-top: 1px solid var(--line); }
 .mc-scr-logi-h2 { display: flex; align-items: center; gap: 10px; margin: 0; font: inherit; }
 .mc-scr-logi-count { font-size: 12px; color: var(--ink-subtle); }
-.mc-scr-logi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 6px 14px; }
+.mc-scr-logi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px 14px; }
 .mc-scr-logi-cell { min-width: 0; display: grid; gap: 6px; }
 .mc-scr-logi-cell > .mc-node { width: auto; }
 .mc-scr-logi-life { font-size: 12px; padding-left: 2px; }
-.mc-scr-logi-insp { position: sticky; z-index: 3; top: 92px; flex: none; max-height: calc(100vh - 108px); }
 .mc-scr-logi-insp .body { grid-template-columns: minmax(0, 1fr); }
 @media (min-width: 1800px) {
-  .mc-scr-logi-wrap, .mc-scr-logi-wrap.has-insp { max-width: 1760px; padding-inline: 40px; }
-  .mc-scr-logi-bar { width: 1728px; max-width: calc(100% - 32px); margin-inline: auto; box-sizing: border-box; }
 }
 @media (max-width: 1280px) {
-  .mc-scr-logi-wrap { padding-inline: 24px; }
   .mc-scr-logi-titles { flex-basis: 100%; }
   .mc-scr-logi-search, .mc-scr-logi-sort { flex: 1 1 200px; width: auto; }
 }

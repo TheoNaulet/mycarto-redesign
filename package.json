@@ -14,7 +14,8 @@
     "build-storybook:atlas": "storybook build -c .storybook-atlas -o storybook-atlas-static",
     "typecheck:atlas": "vue-tsc --noEmit -p tsconfig.atlas.json",
     "dev:atlas": "vite --config vite.atlas.config.ts",
-    "build:atlas": "vite build --config vite.atlas.config.ts"
+    "build:atlas": "vite build --config vite.atlas.config.ts",
+    "build:atlas:site": "ATLAS_BASE=/app/ ATLAS_OUT=./dist/app vite build --config vite.atlas.config.ts"
   },
   "dependencies": {
     "@fontsource-variable/noto-sans": "^5.3.0",

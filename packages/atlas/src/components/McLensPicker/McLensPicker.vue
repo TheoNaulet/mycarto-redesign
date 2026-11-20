@@ -73,6 +73,23 @@ function onListKey(e: KeyboardEvent) {
   e.preventDefault()
 }
 
+/* La barre d'outils suit la largeur du bouton : on anime le passage d'une largeur à l'autre. */
+let widthAnim: Animation | undefined
+watch(
+  () => current.value?.label,
+  async () => {
+    const el = trigger.value
+    if (!el || matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const from = el.getBoundingClientRect().width
+    widthAnim?.cancel()
+    await nextTick()
+    const to = el.getBoundingClientRect().width
+    if (Math.abs(to - from) < 1) return
+    widthAnim = el.animate([{ width: `${from}px` }, { width: `${to}px` }], { duration: 240, easing: 'cubic-bezier(.2, .8, .2, 1)' })
+  },
+  { flush: 'pre' },
+)
+
 function onDocPointer(e: PointerEvent) {
   if (open.value && root.value && !root.value.contains(e.target as Node)) close(false)
 }
@@ -98,38 +115,40 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', onDocPointer))
       @click="toggle"
     >
       <McIcon name="lens" size="lg" />
-      <span class="lbl">Lentille<small>{{ current?.label }}</small></span>
+      <span class="lbl">Lentille<small :key="current?.label">{{ current?.label }}</small></span>
       <McIcon name="chevron-down" size="sm" />
     </button>
-    <div v-if="open" class="mc-pop mc-maps mc-lens-pop" :class="`is-${placement}`">
-      <div :id="`${uid}-head`" class="head mc-over">{{ heading }}</div>
-      <div
-        :id="`${uid}-list`"
-        ref="list"
-        role="listbox"
-        tabindex="-1"
-        :aria-labelledby="`${uid}-head`"
-        :aria-activedescendant="`${uid}-o${active}`"
-        class="mc-lens-list"
-        @keydown="onListKey"
-      >
+    <Transition name="mc-pop">
+      <div v-if="open" class="mc-pop mc-maps mc-lens-pop" :class="`is-${placement}`">
+        <div :id="`${uid}-head`" class="head mc-over">{{ heading }}</div>
         <div
-          v-for="(l, i) in lenses"
-          :id="`${uid}-o${i}`"
-          :key="l.id"
-          role="option"
-          class="it"
-          :class="{ 'is-on': l.id === lens, 'is-active': i === active }"
-          :aria-selected="l.id === lens"
-          @click="choose(l)"
-          @pointerenter="active = i"
+          :id="`${uid}-list`"
+          ref="list"
+          role="listbox"
+          tabindex="-1"
+          :aria-labelledby="`${uid}-head`"
+          :aria-activedescendant="`${uid}-o${active}`"
+          class="mc-lens-list"
+          @keydown="onListKey"
         >
-          <span class="th mc-lens-th" :class="`t-${l.tone}`"><McIcon :name="l.icon" /></span>
-          <span class="tx"><b>{{ l.label }}</b><span>{{ l.description }}</span></span>
-          <span v-if="l.id === lens" class="go mc-lens-check"><McIcon name="check" size="sm" /></span>
+          <div
+            v-for="(l, i) in lenses"
+            :id="`${uid}-o${i}`"
+            :key="l.id"
+            role="option"
+            class="it"
+            :class="{ 'is-on': l.id === lens, 'is-active': i === active }"
+            :aria-selected="l.id === lens"
+            @click="choose(l)"
+            @pointerenter="active = i"
+          >
+            <span class="th mc-lens-th" :class="`t-${l.tone}`"><McIcon :name="l.icon" /></span>
+            <span class="tx"><b>{{ l.label }}</b><span>{{ l.description }}</span></span>
+            <span v-if="l.id === lens" class="go mc-lens-check"><McIcon name="check" size="sm" /></span>
+          </div>
         </div>
       </div>
-    </div>
+    </Transition>
   </div>
 </template>
 

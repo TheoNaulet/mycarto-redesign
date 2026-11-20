@@ -17,8 +17,10 @@ import { useToast } from '../../components/McToast/useToast'
 import type { Criticity } from '../../utils/types'
 import { ficheHref, goFiche, goPath, pathHref } from '../bridge'
 import { openPaletteItem, paletteItems } from '../Accueil/nav'
-import { inventory, type Application } from '../../data/applications'
+import { inventory, getApplication, type Application } from '../../data/applications'
 import { exportCsv } from '../../data/a-texte'
+import AppInspector from '../shared/AppInspector.vue'
+import type { KeyValueItem } from '../../components/McKeyValueList/types'
 
 const toast = useToast()
 const plural = (n: number, one: string, many: string) => `${n} ${n > 1 ? many : one}`
@@ -83,9 +85,9 @@ function clearAll() {
 }
 
 /* ---------- Barre du haut ---------- */
-const trail: TrailStep[] = [{ label: 'Accueil' }, { label: 'Couche applicative', layer: 'applicatif' }, { label: 'Criticité' }]
+const trail: TrailStep[] = [{ label: 'Accueil' }, { label: 'Criticité' }]
 function onTrail(_s: TrailStep, i: number) {
-  if (i === 0 || i === 1) goPath('/')
+  if (i === 0) goPath('/')
 }
 function onHome(e: MouseEvent) {
   if (e.metaKey || e.ctrlKey || e.shiftKey) return
@@ -104,11 +106,17 @@ function exportList() {
   const file = exportCsv(cell.value ? `Criticité ${cellLabel.value}` : 'Criticité des applications', ['Application', 'Domaine', `Niveau (${criteria.value.join(', ')})`, 'Disponibilité', 'Intégrité', 'Confidentialité', 'Preuve'], rows)
   toast.success(`${file} téléchargé : ${plural(rows.length, 'application', 'applications')}`)
 }
+// Clic : l'application s'affiche dans l'inspecteur à droite ; double-clic ou ⌘/Ctrl-clic : sa fiche.
 function open(a: Application, e: MouseEvent) {
   if (e.metaKey || e.ctrlKey) return
   e.preventDefault()
-  goFiche(a.slug)
+  inspectedSlug.value = inspectedSlug.value === a.slug ? null : a.slug
 }
+const inspectedSlug = ref<string | null>(null)
+const inspected = computed(() => getApplication(inspectedSlug.value))
+/** Sans sélection, l'inspecteur résume ce que montre la liste. */
+const summary = computed<KeyValueItem[]>(() => [{ key: 'Applications', value: found.value.length }, { key: 'Évaluées', value: evaluated.value }, ...bar.value.map((x) => ({ key: `Criticité ${criticityLabel[x.lv].toLowerCase()}`, value: x.n }))])
+
 </script>
 
 <template>
@@ -119,7 +127,8 @@ function open(a: Application, e: MouseEvent) {
       </template>
     </McAppBar>
 
-    <main class="mc-scr-crit-wrap">
+    <div class="mc-scr-crit-wrap">
+    <main class="mc-scr-crit-main">
       <header class="mc-scr-crit-head">
         <div class="mc-scr-crit-titles">
           <p class="mc-over">Couche applicative · Sécurité</p>
@@ -215,7 +224,7 @@ function open(a: Application, e: MouseEvent) {
           <p v-if="!g.lv" class="mc-scr-crit-note">Aucun des critères retenus n’est renseigné. À compléter depuis la fiche de chaque application.</p>
           <ul class="mc-scr-crit-rows">
             <li v-for="a in g.apps" :key="a.slug">
-              <a class="mc-scr-crit-row" :href="ficheHref(a.slug)" @click="open(a, $event)">
+              <a class="mc-scr-crit-row" :class="{ 'is-sel': inspectedSlug === a.slug }" :aria-current="inspectedSlug === a.slug || undefined" :href="ficheHref(a.slug)" @click="open(a, $event)" @dblclick="goFiche(a.slug)">
                 <span class="mc-scr-crit-tile"><McIcon name="app" /></span>
                 <span class="mc-scr-crit-name">{{ a.name }}</span>
                 <span class="mc-scr-crit-dom">{{ domainOf(a) }}</span>
@@ -230,6 +239,8 @@ function open(a: Application, e: MouseEvent) {
         <template #action><McButton variant="outline" size="sm" icon="x" @click="clearAll">Tout effacer</McButton></template>
       </McEmptyState>
     </main>
+    <AppInspector :app="inspected" :summary="summary" @close="inspectedSlug = null" @inspect="(a) => (inspectedSlug = a.slug)" />
+    </div>
 
     <McCommandPalette v-model:open="paletteOpen" :items="paletteItems" @select="onPalette" />
     <McToastHost />
@@ -238,8 +249,9 @@ function open(a: Application, e: MouseEvent) {
 
 <style>
 .mc-scr-crit { position: relative; min-height: 100vh; background: var(--canvas); color: var(--ink); font-family: var(--font-sans); box-sizing: border-box; }
-.mc-scr-crit-bar { position: sticky; top: 16px; z-index: 20; margin: 16px 16px 0; }
-.mc-scr-crit-wrap { max-width: 1280px; margin: 0 auto; padding: 24px 32px 40px; box-sizing: border-box; display: grid; gap: 16px; }
+.mc-scr-crit-bar { position: sticky; top: 16px; z-index: 20; margin: 16px var(--page-inset) 0; }
+.mc-scr-crit-wrap { max-width: var(--page-w); margin: 0 auto; padding: 24px var(--page-pad) 40px; box-sizing: border-box; display: flex; gap: 20px; align-items: flex-start; }
+.mc-scr-crit-main { flex: 1; min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
 .mc-scr-crit-head { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
 .mc-scr-crit-titles { flex: 1; min-width: 180px; }
 .mc-scr-crit-titles .mc-over { margin: 0 0 2px; }
@@ -294,17 +306,15 @@ function open(a: Application, e: MouseEvent) {
 .mc-scr-crit-rows { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 6px 14px; }
 .mc-scr-crit-row { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 6px 10px 6px 8px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--surface); color: var(--ink); text-decoration: none; box-shadow: var(--shadow-node); }
 .mc-scr-crit-row:hover { border-color: var(--line-strong); box-shadow: var(--shadow-hover); }
+.mc-scr-crit-row.is-sel { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), var(--shadow-node); }
 .mc-scr-crit-row:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .mc-scr-crit-tile { width: 26px; height: 26px; border-radius: var(--radius-xs); background: var(--layer-applicatif-soft); color: var(--layer-applicatif); display: inline-flex; align-items: center; justify-content: center; flex: none; }
 .mc-scr-crit-name { font: 600 13px/16px var(--font-display); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .mc-scr-crit-dom { flex: 1; min-width: 0; font-size: 12px; color: var(--ink-subtle); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .mc-scr-crit-go { color: var(--ink-subtle); }
 @media (min-width: 1800px) {
-  .mc-scr-crit-wrap { max-width: 1760px; padding-inline: 40px; }
-  .mc-scr-crit-bar { width: 1728px; max-width: calc(100% - 32px); margin-inline: auto; box-sizing: border-box; }
 }
 @media (max-width: 1280px) {
-  .mc-scr-crit-wrap { padding-inline: 24px; }
   .mc-scr-crit-card { grid-template-columns: minmax(0, 1fr); }
 }
 </style>

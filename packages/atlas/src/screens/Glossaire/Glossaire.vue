@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // Écran « Glossaire des applications » : une tuile par lettre (0123 pour les chiffres) avec le nombre d'applications,
 // les lettres vides grisées. Clic sur une lettre : ses applications, chacune vers sa fiche.
+import { appLogo } from '../../logos/appLogo'
 import { computed, ref, watch } from 'vue'
 import McAppBar from '../../components/McAppBar/McAppBar.vue'
 import type { TrailStep } from '../../components/McMapTrail/McMapTrail.vue'
@@ -13,8 +14,10 @@ import McToastHost from '../../components/McToast/McToastHost.vue'
 import { useToast } from '../../components/McToast/useToast'
 import { ficheHref, goFiche, goPath, pathHref } from '../bridge'
 import { openPaletteItem, paletteItems } from '../Accueil/nav'
-import { applications, type Application } from '../../data/applications'
+import { applications, getApplication, type Application } from '../../data/applications'
 import { exportCsv } from '../../data/a-texte'
+import AppInspector from '../shared/AppInspector.vue'
+import type { KeyValueItem } from '../../components/McKeyValueList/types'
 
 const toast = useToast()
 const plural = (n: number, one: string, many: string) => `${n} ${n > 1 ? many : one}`
@@ -57,9 +60,9 @@ const subOf = (a: Application) => a.description ?? (a.parent ? `Module de ${a.pa
 const letterLabel = (l: string) => (l === DIGITS ? 'un chiffre' : `la lettre ${l}`)
 
 /* ---------- Barre du haut ---------- */
-const trail: TrailStep[] = [{ label: 'Accueil' }, { label: 'Couche applicative', layer: 'applicatif' }, { label: 'Glossaire' }]
+const trail: TrailStep[] = [{ label: 'Accueil' }, { label: 'Glossaire' }]
 function onTrail(_s: TrailStep, i: number) {
-  if (i === 0 || i === 1) goPath('/')
+  if (i === 0) goPath('/')
 }
 function onHome(e: MouseEvent) {
   if (e.metaKey || e.ctrlKey || e.shiftKey) return
@@ -78,10 +81,16 @@ function exportList() {
   const file = exportCsv(query.value.trim() ? `Glossaire ${query.value.trim()}` : 'Glossaire des applications', ['Lettre', 'Application', 'Nature', 'Autres noms', 'Description', 'Domaines', 'Fournisseur'], rows)
   toast.success(`${file} téléchargé : ${plural(rows.length, 'application', 'applications')}`)
 }
+// Clic : l'application s'affiche dans l'inspecteur à droite ; double-clic ou ⌘/Ctrl-clic : sa fiche.
 function open(a: Application, e?: MouseEvent) {
   if (e && (e.metaKey || e.ctrlKey)) return void window.open(ficheHref(a.slug), '_blank')
-  goFiche(a.slug)
+  inspectedSlug.value = inspectedSlug.value === a.slug ? null : a.slug
 }
+const inspectedSlug = ref<string | null>(null)
+const inspected = computed(() => getApplication(inspectedSlug.value))
+/** Sans sélection, l'inspecteur résume ce que montre la liste. */
+const summary = computed<KeyValueItem[]>(() => [{ key: 'Applications', value: found.value.filter((a) => a.nature !== 'Module applicatif').length }, { key: 'Modules applicatifs', value: found.value.filter((a) => a.nature === 'Module applicatif').length }, { key: 'Infra obsolète', value: found.value.filter((a) => a.obsolescence?.status === 'critical').length }, { key: 'Sans description', value: found.value.filter((a) => !a.description).length }])
+
 </script>
 
 <template>
@@ -92,7 +101,8 @@ function open(a: Application, e?: MouseEvent) {
       </template>
     </McAppBar>
 
-    <main class="mc-scr-glos-wrap">
+    <div class="mc-scr-glos-wrap">
+    <main class="mc-scr-glos-main">
       <header class="mc-scr-glos-head">
         <div class="mc-scr-glos-titles">
           <p class="mc-over">Couche applicative</p>
@@ -130,13 +140,15 @@ function open(a: Application, e?: MouseEvent) {
               :key="a.slug"
               layer="applicatif"
               icon="app"
+              :logo="appLogo(a.name)"
               :type="a.nature === 'Module applicatif' ? 'Module' : 'Application'"
               :name="a.name"
               :subtitle="subOf(a)"
               :status="a.obsolescence?.status === 'critical' ? 'critical' : undefined"
-              :title="`Ouvrir la fiche de ${a.name}`"
+              :title="`${a.name} : double-clic pour ouvrir la fiche`"
+              :selected="inspectedSlug === a.slug"
               @select="open(a, $event)"
-              @open="open(a)"
+              @open="goFiche(a.slug)"
             />
           </div>
         </template>
@@ -145,6 +157,8 @@ function open(a: Application, e?: MouseEvent) {
         </McEmptyState>
       </section>
     </main>
+    <AppInspector :app="inspected" :summary="summary" @close="inspectedSlug = null" @inspect="(a) => (inspectedSlug = a.slug)" />
+    </div>
 
     <McCommandPalette v-model:open="paletteOpen" :items="paletteItems" @select="onPalette" />
     <McToastHost />
@@ -153,8 +167,9 @@ function open(a: Application, e?: MouseEvent) {
 
 <style>
 .mc-scr-glos { position: relative; min-height: 100vh; background: var(--canvas); color: var(--ink); font-family: var(--font-sans); box-sizing: border-box; }
-.mc-scr-glos-bar { position: sticky; top: 16px; z-index: 20; margin: 16px 16px 0; }
-.mc-scr-glos-wrap { max-width: 1280px; margin: 0 auto; padding: 24px 32px 40px; box-sizing: border-box; display: grid; gap: 20px; }
+.mc-scr-glos-bar { position: sticky; top: 16px; z-index: 20; margin: 16px var(--page-inset) 0; }
+.mc-scr-glos-wrap { max-width: var(--page-w); margin: 0 auto; padding: 24px var(--page-pad) 40px; box-sizing: border-box; display: flex; gap: 20px; align-items: flex-start; }
+.mc-scr-glos-main { flex: 1; min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
 .mc-scr-glos-head { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
 .mc-scr-glos-titles { flex: 1; min-width: 180px; }
 .mc-scr-glos-titles .mc-over { margin: 0 0 2px; }
@@ -177,13 +192,10 @@ function open(a: Application, e?: MouseEvent) {
 .mc-scr-glos-h2 { display: flex; align-items: baseline; gap: 10px; margin: 0; font: inherit; }
 .mc-scr-glos-big { font: 700 28px/32px var(--font-display); }
 .mc-scr-glos-count { font-size: 13px; color: var(--ink-subtle); }
-.mc-scr-glos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 4px 14px; }
+.mc-scr-glos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px 14px; }
 .mc-scr-glos-grid > .mc-node { width: auto; min-width: 0; }
 @media (min-width: 1800px) {
-  .mc-scr-glos-wrap { max-width: 1760px; padding-inline: 40px; }
-  .mc-scr-glos-bar { width: 1728px; max-width: calc(100% - 32px); margin-inline: auto; box-sizing: border-box; }
 }
 @media (max-width: 1280px) {
-  .mc-scr-glos-wrap { padding-inline: 24px; }
 }
 </style>

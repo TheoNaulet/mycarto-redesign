@@ -70,8 +70,11 @@ body { margin: 0; background: var(--canvas); color: var(--ink); font-family: var
 .mc-input.select { cursor: pointer; }
 .mc-input.sm { height: var(--control-sm); font-size: 13px; }
 .mc-textarea { height: auto; min-height: 72px; align-items: flex-start; padding: var(--space-2) var(--space-3); }
+.mc-textarea textarea { flex: 1; min-width: 0; min-height: 56px; border: 0; outline: 0; resize: vertical; background: transparent; color: inherit; font: inherit; padding: 0; }
+.mc-textarea textarea::placeholder { color: var(--ink-subtle); }
+.mc-textarea:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
 
-.mc-field { display: grid; gap: 6px; min-width: 0; }
+.mc-field { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; min-width: 0; align-content: start; }
 .mc-field-label { display: flex; align-items: center; gap: 6px; font: 600 12px/16px var(--font-sans); color: var(--ink-muted); }
 .mc-req { color: var(--status-critical); font-weight: 700; }
 .mc-field-help { font-size: 12px; line-height: 16px; color: var(--ink-subtle); }
@@ -229,6 +232,7 @@ body { margin: 0; background: var(--canvas); color: var(--ink); font-family: var
 .mc-maps .head { display: flex; align-items: center; gap: 8px; padding: 6px 8px 8px; }
 .mc-maps .it { display: flex; align-items: center; gap: 10px; padding: 7px 8px; border-radius: var(--radius-sm); cursor: pointer; }
 .mc-maps .it:hover, .mc-maps .it.is-on { background: var(--surface-sunken); }
+.mc-maps .it + .it { margin-top: 2px; }
 .mc-maps .it .th { width: 32px; height: 32px; border-radius: var(--radius-sm); background: var(--ls); color: var(--lc); display: inline-flex; align-items: center; justify-content: center; flex: none; }
 .mc-maps .it .tx { display: grid; min-width: 0; }
 .mc-maps .it .tx b { font-weight: 600; font-size: 13px; line-height: 18px; color: var(--ink); }
@@ -257,17 +261,24 @@ body { margin: 0; background: var(--canvas); color: var(--ink); font-family: var
 .mc-modal .ft .left { margin-right: auto; display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink-subtle); }
 .mc-section-toggle { display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 0; border: 0; border-top: 1px solid var(--line); background: none; cursor: pointer; color: var(--ink-muted); }
 .mc-section-toggle .grow { flex: 1; text-align: left; }
-.mc-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; }
+.mc-grid2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px 16px; }
+.mc-grid2 > * { min-width: 0; }
 
 /* Inspecteur */
 .mc-insp { width: var(--panel-w); max-width: 100%; overflow: hidden; display: flex; flex-direction: column; }
 .mc-insp .hd { display: flex; gap: 12px; align-items: flex-start; padding: 16px 12px 12px 16px; }
 .mc-insp .hd .grow { flex: 1; min-width: 0; display: grid; gap: 6px; }
 .mc-insp .tile { width: 40px; height: 40px; border-radius: 10px; background: var(--ls); color: var(--lc); display: inline-flex; align-items: center; justify-content: center; flex: none; }
-.mc-insp .acts { display: flex; gap: 6px; padding: 0 16px 12px; }
-.mc-insp .acts .mc-btn { flex: 1; }
+.mc-insp .acts { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 16px 12px; }
+.mc-insp .acts .mc-btn { flex: 1 1 auto; }
 .mc-insp .tabs { padding: 0 16px; }
-.mc-insp .body { padding: 14px 16px 16px; display: grid; gap: 16px; }
+.mc-insp .body { padding: 14px 16px 16px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+/* Inspecteur des écrans en liste : colonne toujours là à droite de la liste (résumé sans sélection, fiche au clic), rien ne bouge. */
+.mc-insp.mc-insp-dock { position: sticky; z-index: 3; top: 84px; flex: none; max-height: calc(100vh - 100px); }
+.mc-insp.mc-insp-dock .body { overflow-y: auto; min-height: 0; grid-template-columns: minmax(0, 1fr); }
+.mc-insp.mc-insp-dock .mc-insp-state { display: flex; flex-direction: column; min-height: 0; }
+.mc-insp.mc-insp-dock .mc-empty { padding: var(--space-5) var(--space-4) var(--space-4); }
+.mc-insp-summary { border-top: 1px solid var(--line); }
 
 /* Liste clé/valeur */
 .mc-kv { display: grid; grid-template-columns: minmax(96px, 40%) 1fr; gap: 10px 12px; font-size: 13px; line-height: 18px; margin: 0; }
@@ -309,6 +320,8 @@ body { margin: 0; background: var(--canvas); color: var(--ink); font-family: var
 .mc-node.is-dim .mc-tab { opacity: 1; }
 .mc-node .tile { width: 28px; height: 28px; border-radius: var(--radius-xs); background: var(--ls); color: var(--lc); display: inline-flex; align-items: center; justify-content: center; flex: none; }
 .mc-node .tile img { width: 18px; height: 18px; }
+/* Logo de marque : fond blanc et filet, pour que les couleurs de la marque restent justes. */
+.mc-node .tile.has-logo, .mc-insp .tile.has-logo, .mc-rel .row .tile.has-logo, .mc-table .name .tile.has-logo { background: #fff; box-shadow: inset 0 0 0 1px var(--line); }
 .mc-node .tx { display: grid; min-width: 0; flex: 1; }
 .mc-node .tx b { font: 600 13px/16px var(--font-display); color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .mc-node .tx span { font-size: 11px; line-height: 14px; color: var(--ink-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -341,7 +354,7 @@ body { margin: 0; background: var(--canvas); color: var(--ink); font-family: var
 .mc-group > .gh .tile .mc-ico { width: 13px; height: 13px; }
 .mc-group > .gh b { font: 600 13px/16px var(--font-display); color: var(--ink); }
 .mc-group > .gh .grow { flex: 1; }
-.mc-group > .gb { display: flex; flex-wrap: wrap; gap: 10px; }
+.mc-group > .gb { display: flex; flex-wrap: wrap; gap: 12px 10px; }
 .mc-group.zone { --gbg: color-mix(in srgb, var(--lc) 14%, var(--surface)); }
 .mc-group.env { --gbg: var(--behind, var(--canvas)); border-style: dashed; border-top-left-radius: var(--radius-md); margin-top: 0; }
 .mc-group.is-collapsed > .gb { display: none; }
@@ -376,11 +389,13 @@ body { margin: 0; background: var(--canvas); color: var(--ink); font-family: var
 .mc-toolbar { display: inline-flex; align-items: center; gap: 4px; padding: 6px; border-radius: var(--radius-lg); }
 .mc-toolbar .zoom { display: inline-flex; align-items: center; gap: 2px; font: 600 12px/16px var(--font-sans); color: var(--ink-muted); font-variant-numeric: tabular-nums; }
 .mc-toolbar .zoom span { min-width: 40px; text-align: center; }
-.mc-lens { display: inline-flex; align-items: center; gap: 8px; height: var(--control-lg); padding: 0 10px 0 8px; border-radius: 10px; border: 0; background: transparent; color: var(--ink); font: 600 13px/16px var(--font-sans); cursor: pointer; }
+.mc-lens { overflow: hidden; display: inline-flex; align-items: center; gap: 8px; height: var(--control-lg); padding: 0 10px 0 8px; border-radius: 10px; border: 0; background: transparent; color: var(--ink); font: 600 13px/16px var(--font-sans); cursor: pointer; }
 .mc-lens:hover { background: var(--surface-sunken); }
 .mc-lens.is-on { background: var(--yellow); color: var(--on-yellow); }
 .mc-lens .lbl { display: grid; text-align: left; line-height: 14px; }
-.mc-lens .lbl small { font: 400 11px/14px var(--font-sans); opacity: .8; }
+.mc-lens .lbl small { font: 400 11px/14px var(--font-sans); opacity: .8; white-space: nowrap; animation: mc-lens-label 240ms var(--ease-out); }
+@keyframes mc-lens-label { from { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .mc-lens .lbl small { animation: none; } }
 
 /* Minimap */
 .mc-minimap { width: 200px; padding: 8px; box-sizing: border-box; }
@@ -390,7 +405,7 @@ body { margin: 0; background: var(--canvas); color: var(--ink); font-family: var
 .mc-minimap .ft { display: flex; justify-content: space-between; align-items: center; padding: 6px 2px 0; font-size: 11px; color: var(--ink-subtle); }
 
 /* Légende */
-.mc-legend { width: 280px; max-width: 100%; padding: 12px; box-sizing: border-box; display: grid; gap: 12px; }
+.mc-legend { width: var(--panel-w); max-width: 100%; padding: 12px; box-sizing: border-box; display: grid; gap: 12px; }
 .mc-legend .hd { display: flex; align-items: center; gap: 8px; }
 .mc-legend .hd .grow { flex: 1; font: 600 14px/20px var(--font-display); }
 .mc-legend .li { display: flex; align-items: center; gap: 10px; font-size: 13px; line-height: 18px; }
@@ -489,3 +504,52 @@ body { margin: 0; background: var(--canvas); color: var(--ink); font-family: var
 @keyframes mc-sh { to { background-position: -200% 0; } }
 .mc-spin { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--line); border-top-color: var(--accent); animation: mc-rot .8s linear infinite; }
 @keyframes mc-rot { to { transform: rotate(360deg); } }
+
+/* ---------- Mouvement : ouvertures et fermetures ----------
+ * Une seule grammaire pour tout ce qui s'ouvre. On arrive en ease-out (rapide puis doux), on part plus vite en ease-in.
+ * Panneau latéral : glisse de 16px depuis la droite. Menu, liste, popover : zoom de 96 % depuis son ancrage.
+ * Modale et palette : le fond se fond, la fenêtre monte de 8px. Rien ne rebondit, rien ne dure plus de 260 ms.
+ */
+:root { --ease-in: cubic-bezier(.4, 0, 1, 1); }
+
+/* Panneaux latéraux (McPanelTransition) */
+.mc-panel-enter-active { transition: opacity 220ms var(--ease-out), translate 260ms var(--ease-out); }
+.mc-panel-leave-active { transition: opacity 150ms var(--ease-in), translate 150ms var(--ease-in); }
+.mc-panel-enter-from { opacity: 0; translate: 16px 0; }
+.mc-panel-leave-to { opacity: 0; translate: 10px 0; }
+
+/* Inspecteur fixe des listes : à chaque objet affiché, un fondu court (le panneau reste en place). */
+@keyframes mc-insp-swap { from { opacity: 0; translate: 0 4px; } }
+.mc-insp.mc-insp-dock { animation: mc-insp-swap 220ms var(--ease-out); }
+
+/* Menus, listes déroulantes, popovers */
+.mc-pop-enter-active { transition: opacity 140ms var(--ease-out), translate 180ms var(--ease-out), scale 180ms var(--ease-out); }
+.mc-pop-leave-active { transition: opacity 100ms var(--ease-in), translate 100ms var(--ease-in), scale 100ms var(--ease-in); }
+.mc-pop-enter-from, .mc-pop-leave-to { opacity: 0; scale: .96; translate: 0 -4px; }
+.mc-select-pop, .mc-lens-pop.is-bottom, .mc-maps.is-placed { transform-origin: top left; }
+.mc-maps.is-placed.end { transform-origin: top right; }
+.mc-lens-pop.is-top { transform-origin: bottom center; }
+.mc-lens-pop.is-top.mc-pop-enter-from, .mc-lens-pop.is-top.mc-pop-leave-to { translate: 0 4px; }
+.mc-ctx { transform-origin: top left; }
+
+/* Modales et palette de commandes : le fond, puis la fenêtre. */
+.mc-overlay-enter-active { transition: opacity 200ms var(--ease-out); }
+.mc-overlay-leave-active { transition: opacity 150ms var(--ease-in); }
+.mc-overlay-enter-from, .mc-overlay-leave-to { opacity: 0; }
+.mc-overlay-enter-active :is(.mc-modal, .mc-palette) { transition: translate 240ms var(--ease-out), scale 240ms var(--ease-out); }
+.mc-overlay-leave-active :is(.mc-modal, .mc-palette) { transition: translate 150ms var(--ease-in), scale 150ms var(--ease-in); }
+.mc-overlay-enter-from :is(.mc-modal, .mc-palette) { translate: 0 8px; scale: .98; }
+.mc-overlay-leave-to :is(.mc-modal, .mc-palette) { translate: 0 4px; scale: .99; }
+.mc-overlay-enter-from .mc-palette { translate: 0 -8px; }
+/* Inspecteur ouvert, autre objet : le contenu se renouvelle sur place. */
+@keyframes mc-insp-content { from { opacity: 0; translate: 0 3px; } }
+.mc-insp.is-swapping > * { animation: mc-insp-content 180ms var(--ease-out); }
+
+/* ---------- Largeur des pages (hors cartes) ----------
+ * Une seule colonne pour toutes les pages. --page-w : largeur maximale de la colonne, marges comprises.
+ * --page-pad : marge intérieure de la colonne.
+ * --page-inset : retrait de la barre du haut. 16 px partout, comme sur les cartes : la barre ne bouge pas d'une page à l'autre.
+ */
+:root { --page-w: 1440px; --page-pad: 32px; --page-inset: 16px; }
+@media (min-width: 1800px) { :root { --page-w: 1760px; --page-pad: 40px; } }
+@media (max-width: 1280px) { :root { --page-pad: 24px; } }

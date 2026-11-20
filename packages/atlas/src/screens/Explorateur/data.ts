@@ -1,7 +1,7 @@
 // Données de l'explorateur. Les 65 applications viennent de la source unique src/data/applications.ts.
 import { ref } from 'vue'
 import type { TreeNode } from '../../components/McTree/McTree.vue'
-import { appRows, catalogue, contracts, domainNames, inventory, supplierSeeds, type AppRow } from '../../data/applications'
+import { appRows, catalogue, contracts, domainNames, inventory, supplierSeeds, type Application, type AppRow, type Domaine } from '../../data/applications'
 
 export type { AppRow, Domaine, Hebergement, Nature, Obsolescence, Statut } from '../../data/applications'
 export { appRows as applications, editeurs, groupes, machines } from '../../data/applications'
@@ -84,3 +84,36 @@ export const typeInfo: Record<string, { plural: string; layer: string; one: stri
 /** Les lignes de l'explorateur pendant la session : modifications, créations et imports y restent d'une visite à l'autre.
  * Les applications supprimées restent ici mais sont masquées (voir deletedApps dans src/data/session.ts). */
 export const sessionRows = ref<AppRow[]>(appRows.map((a) => ({ ...a, dicp: { ...a.dicp } })))
+
+/** Date du jour au format français (JJ/MM/AAAA). */
+export const today = () => new Date().toLocaleDateString('fr-FR')
+/** Une ligne vide, pour une application créée ou importée. */
+export function blankRow(id: number): AppRow {
+  return {
+    id, name: '', nature: 'Application', statut: 'Prévue', obsolescence: null, hebergement: 'On-premise', description: '', domaine: 'Scolarité', editeur: null,
+    groupe: 'Groupe complet', miseEnService: '', finDeService: '', machine: '', cout: '', dicp: { d: 0, i: 0, c: 0, p: 0 }, flux: 0, creee: today(), modifiee: today(),
+  }
+}
+/** Une application connue des autres écrans mais pas encore de l'inventaire, en ligne d'explorateur. */
+export function rowFromApp(a: Application, id: number): AppRow {
+  return {
+    ...blankRow(id),
+    name: a.name,
+    nature: a.nature ?? 'Application',
+    statut: a.statut ?? 'Prévue',
+    obsolescence: a.obsolescence,
+    hebergement: a.hebergement ?? 'On-premise',
+    description: a.description ?? '',
+    domaine: (a.domaines[0] ?? 'Scolarité') as Domaine,
+    editeur: a.editeur ?? a.fournisseur,
+    groupe: a.groupe ?? 'Groupe complet',
+    miseEnService: a.miseEnService ?? '',
+    finDeService: a.finDeService ?? '',
+    machine: a.hosts[0]?.name ?? '',
+    cout: a.cout ?? '',
+    dicp: { ...a.dicp },
+    flux: a.flux,
+    creee: a.creee ?? today(),
+    modifiee: a.modifiee ?? today(),
+  }
+}

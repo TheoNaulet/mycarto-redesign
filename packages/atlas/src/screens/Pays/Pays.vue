@@ -189,9 +189,9 @@ const relations = computed<RelationGroup[]>(() => {
 const horsUE = traitements.filter((t) => t.horsUE)
 
 /* ---------- Barre du haut ---------- */
-const trail: TrailStep[] = [{ label: 'Accueil' }, { label: 'Couche métier', layer: 'metier' }, { label: 'Pays' }]
+const trail: TrailStep[] = [{ label: 'Accueil' }, { label: 'Pays' }]
 function onTrail(_s: TrailStep, i: number) {
-  if (i <= 1) goPath('/')
+  if (i === 0) goPath('/')
 }
 function onHome(e: MouseEvent) {
   if (e.metaKey || e.ctrlKey || e.shiftKey) return
@@ -204,6 +204,8 @@ function follow(e: MouseEvent, path: string) {
   goPath(path)
 }
 const paletteOpen = ref(false)
+// Sans sélection, l'inspecteur résume ce que montre la liste.
+const summary = computed<KeyValueItem[]>(() => [{ key: 'Pays', value: pays.value.length }, { key: 'Sites rattachés', value: sitesCount.value }, { key: 'Hors Union européenne', value: pays.value.filter((p) => !p.ue).length }])
 </script>
 
 <template>
@@ -214,7 +216,7 @@ const paletteOpen = ref(false)
       </template>
     </McAppBar>
 
-    <div class="mc-scr-pays-wrap" :class="{ 'has-insp': inspected }">
+    <div class="mc-scr-pays-wrap">
       <main class="mc-scr-pays-main">
         <header class="mc-scr-pays-head">
           <div class="mc-scr-pays-titles">
@@ -278,21 +280,25 @@ const paletteOpen = ref(false)
       </main>
 
       <McInspector
-        v-if="inspected"
-        :key="inspected.code"
-        class="mc-scr-pays-insp"
-        :object="{ name: inspected.name, type: 'Pays', layer: 'metier', icon: 'globe' }"
+        :key="inspected?.code ?? 'resume'"
+        class="mc-insp-dock mc-scr-pays-insp"
+        :object="inspected ? { name: inspected.name, type: 'Pays', layer: 'metier', icon: 'globe' } : undefined"
+        empty-title="Sélectionnez un pays"
+        empty-text="Ses sites et leur rattachement à l’Union européenne s’affichent ici."
         @close="inspectedCode = null"
       >
-        <template #statuses>
+        <template #empty><McKeyValueList :items="summary" /></template>
+        <template v-if="inspected" #statuses>
           <McStatusChip :status="inspected.ue ? 'neutral' : 'warn'" size="sm">{{ inspected.ue ? 'Union européenne' : 'Hors UE' }}</McStatusChip>
         </template>
-        <template #actions>
+        <template v-if="inspected" #actions>
           <McButton size="sm" variant="outline" icon="pin" @click="openSite">Ajouter un site</McButton>
           <McIconButton size="sm" icon="trash" variant="danger" :label="`Supprimer ${inspected.name}`" @click="deleteOpen = true" />
         </template>
-        <McKeyValueList :items="kv" />
-        <McRelationList :groups="relations" :visible="8" @open="openSiteRelation" @add="openSite" />
+        <template v-if="inspected">
+          <McKeyValueList :items="kv" />
+          <McRelationList :groups="relations" :visible="8" @open="openSiteRelation" @add="openSite" />
+        </template>
       </McInspector>
     </div>
 
@@ -346,9 +352,8 @@ const paletteOpen = ref(false)
 
 <style>
 .mc-scr-pays { position: relative; min-height: 100vh; background: var(--canvas); color: var(--ink); font-family: var(--font-sans); box-sizing: border-box; }
-.mc-scr-pays-bar { position: sticky; top: 16px; z-index: 20; margin: 16px 16px 0; }
-.mc-scr-pays-wrap { max-width: 1280px; margin: 0 auto; padding: 24px 32px 40px; box-sizing: border-box; display: flex; gap: 20px; align-items: flex-start; }
-.mc-scr-pays-wrap.has-insp { max-width: 1440px; }
+.mc-scr-pays-bar { position: sticky; top: 16px; z-index: 20; margin: 16px var(--page-inset) 0; }
+.mc-scr-pays-wrap { max-width: var(--page-w); margin: 0 auto; padding: 24px var(--page-pad) 40px; box-sizing: border-box; display: flex; gap: 20px; align-items: flex-start; }
 .mc-scr-pays-main { flex: 1; min-width: 0; display: grid; gap: 18px; }
 .mc-scr-pays-head { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
 .mc-scr-pays-titles { flex: 1; min-width: 180px; }
@@ -365,23 +370,19 @@ const paletteOpen = ref(false)
 .mc-scr-pays-zone { display: grid; gap: 8px; }
 .mc-scr-pays-zh { margin: 0; font: 600 13px/18px var(--font-display); color: var(--ink-muted); text-transform: uppercase; letter-spacing: .06em; }
 .mc-scr-pays-zh span { color: var(--ink-subtle); margin-left: 4px; }
-.mc-scr-pays-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 4px 14px; }
+.mc-scr-pays-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px 14px; }
 .mc-scr-pays-cell { position: relative; min-width: 0; }
 .mc-scr-pays-cell > .mc-node { width: auto; padding-right: 140px; }
 .mc-scr-pays-st { position: absolute; right: 10px; top: calc(14px + 15px); pointer-events: none; }
 .mc-scr-pays-note { margin: 0; }
 .mc-scr-pays-note a { color: var(--accent); }
 .mc-scr-pays-insp .body { grid-template-columns: minmax(0, 1fr); }
-.mc-scr-pays-insp { position: sticky; top: 92px; flex: none; max-height: calc(100vh - 108px); }
 /* Les listes déroulantes du formulaire débordent de la modale au lieu d'être coupées. */
 .mc-scr-pays-form { display: grid; gap: 16px; }
 .mc-scr-pays-modal { margin: 0; font-size: 14px; line-height: 20px; color: var(--ink-muted); }
 @media (min-width: 1800px) {
-  .mc-scr-pays-wrap, .mc-scr-pays-wrap.has-insp { max-width: 1760px; padding-inline: 40px; }
-  .mc-scr-pays-bar { width: 1728px; max-width: calc(100% - 32px); margin-inline: auto; box-sizing: border-box; }
 }
 @media (max-width: 1180px) {
-  .mc-scr-pays-wrap { padding-inline: 24px; }
   .mc-scr-pays-search { flex: 1 1 220px; width: auto; }
 }
 </style>

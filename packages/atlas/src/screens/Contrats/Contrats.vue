@@ -2,6 +2,7 @@
 // Écran « Les contrats » : les 25 contrats du SI, groupés par échéance, lus par la lentille « Échéance des contrats ».
 import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import type { Status } from '../../utils/types'
+import McPanelTransition from '../../components/McPanelTransition/McPanelTransition.vue'
 import McAppBar from '../../components/McAppBar/McAppBar.vue'
 import type { TrailStep } from '../../components/McMapTrail/McMapTrail.vue'
 import McAvatarStack, { type McAvatarPerson } from '../../components/McAvatar/McAvatarStack.vue'
@@ -32,8 +33,11 @@ import McFormField from '../../components/McFormField/McFormField.vue'
 import MapAnnotations from '../Infrastructure/MapAnnotations.vue'
 import MapShareDialog from '../Infrastructure/MapShareDialog.vue'
 import type { ExportItem } from '../shared/SharePanel.vue'
+import MapEditBar from '../shared/MapEditBar.vue'
+import McIconButton from '../../components/McIconButton/McIconButton.vue'
+import { useMapEdit } from '../shared/mapEdit'
 import { hasApplication, type Contract, type ContractLevel } from '../../data/applications'
-import { contratsSuivis, extraOf, frToIso, isoToFr, levelOf, renewedEnd } from '../../data/contratsSuivi'
+import { addMonths, contratsSuivis, extraOf, formatFr, frToIso, isoToFr, levelOf, renewedEnd, type ContractExtra } from '../../data/contratsSuivi'
 import { noteTexts } from '../../data/annotations'
 import { isNarrowWindow, useCanvasView } from '../Infrastructure/canvasView'
 
@@ -49,7 +53,10 @@ const LEVEL_LABEL: Record<Level, string> = {
   inconnue: 'Date non renseignée',
 }
 const CONTRACTS: Contract[] = contratsSuivis
-const byRef = Object.fromEntries(CONTRACTS.map((x) => [x.ref, x])) as Record<string, Contract>
+/** Index par référence, recalculé quand un contrat est ajouté ou retiré. */
+const byRef = computed(() => Object.fromEntries(CONTRACTS.map((x) => [x.ref, x])) as Record<string, Contract>)
+/** Tous les contrats vus pendant la session, retirés compris : annuler un retrait remet le même objet. */
+const pool = new Map<string, Contract>(CONTRACTS.map((x) => [x.ref, x]))
 
 /** Groupes de la carte : regroupements sans objet (variante env), du plus urgent au plus sûr. */
 interface Group {
@@ -100,10 +107,10 @@ const groupDim = (g: Group) => inGroup(g).every(isoDim)
 function refFromUrl(): string | null {
   if (typeof window === 'undefined') return null
   const r = new URLSearchParams(window.location.search).get('ref')
-  return r && byRef[r] ? r : null
+  return r && byRef.value[r] ? r : null
 }
 const selected = ref<string | null>(refFromUrl() ?? 'CONT000035')
-const current = computed(() => (selected.value ? byRef[selected.value] : undefined))
+const current = computed(() => (selected.value ? byRef.value[selected.value] : undefined))
 const inspected = computed<InspectedObject | undefined>(() => {
   const x = current.value
   if (!x) return undefined
@@ -141,6 +148,7 @@ const toast = useToast()
 function renew() {
   const x = current.value
   if (!x) return
+  edit.record()
   const before = { end: x.end, level: x.level }
   const d = extraOf(x.ref).dureeMois
   x.end = renewedEnd(x, d)
@@ -156,7 +164,9 @@ function renew() {
 
 /* ---------- Modifier un contrat ---------- */
 const editOpen = ref(false)
-const form = reactive({ ref: '', end: '', renewal: 'Expresse' as string | number | null, duree: 36 as string | number | null, montant: '', notes: '' })
+const form = reactive({ ref: '', supplier: '', end: '', renewal: 'Expresse' as string | number | null, duree: 36 as string | number | null, montant: '', notes: '' })
+/** La fenêtre crée un contrat (« Nouveau contrat » en mode modification) au lieu d'en modifier un. */
+const creating = ref(false)
 let original = ''
 const renewalOptions: McSelectOption[] = [
   { value: 'Tacite', label: 'Tacite' },
@@ -167,15 +177,30 @@ function openEdit() {
   const x = current.value
   if (!x) return
   const e = extraOf(x.ref)
-  Object.assign(form, { ref: x.ref, end: frToIso(x.end), renewal: x.renewal, duree: e.dureeMois, montant: e.montant, notes: e.notes })
+  creating.value = false
+  Object.assign(form, { ref: x.ref, supplier: x.supplier, end: frToIso(x.end), renewal: x.renewal, duree: e.dureeMois, montant: e.montant, notes: e.notes })
+  original = JSON.stringify(form)
+  editOpen.value = true
+}
+/** Prochaine référence libre : CONT + 6 chiffres. */
+function nextRef() {
+  const max = Math.max(0, ...[...pool.keys()].map((r) => Number(r.replace(/\D/g, '')) || 0))
+  return `CONT${String(max + 1).padStart(6, '0')}`
+}
+/** Nouveau contrat : 3 ans à partir d'aujourd'hui par défaut, il se range seul dans « Plus d'un an ». */
+function openCreate() {
+  creating.value = true
+  Object.assign(form, { ref: nextRef(), supplier: '', end: frToIso(addMonths(formatFr(new Date()), 36)), renewal: 'Expresse', duree: 36, montant: '', notes: '' })
   original = JSON.stringify(form)
   editOpen.value = true
 }
 const dirty = computed(() => editOpen.value && JSON.stringify(form) !== original)
 const formLevel = computed(() => (form.end ? levelOf(isoToFr(form.end)) : 'inconnue'))
 function save() {
-  const x = byRef[form.ref]
+  if (creating.value) return create()
+  const x = byRef.value[form.ref]
   if (!x || !form.end) return
+  edit.record()
   const e = extraOf(x.ref)
   const before = { x: { end: x.end, level: x.level, renewal: x.renewal }, e: { ...e } }
   x.end = isoToFr(form.end)
@@ -192,6 +217,55 @@ function save() {
   })
 }
 
+function create() {
+  if (!form.end || !form.supplier.trim()) return
+  edit.record()
+  const end = isoToFr(form.end)
+  const x: Contract = { ref: form.ref, supplier: form.supplier.trim(), end, level: levelOf(end), renewal: form.renewal === 'Tacite' ? 'Tacite' : 'Expresse', covers: [] }
+  pool.set(x.ref, x)
+  CONTRACTS.push(x)
+  Object.assign(extraOf(x.ref), { dureeMois: Number(form.duree) || 36, montant: form.montant.trim(), notes: form.notes.trim() })
+  editOpen.value = false
+  creating.value = false
+  selected.value = x.ref
+  toast.success(`${x.ref} ajouté : ${LEVEL_LABEL[x.level].toLowerCase()}`)
+}
+
+/* ---------- Mode modification (sur place) ---------- */
+// La carte reste celle des contrats : on ajoute, modifie et retire des contrats ; les groupes suivent l'échéance.
+interface ContratsState {
+  list: Contract[]
+  extras: Record<string, ContractExtra>
+}
+const edit = useMapEdit<ContratsState>({
+  name: 'Les contrats',
+  get: () => ({ list: CONTRACTS.map((x) => ({ ...x, covers: [...x.covers] })), extras: Object.fromEntries(CONTRACTS.map((x) => [x.ref, { ...extraOf(x.ref) }])) }),
+  set: (v) => {
+    // Remet les mêmes objets (la fiche d'une application les partage), avec leurs anciennes valeurs.
+    const list = v.list.map((c) => {
+      const x = pool.get(c.ref) ?? c
+      pool.set(c.ref, x)
+      return Object.assign(x, c)
+    })
+    CONTRACTS.splice(0, CONTRACTS.length, ...list)
+    for (const [r, e] of Object.entries(v.extras)) Object.assign(extraOf(r), e)
+    if (selected.value && !byRef.value[selected.value]) selected.value = null
+  },
+})
+const { on: editing, count: editCount, countLabel: editCountLabel } = edit
+function remove(x: Contract) {
+  edit.record()
+  const k = CONTRACTS.indexOf(x)
+  if (k >= 0) CONTRACTS.splice(k, 1)
+  if (selected.value === x.ref) selected.value = null
+  toast.success(`${x.ref} retiré de la carte`, { actionLabel: 'Annuler', onAction: edit.undo })
+}
+/** En mode modification, un clic sur un contrat ouvre directement sa fenêtre de modification. */
+function onSelect(x: Contract) {
+  selected.value = x.ref
+  if (editing.value) openEdit()
+}
+
 /* ---------- Exporter, post-its, commentaires ---------- */
 const shareOpen = ref(false)
 const exportItems = computed<ExportItem[]>(() => {
@@ -204,17 +278,16 @@ function placeNote() {
   const c = viewCenter()
   annotations.value?.placeNote(c.x, c.y)
 }
+/** Le bouton Commentaire arme le mode placement : le prochain clic sur la carte pose l'épingle. */
 function placeComment() {
-  const c = viewCenter()
-  annotations.value?.placeComment(c.x + 40, c.y - 40)
+  annotations.value?.armComment()
 }
 
 /* ---------- Barre du haut ---------- */
-const trail: TrailStep[] = [{ label: 'Accueil', href: pathHref('/') }, { label: 'Couche applicative', layer: 'applicatif' }, { label: 'Contrats' }]
+const trail: TrailStep[] = [{ label: 'Accueil', href: pathHref('/') }, { label: 'Contrats' }]
 const paletteOpen = ref(false)
 function onTrail(_s: TrailStep, i: number) {
-  // L'accueil range les objets par couche : la couche applicative y est.
-  if (i === 0 || i === 1) goPath('/')
+  if (i === 0) goPath('/')
 }
 function onHome(e: MouseEvent) {
   e.preventDefault()
@@ -271,7 +344,7 @@ onBeforeUnmount(() => ro?.disconnect())
     ref="root"
     class="mc-scr-contrats mc-scr-map"
     :style="vars"
-    :class="{ 'is-hand': tool === 'hand' }"
+    :class="{ 'is-hand': tool === 'hand', 'is-editing': editing }"
     @pointerdown="handlers.onPointerDown"
     @pointermove="handlers.onPointerMove"
     @pointerup="handlers.onPointerUp"
@@ -294,9 +367,8 @@ onBeforeUnmount(() => ro?.disconnect())
             :class="`is-${g.id}`"
             :style="{ width: g.width + 'px' }"
           >
+            <span v-for="x in inGroup(g)" :key="x.ref" class="mc-scr-contrats-cell">
             <McNode
-              v-for="x in inGroup(g)"
-              :key="x.ref"
               layer="applicatif"
               icon="contract"
               type="Contrat"
@@ -307,9 +379,19 @@ onBeforeUnmount(() => ro?.disconnect())
               :selected="selected === x.ref"
               :dimmed="isoDim(x)"
               :title="`${x.ref} · ${x.supplier} · ${deadline(x)}`"
-              @select="selected = x.ref"
+              @select="onSelect(x)"
               @open="selected = x.ref; openEdit()"
             />
+            <McIconButton
+              v-if="editing"
+              size="sm"
+              icon="x"
+              :label="`Retirer ${x.ref}`"
+              class="mc-scr-contrats-rm"
+              @pointerdown.stop
+              @click.stop="remove(x)"
+            />
+            </span>
           </McContainer>
         </template>
       </div>
@@ -321,7 +403,8 @@ onBeforeUnmount(() => ro?.disconnect())
             <template #actions>
               <McAvatarStack :people="people" label="3 personnes sur la carte" />
               <McButton variant="outline" icon="export" class="mc-scr-map-ico" title="Exporter" @click="shareOpen = true"><span class="mc-scr-map-lbl">Exporter</span></McButton>
-              <McButton variant="primary" icon="pencil" :href="pathHref('/editeur')" @click.prevent="goPath('/editeur')">Modifier</McButton>
+              <McButton v-if="!editing" variant="primary" icon="pencil" @click="edit.begin()">Modifier</McButton>
+              <McButton v-else variant="primary" icon="check" @click="edit.finish()">Terminer</McButton>
             </template>
           </McAppBar>
           <div class="mc-scr-contrats-bar">
@@ -335,25 +418,29 @@ onBeforeUnmount(() => ro?.disconnect())
       </template>
 
       <template #right>
-        <McLegend v-if="legend" v-model:isolated="isolated" :sections="legendSections" @close="legend = false" />
-        <McInspector v-if="inspected && current" :object="inspected" @close="selected = null">
-          <template #statuses>
-            <McStatusChip :status="LEVEL_STATUS[current.level]" size="sm">{{ current.level === 'expire' ? 'Expiré' : deadline(current) }}</McStatusChip>
-          </template>
-          <template #actions>
-            <McButton size="sm" variant="secondary" icon="history" @click="renew">Renouveler</McButton>
-            <McButton size="sm" variant="outline" icon="pencil" @click="openEdit">Modifier</McButton>
-          </template>
-          <template #default>
-            <McKeyValueList :items="infos">
-              <template #value="{ item }">
-                <a v-if="item.href" :href="pathHref('/fournisseurs')" class="mc-scr-contrats-link" @click.prevent="goPath('/fournisseurs')">{{ item.value }}</a>
-                <span v-else>{{ item.value }}</span>
-              </template>
-            </McKeyValueList>
-            <McRelationList :groups="relations" @open="openRelation" />
-          </template>
-        </McInspector>
+        <McPanelTransition>
+          <McLegend v-if="legend" v-model:isolated="isolated" :sections="legendSections" @close="legend = false" />
+        </McPanelTransition>
+        <McPanelTransition>
+          <McInspector v-if="inspected && current" :object="inspected" @close="selected = null">
+            <template #statuses>
+              <McStatusChip :status="LEVEL_STATUS[current.level]" size="sm">{{ current.level === 'expire' ? 'Expiré' : deadline(current) }}</McStatusChip>
+            </template>
+            <template #actions>
+              <McButton size="sm" variant="secondary" icon="history" @click="renew">Renouveler</McButton>
+              <McButton size="sm" variant="outline" icon="pencil" @click="openEdit">Modifier</McButton>
+            </template>
+            <template #default>
+              <McKeyValueList :items="infos">
+                <template #value="{ item }">
+                  <a v-if="item.href" :href="pathHref('/fournisseurs')" class="mc-scr-contrats-link" @click.prevent="goPath('/fournisseurs')">{{ item.value }}</a>
+                  <span v-else>{{ item.value }}</span>
+                </template>
+              </McKeyValueList>
+              <McRelationList :groups="relations" @open="openRelation" />
+            </template>
+          </McInspector>
+        </McPanelTransition>
       </template>
 
       <template #bottom-left>
@@ -361,7 +448,19 @@ onBeforeUnmount(() => ro?.disconnect())
       </template>
 
       <template #bottom>
-        <McToolbar v-model:tool="tool" v-model:zoom="zoom" v-model:legend="legend" @fit="fit" @filter="legend = true" @sticky="placeNote" @comment="placeComment">
+        <MapEditBar
+          v-if="editing"
+          :count="editCount"
+          :count-label="editCountLabel"
+          hint="Les contrats se rangent seuls par échéance"
+          @undo="edit.undo()"
+          @discard="edit.discard()"
+          @finish="edit.finish()"
+        >
+          <McButton variant="ghost" icon="plus" @click="openCreate">Nouveau contrat</McButton>
+        </MapEditBar>
+        <McToolbar
+          v-else v-model:tool="tool" v-model:zoom="zoom" v-model:legend="legend" @fit="fit" @filter="legend = true" @sticky="placeNote" @comment="placeComment" :commenting="annotations?.placing ?? false">
           <template #lens><McLensPicker v-model:lens="lens" :lenses="LENSES" /></template>
         </McToolbar>
       </template>
@@ -369,14 +468,16 @@ onBeforeUnmount(() => ro?.disconnect())
     <MapShareDialog v-model:open="shareOpen" title="Les contrats" :items="exportItems" :selection-count="selected ? 1 : 0" :notes="noteTexts('contrats')" />
     <McModal
       v-model:open="editOpen"
-      :title="`Modifier ${form.ref}`"
+      :title="creating ? `Nouveau contrat ${form.ref}` : `Modifier ${form.ref}`"
       :type="{ label: 'Contrat', icon: 'contract', layer: 'applicatif' }"
-      :subtitle="byRef[form.ref] ? `Contrat avec ${byRef[form.ref].supplier}` : undefined"
+      :subtitle="!creating && byRef[form.ref] ? `Contrat avec ${byRef[form.ref].supplier}` : undefined"
+      :confirm-label="creating ? 'Ajouter' : undefined"
       :dirty="dirty"
-      :confirm-disabled="!form.end"
+      :confirm-disabled="!form.end || (creating && !form.supplier.trim())"
       @confirm="save"
     >
       <div class="mc-scr-contrats-form">
+        <McTextField v-if="creating" v-model="form.supplier" label="Fournisseur" required placeholder="ex. AMUE" />
         <div class="mc-grid2">
           <McTextField v-model="form.end" type="date" label="Fin du contrat" required :help="form.end ? LEVEL_LABEL[formLevel] : undefined" />
           <McTextField v-model="form.montant" label="Montant annuel" suffix="€ / an" placeholder="ex. 12 400" />
@@ -409,14 +510,19 @@ onBeforeUnmount(() => ro?.disconnect())
 /* Groupes : « Expirés » sur toute la largeur, puis les deux autres côte à côte. */
 .mc-scr-contrats-groups { position: absolute; display: flex; flex-wrap: wrap; align-items: flex-start; gap: 18px; }
 .mc-scr-contrats-row { flex-basis: 100%; height: 0; margin-top: -18px; }
-.mc-scr-contrats-group > .gb { gap: 0 12px; }
+.mc-scr-contrats-group > .gb { gap: 12px; }
 .mc-scr-contrats-group .mc-node { width: 212px; }
 /* Une référence de contrat : chasse fixe. */
 .mc-scr-contrats-group .mc-node .tx b { font-family: var(--font-mono); font-size: 12px; font-weight: 500; }
 
 .mc-scr-contrats .mc-canvas-right { align-items: stretch; }
 .mc-scr-contrats .mc-canvas-right > .mc-legend { flex: none; }
-.mc-scr-contrats .mc-canvas-right > .mc-insp { flex: 0 1 auto; min-height: 0; overflow: auto; }
+.mc-scr-contrats .mc-canvas-right > .mc-insp { flex: 0 1 auto; min-height: 0; overflow: hidden auto; }
 .mc-scr-contrats .mc-insp .body { grid-template-columns: minmax(0, 1fr); }
 .mc-scr-contrats-form { display: grid; gap: 16px; }
+
+/* Mode modification : contour pointillé au survol, bouton Retirer en haut à droite du contrat. */
+.mc-scr-contrats-cell { position: relative; display: inline-flex; }
+.mc-scr-contrats-rm { position: absolute; top: 6px; right: -8px; z-index: 2; background: var(--surface); border-radius: 999px; box-shadow: var(--shadow-node); }
+.mc-scr-contrats.is-editing .mc-scr-contrats-group .mc-node:hover { outline: 1.5px dashed var(--accent); outline-offset: 3px; }
 </style>

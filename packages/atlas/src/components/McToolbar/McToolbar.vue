@@ -20,6 +20,8 @@ const props = withDefaults(
     shortcuts?: boolean
     /** Nom de la barre pour les lecteurs d'écran. */
     label?: string
+    /** Mode placement de commentaire armé : le bouton Commentaire reste enfoncé. */
+    commenting?: boolean
   }>(),
   {
     readonly: false,
@@ -152,7 +154,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onShortcut))
       <button type="button" class="mc-ibtn lg" aria-label="Post-it" title="Post-it (S)" @click="emit('sticky')">
         <McIcon name="sticky" size="lg" />
       </button>
-      <button type="button" class="mc-ibtn lg" aria-label="Commentaire" title="Commentaire (C)" @click="emit('comment')">
+      <button type="button" class="mc-ibtn lg" :class="{ 'is-on': commenting }" :aria-pressed="commenting" aria-label="Commentaire" title="Commentaire (C) : cliquez ensuite sur la carte" @click="emit('comment')">
         <McIcon name="comment" size="lg" />
       </button>
     </template>

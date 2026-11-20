@@ -22,7 +22,7 @@ import McTag from '../../components/McTag/McTag.vue'
 import McModal from '../../components/McModal/McModal.vue'
 import McToastHost from '../../components/McToast/McToastHost.vue'
 import { useToast } from '../../components/McToast/useToast'
-import { goPath, pathHref } from '../bridge'
+import { goPath, pathHref, queryParam } from '../bridge'
 import SearchPalette from '../Accueil/SearchPalette.vue'
 import { domainCount } from '../../data/applications'
 import { addMapVersion, mapVersions, removeMapVersion } from '../../data/publication'
@@ -288,16 +288,16 @@ function exportReport() {
 }
 
 /* ---------- Barre du haut ---------- */
-const trail: TrailStep[] = [
-  { label: 'Accueil' },
-  { label: 'Scolarité', layer: 'fonctionnel' },
-  { label: 'Applications et flux' },
-  { label: 'Historique' },
-]
+/** Ouvert depuis le journal des modifications (?depuis=journal) : le fil d'Ariane et « Quitter » y ramènent. */
+const fromJournal = queryParam('depuis') === 'journal'
+const trail: TrailStep[] = fromJournal
+  ? [{ label: 'Historique', icon: 'history' }, { label: 'Scolarité', layer: 'fonctionnel' }, { label: 'Applications et flux' }, { label: 'Comparaison' }]
+  : [{ label: 'Accueil' }, { label: 'Scolarité', layer: 'fonctionnel' }, { label: 'Applications et flux' }, { label: 'Historique' }]
 function onTrail(_s: TrailStep, i: number) {
-  if (i === 0) goPath('/')
+  if (i === 0) goPath(fromJournal ? '/journal' : '/')
   else if (i < 3) goPath('/carte')
 }
+const quit = () => goPath(fromJournal ? '/journal' : '/carte')
 const people: McAvatarPerson[] = [
   { name: 'Théo Naulet', initials: 'TN', color: 1 },
   { name: 'William Vidal', initials: 'WV', color: 4 },
@@ -413,7 +413,7 @@ const markClass: Record<ChangeKind, string> = { add: 'is-add', mod: 'is-mod', de
         <McAppBar :trail="trail" :home-href="pathHref('/')" @navigate="onTrail" @home.prevent="goPath('/')" @search="paletteOpen = true">
           <template #actions>
             <McAvatarStack :people="people" label="3 personnes sur la carte" />
-            <McButton variant="outline" icon="x" @click="goPath('/carte')">Quitter la comparaison</McButton>
+            <McButton variant="outline" icon="x" @click="quit">Quitter la comparaison</McButton>
           </template>
         </McAppBar>
       </template>
@@ -535,7 +535,7 @@ const markClass: Record<ChangeKind, string> = { add: 'is-add', mod: 'is-mod', de
 .mc-scr-hi-diff > .mc-node.is-selected { box-shadow: 0 0 0 2px var(--accent); }
 
 /* Panneau de droite. */
-.mc-scr-hi-panel { position: absolute; right: 16px; top: 84px; bottom: 16px; width: 320px; z-index: 6; overflow: auto; box-sizing: border-box; padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; }
+.mc-scr-hi-panel { position: absolute; right: 16px; top: 84px; bottom: 16px; width: var(--panel-w); z-index: 6; overflow: auto; box-sizing: border-box; padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; }
 .mc-scr-hi-panel > * { flex: none; }
 .mc-scr-hi-head { display: flex; align-items: center; gap: 8px; }
 .mc-scr-hi-head .title { flex: 1; }

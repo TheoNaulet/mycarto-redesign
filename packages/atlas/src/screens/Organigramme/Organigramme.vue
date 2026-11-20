@@ -1,7 +1,9 @@
 <script setup lang="ts">
 // Écran « L'organigramme » : les directions de la collectivité et leurs services, en cartes à onglet.
 // Clic sur une direction : elle est sélectionnée et l'inspecteur montre ses services et ses applications.
+import { appLogo } from '../../logos/appLogo'
 import { computed, getCurrentInstance, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
+import McPanelTransition from '../../components/McPanelTransition/McPanelTransition.vue'
 import McAppBar from '../../components/McAppBar/McAppBar.vue'
 import type { TrailStep } from '../../components/McMapTrail/McMapTrail.vue'
 import McAvatarStack, { type McAvatarPerson } from '../../components/McAvatar/McAvatarStack.vue'
@@ -318,10 +320,9 @@ watch(
 )
 
 /* ---------- Barre du haut ---------- */
-const trail: TrailStep[] = [{ label: 'Accueil' }, { label: 'Couche métier', layer: 'metier' }, { label: 'Organigramme' }]
+const trail: TrailStep[] = [{ label: 'Accueil' }, { label: 'Organigramme' }]
 function onTrail(_s: TrailStep, i: number) {
-  // L'accueil range les objets par couche : la couche métier y est.
-  if (i === 0 || i === 1) goPath('/')
+  if (i === 0) goPath('/')
 }
 function onHome(e: MouseEvent) {
   if (e.metaKey || e.ctrlKey || e.shiftKey) return
@@ -471,44 +472,48 @@ function onWheel(e: WheelEvent) {
       </template>
 
       <template #right>
-        <McLegend v-if="legend" v-model:isolated="isolated" :sections="legendSections" @close="legend = false" />
-        <McInspector v-if="inspected && current" :key="current.code" :object="inspected" @close="selected = null">
-          <template #statuses>
-            <span class="mc-code mc-scr-org-uo">{{ current.uo }}</span>
-          </template>
-          <template #actions>
-            <McButton size="sm" icon="map" :disabled="!currentApps.length" :title="currentApps.length ? undefined : 'Aucune application rattachée à cette unité'" @click="mapOpen = true">Carte des applications</McButton>
-            <McIconButton size="sm" icon="more" label="Plus d’actions" :aria-expanded="menu.open" @click="openMenu" />
-          </template>
-          <div v-if="editing" class="mc-scr-org-edit">
-            <McTextField :model-value="current.name" label="Nom de la direction" @update:model-value="(v) => renameDirection(String(v ?? ''))" />
-            <div class="mc-scr-org-edit-svs">
-              <span class="mc-field-label">Services</span>
-              <div v-for="(sv, i) in current.services" :key="i" class="mc-scr-org-edit-sv">
-                <McTextField :model-value="sv.name" :aria-label="`Nom du service ${i + 1}`" @update:model-value="(v) => renameService(sv, String(v ?? ''))" />
-                <McIconButton size="sm" icon="trash" :label="`Retirer le service ${sv.name}`" @click="removeService(sv)" />
+        <McPanelTransition>
+          <McLegend v-if="legend" v-model:isolated="isolated" :sections="legendSections" @close="legend = false" />
+        </McPanelTransition>
+        <McPanelTransition>
+          <McInspector v-if="inspected && current" :key="current.code" :object="inspected" @close="selected = null">
+            <template #statuses>
+              <span class="mc-code mc-scr-org-uo">{{ current.uo }}</span>
+            </template>
+            <template #actions>
+              <McButton size="sm" icon="map" :disabled="!currentApps.length" :title="currentApps.length ? undefined : 'Aucune application rattachée à cette unité'" @click="mapOpen = true">Carte des applications</McButton>
+              <McIconButton size="sm" icon="more" label="Plus d’actions" :aria-expanded="menu.open" @click="openMenu" />
+            </template>
+            <div v-if="editing" class="mc-scr-org-edit">
+              <McTextField :model-value="current.name" label="Nom de la direction" @update:model-value="(v) => renameDirection(String(v ?? ''))" />
+              <div class="mc-scr-org-edit-svs">
+                <span class="mc-field-label">Services</span>
+                <div v-for="(sv, i) in current.services" :key="i" class="mc-scr-org-edit-sv">
+                  <McTextField :model-value="sv.name" :aria-label="`Nom du service ${i + 1}`" @update:model-value="(v) => renameService(sv, String(v ?? ''))" />
+                  <McIconButton size="sm" icon="trash" :label="`Retirer le service ${sv.name}`" @click="removeService(sv)" />
+                </div>
+                <McButton size="sm" variant="outline" icon="plus" @click="addService">Ajouter un service</McButton>
               </div>
-              <McButton size="sm" variant="outline" icon="plus" @click="addService">Ajouter un service</McButton>
             </div>
-          </div>
-          <div class="mc-row mc-scr-org-chips">
-            <McStatusChip size="sm">{{ plural(current.services.length, 'service', 'services') }}</McStatusChip>
-            <McStatusChip size="sm">{{ currentApps.length ? plural(currentApps.length, 'application', 'applications') : 'Aucune application' }}</McStatusChip>
-            <McStatusChip v-if="invalidCount" status="critical" size="sm">{{ plural(invalidCount, 'non valide', 'non valides') }}</McStatusChip>
-          </div>
-          <template v-if="currentApps.length">
-            <McRelationList :groups="appGroups" :visible="5" @open="openApp" />
-          </template>
-          <template v-else>
-            <McRelationList :groups="serviceGroups" :visible="8" @open="(item) => (query = item.name)" />
-            <McEmptyState
-              size="compact"
-              icon="app"
-              title="Aucune application rattachée"
-              text="Rattachez une application à un service depuis sa fiche : elle apparaîtra ici."
-            />
-          </template>
-        </McInspector>
+            <div class="mc-row mc-scr-org-chips">
+              <McStatusChip size="sm">{{ plural(current.services.length, 'service', 'services') }}</McStatusChip>
+              <McStatusChip size="sm">{{ currentApps.length ? plural(currentApps.length, 'application', 'applications') : 'Aucune application' }}</McStatusChip>
+              <McStatusChip v-if="invalidCount" status="critical" size="sm">{{ plural(invalidCount, 'non valide', 'non valides') }}</McStatusChip>
+            </div>
+            <template v-if="currentApps.length">
+              <McRelationList :groups="appGroups" :visible="5" @open="openApp" />
+            </template>
+            <template v-else>
+              <McRelationList :groups="serviceGroups" :visible="8" @open="(item) => (query = item.name)" />
+              <McEmptyState
+                size="compact"
+                icon="app"
+                title="Aucune application rattachée"
+                text="Rattachez une application à un service depuis sa fiche : elle apparaîtra ici."
+              />
+            </template>
+          </McInspector>
+        </McPanelTransition>
       </template>
 
       <template #bottom>
@@ -551,6 +556,7 @@ function onWheel(e: WheelEvent) {
               type="Application"
               layer="applicatif"
               icon="app"
+              :logo="appLogo(a.name)"
               :subtitle="appDetail(a.name)"
               :status="a.invalid ? 'critical' : undefined"
               :lens="a.invalid"
@@ -603,7 +609,7 @@ function onWheel(e: WheelEvent) {
 .mc-scr-org-edit-sv { display: flex; gap: 4px; align-items: center; width: 100%; }
 .mc-scr-org-edit-sv > .mc-field { flex: 1; min-width: 0; }
 .mc-scr-org-map { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; padding-top: 18px; }
-.mc-scr-org-map-nodes { display: grid; gap: 8px; }
+.mc-scr-org-map-nodes { display: grid; gap: 12px; }
 .mc-scr-org-map .mc-node { cursor: pointer; width: 100%; }
 /* Petits écrans : recherche plus courte, pour que la barre d'outils tienne à gauche de l'inspecteur et que le fil d'Ariane reste lisible. */
 @media (max-width: 1180px) {

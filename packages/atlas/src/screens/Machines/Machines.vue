@@ -2,6 +2,7 @@
 // Écran « Machines » : les machines physiques et virtuelles des trois sites.
 // Tableau (ou grille), recherche, tri, filtres de type, de site et d'obsolescence, inspecteur avec les applications
 // hébergées et l'impact d'un arrêt (l'écran Impact pour sophocle, un résumé calculé pour les autres).
+import { logoFor } from '../../logos/logoFor'
 import { computed, getCurrentInstance, reactive, ref, watch } from 'vue'
 import McAppBar from '../../components/McAppBar/McAppBar.vue'
 import type { TrailStep } from '../../components/McMapTrail/McMapTrail.vue'
@@ -155,6 +156,7 @@ const sorted = computed(() => {
     else if (s.key === 'composants') c = a.composants - b.composants
     else if (s.key === 'obso') c = OBSO[a.obso.status].rank - OBSO[b.obso.status].rank
     else if (s.key === 'fin') c = (a.os.fin ?? '9999').localeCompare(b.os.fin ?? '9999')
+    else if (s.key === 'os') c = a.os.name.localeCompare(b.os.name, 'fr')
     else if (s.key === 'type') c = a.m.kind.localeCompare(b.m.kind)
     else if (s.key === 'site') c = a.m.site.localeCompare(b.m.site, 'fr')
     else if (s.key === 'etat') c = a.m.etat.localeCompare(b.m.etat)
@@ -190,14 +192,30 @@ const rows = computed<Row[]>(() =>
   })),
 )
 const itemOf = (name: string) => items.find((i) => i.m.name === name)!
+// Une ligne par machine, une information par colonne : le type et la baie passent sous le nom,
+// la fin de support est une simple date, et seul l'état (puce) porte la couleur.
 const columns: DataTableColumn<Row>[] = [
   { key: 'name', label: 'Machine', sortable: true },
-  { key: 'type', label: 'Type', sortable: true, width: '104px' },
-  { key: 'site', label: 'Site', sortable: true, width: '150px' },
-  { key: 'fin', label: 'Système', sortable: true, width: '236px' },
-  { key: 'apps', label: 'Applications', sortable: true, align: 'right', width: '112px' },
-  { key: 'obso', label: 'Obsolescence', sortable: true, width: '190px' },
+  { key: 'site', label: 'Site', sortable: true, width: '120px' },
+  { key: 'os', label: 'Système', sortable: true },
+  { key: 'fin', label: 'Fin de support', sortable: true, width: '128px' },
+  { key: 'apps', label: 'Applis', sortable: true, align: 'right', width: '80px' },
+  { key: 'obso', label: 'État', sortable: true, width: '200px' },
 ]
+/** Quand ce n'est pas le système qui est en cause, c'est un logiciel installé : la puce le dit. */
+const obsoLabel = (r: Row) => {
+  const i = itemOf(r.id)
+  if (i.os.status === i.obso.status || r.obso === 'unknown') return OBSO[r.obso as Status].label
+  return r.obso === 'critical' ? 'Logiciel plus supporté' : 'Logiciel en fin de support'
+}
+const shortDate = (iso: string) => (iso ? iso.split('-').reverse().join('/') : '')
+/** Sous le nom : physique ou virtuelle, où elle est, et son état si elle n'est pas en service. */
+const subOf = (r: Row) => {
+  const i = itemOf(r.id)
+  return [r.type === 'Machine' ? 'Physique' : 'Virtuelle', i.emplacement, r.etat !== 'service' ? ETAT_MACHINE[r.etat as Machine['etat']].label : '']
+    .filter(Boolean)
+    .join(' · ')
+}
 
 /* ---------- Inspecteur ---------- */
 const inspectedName = ref<string | null>(null)
@@ -294,7 +312,7 @@ const composantGroups = computed<RelationGroup[]>(() => {
       verb: 'Emploie',
       items: c.logiciels.map((n) => {
         const l = getLogiciel(n)
-        return { id: `log-${l?.id ?? n}`, name: l?.name ?? n, layer: 'technique' as const, icon: 'software' as const, ...(l && l.obsolescence !== 'ok' ? { status: OBSOLESCENCE[l.obsolescence].status, statusLabel: OBSOLESCENCE[l.obsolescence].label } : {}) }
+        return { id: `log-${l?.id ?? n}`, name: l?.name ?? n, layer: 'technique' as const, icon: 'software' as const, logo: logoFor(l?.name ?? n, l?.editeur), ...(l && l.obsolescence !== 'ok' ? { status: OBSOLESCENCE[l.obsolescence].status, statusLabel: OBSOLESCENCE[l.obsolescence].label } : {}) }
       }),
       emptyLabel: 'Aucun logiciel renseigné',
     },
@@ -411,9 +429,9 @@ watch(
 )
 
 /* ---------- Barre du haut ---------- */
-const trail: TrailStep[] = [{ label: 'Accueil' }, { label: 'Couche technique', layer: 'technique' }, { label: 'Machines' }]
+const trail: TrailStep[] = [{ label: 'Accueil' }, { label: 'Machines' }]
 function onTrail(_s: TrailStep, i: number) {
-  if (i === 0 || i === 1) goPath('/')
+  if (i === 0) goPath('/')
 }
 function onHome(e: MouseEvent) {
   if (e.metaKey || e.ctrlKey || e.shiftKey) return
@@ -429,7 +447,8 @@ function onPalette(item: PaletteItem) {
   openPaletteItem(item)
 }
 const searchCount = computed(() => (query.value.trim() ? (bySearch.value.length ? plural(bySearch.value.length, 'résultat', 'résultats') : 'Aucun résultat') : undefined))
-const lifeLabel = (s: Status) => (s === 'warn' ? 'Fin de support le' : 'Supporté jusqu’au')
+// Sans sélection, l'inspecteur résume ce que montre la liste.
+const summary = computed<KeyValueItem[]>(() => [{ key: 'Machines', value: bySite.value.length }, ...(Object.keys(OBSO) as Obso[]).map((o) => ({ key: OBSO[o].filter, value: obsoCounts.value[o] })), { key: 'Sans composant', value: sansComposantCount.value }])
 </script>
 
 <template>
@@ -441,7 +460,7 @@ const lifeLabel = (s: Status) => (s === 'warn' ? 'Fin de support le' : 'Support�
       </template>
     </McAppBar>
 
-    <div class="mc-scr-mach-wrap" :class="{ 'has-insp': inspected }">
+    <div class="mc-scr-mach-wrap">
       <main class="mc-scr-mach-main">
         <header class="mc-scr-mach-head">
           <div class="mc-scr-mach-titles">
@@ -524,27 +543,18 @@ const lifeLabel = (s: Status) => (s === 'warn' ? 'Fin de support le' : 'Support�
             @open="(r: Row) => inspect(r.id)"
           >
             <template #cell-name="{ row }">
-              <span class="mc-scr-mach-name" :class="{ 'is-on': inspectedName === row.id }">{{ row.name }}</span>
-            </template>
-            <template #cell-type="{ row }">{{ row.type === 'Machine' ? 'Physique' : 'Virtuelle' }}</template>
-            <template #cell-site="{ row }">
               <span class="mc-scr-mach-two">
-                <span>{{ row.site }}</span>
-                <span class="mc-scr-mach-sub">{{ itemOf(row.id).emplacement }}</span>
+                <span class="mc-scr-mach-name" :class="{ 'is-on': inspectedName === row.id }">{{ row.name }}</span>
+                <span class="mc-scr-mach-sub">{{ subOf(row) }}</span>
               </span>
             </template>
+            <template #cell-os="{ row }">{{ itemOf(row.id).os.name }}</template>
             <template #cell-fin="{ row }">
-              <span class="mc-scr-mach-two">
-                <span>{{ itemOf(row.id).os.name }}</span>
-                <McLifecycleDate :date="itemOf(row.id).os.fin" :label="lifeLabel(itemOf(row.id).os.status)" />
-              </span>
+              <span class="mc-scr-mach-fin" :class="`is-${itemOf(row.id).os.status}`">{{ shortDate(row.fin) || '—' }}</span>
             </template>
             <template #cell-obso="{ row }">
-              <span class="mc-scr-mach-two">
-                <McStatusChip :status="row.obso as Status" size="sm">{{ OBSO[row.obso as Status].label }}</McStatusChip>
-                <span v-if="row.obso !== 'ok' && row.obso !== 'unknown'" class="mc-scr-mach-sub">{{ itemOf(row.id).obso.reason.split(' : ')[1] }}{{ row.etat !== 'service' ? ` · ${ETAT_MACHINE[row.etat as Machine['etat']].label}` : '' }}</span>
-                <span v-else-if="row.etat !== 'service'" class="mc-scr-mach-sub">{{ ETAT_MACHINE[row.etat as Machine['etat']].label }}</span>
-              </span>
+              <McStatusChip v-if="row.obso !== 'ok'" :status="row.obso as Status" size="sm" :title="itemOf(row.id).obso.reason">{{ obsoLabel(row) }}</McStatusChip>
+              <span v-else class="mc-scr-mach-ok">À jour</span>
             </template>
             <template #empty-action>
               <McButton variant="outline" size="sm" icon="x" @click="clearAll">Tout effacer</McButton>
@@ -554,17 +564,19 @@ const lifeLabel = (s: Status) => (s === 'warn' ? 'Fin de support le' : 'Support�
       </main>
 
       <McInspector
-        v-if="inspected"
-        :key="inspected.m.name"
-        class="mc-scr-mach-insp"
-        :object="{ name: inspected.m.name, type: typeLabel(inspected.m), layer: 'technique', icon: iconOf(inspected.m), description: inspected.m.description }"
+        :key="inspected?.m.name ?? 'resume'"
+        class="mc-insp-dock mc-scr-mach-insp"
+        :object="inspected ? { name: inspected.m.name, type: typeLabel(inspected.m), layer: 'technique', icon: iconOf(inspected.m), description: inspected.m.description } : undefined"
+        empty-title="Sélectionnez une machine"
+        empty-text="Son support, ses composants et les applications qu’elle héberge s’affichent ici."
         @close="inspectedName = null"
       >
-        <template #statuses>
+        <template #empty><McKeyValueList :items="summary" /></template>
+        <template v-if="inspected" #statuses>
           <McStatusChip :status="inspected.obso.status" size="sm">{{ inspected.obso.status === 'ok' ? 'À jour' : inspected.obso.reason }}</McStatusChip>
           <McStatusChip v-if="inspected.m.etat !== 'service'" :status="ETAT_MACHINE[inspected.m.etat].status" size="sm">{{ ETAT_MACHINE[inspected.m.etat].label }}</McStatusChip>
         </template>
-        <template #actions>
+        <template v-if="inspected" #actions>
           <McButton size="sm" variant="secondary" icon="impact" :aria-expanded="inspected.m.name === 'sophocle' ? undefined : showImpact" @click="onImpact">
             {{ showImpact ? 'Masquer l’impact' : 'Voir l’impact d’un arrêt' }}
           </McButton>
@@ -574,25 +586,27 @@ const lifeLabel = (s: Status) => (s === 'warn' ? 'Fin de support le' : 'Support�
             <McContextMenu v-model:open="moreOpen" :items="moreItems" :header="inspected.m.name" :x="0" :y="34" class="mc-scr-mach-menu" @select="onMore" />
           </span>
         </template>
-        <section v-if="showImpact && impact" class="mc-scr-mach-impact" aria-label="Impact d’un arrêt">
-          <p class="mc-over">Si {{ inspected.m.name }} s’arrête</p>
-          <p class="mc-scr-mach-impact-text">{{ impactText }}</p>
-          <McRelationList v-if="impactGroups.length" :groups="impactGroups" :visible="4" @open="openRelation" />
-        </section>
-        <section v-if="composant" class="mc-scr-mach-cmp" :aria-label="`Composant ${composant.name}`">
-          <div class="mc-scr-mach-cmp-hd">
-            <p class="mc-over">Composant</p>
-            <McIconButton size="sm" icon="x" label="Fermer le composant" @click="composantName = null" />
+        <template v-if="inspected">
+          <section v-if="showImpact && impact" class="mc-scr-mach-impact" aria-label="Impact d’un arrêt">
+            <p class="mc-over">Si {{ inspected.m.name }} s’arrête</p>
+            <p class="mc-scr-mach-impact-text">{{ impactText }}</p>
+            <McRelationList v-if="impactGroups.length" :groups="impactGroups" :visible="4" @open="openRelation" />
+          </section>
+          <section v-if="composant" class="mc-scr-mach-cmp" :aria-label="`Composant ${composant.name}`">
+            <div class="mc-scr-mach-cmp-hd">
+              <p class="mc-over">Composant</p>
+              <McIconButton size="sm" icon="x" label="Fermer le composant" @click="composantName = null" />
+            </div>
+            <p class="mc-scr-mach-cmp-name">{{ composant.name }}</p>
+            <McRelationList :groups="composantGroups" :visible="4" @open="openComposantRelation" />
+          </section>
+          <McKeyValueList :items="kv" @open="openKv" />
+          <div class="mc-scr-mach-life">
+            <span class="mc-scr-mach-life-k">Fin de support du système</span>
+            <McLifecycleDate :date="inspected.os.fin" />
           </div>
-          <p class="mc-scr-mach-cmp-name">{{ composant.name }}</p>
-          <McRelationList :groups="composantGroups" :visible="4" @open="openComposantRelation" />
-        </section>
-        <McKeyValueList :items="kv" @open="openKv" />
-        <div class="mc-scr-mach-life">
-          <span class="mc-scr-mach-life-k">Fin de support du système</span>
-          <McLifecycleDate :date="inspected.os.fin" />
-        </div>
-        <McRelationList :groups="groups" :visible="5" @open="openRelation" />
+          <McRelationList :groups="groups" :visible="5" @open="openRelation" />
+        </template>
       </McInspector>
     </div>
 
@@ -603,9 +617,8 @@ const lifeLabel = (s: Status) => (s === 'warn' ? 'Fin de support le' : 'Support�
 
 <style>
 .mc-scr-mach { position: relative; min-height: 100vh; background: var(--canvas); color: var(--ink); font-family: var(--font-sans); box-sizing: border-box; }
-.mc-scr-mach-bar { position: sticky; top: 16px; z-index: 20; margin: 16px 16px 0; }
-.mc-scr-mach-wrap { max-width: 1280px; margin: 0 auto; padding: 24px 32px 40px; box-sizing: border-box; display: flex; gap: 20px; align-items: flex-start; }
-.mc-scr-mach-wrap.has-insp { max-width: 1520px; }
+.mc-scr-mach-bar { position: sticky; top: 16px; z-index: 20; margin: 16px var(--page-inset) 0; }
+.mc-scr-mach-wrap { max-width: var(--page-w); margin: 0 auto; padding: 24px var(--page-pad) 40px; box-sizing: border-box; display: flex; gap: 20px; align-items: flex-start; }
 .mc-scr-mach-main { flex: 1; min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
 .mc-scr-mach-head { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
 .mc-scr-mach-titles { flex: 1; min-width: 180px; }
@@ -623,15 +636,18 @@ const lifeLabel = (s: Status) => (s === 'warn' ? 'Fin de support le' : 'Support�
 .mc-scr-mach-chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .mc-scr-mach-chip[disabled] { opacity: .45; cursor: not-allowed; }
 .mc-scr-mach-grow { flex: 1; }
-.mc-scr-mach-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 4px 14px; }
+.mc-scr-mach-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px 14px; }
 .mc-scr-mach-cell { position: relative; min-width: 0; }
 .mc-scr-mach-cell > .mc-node { width: auto; padding-right: 150px; }
 .mc-scr-mach-st { position: absolute; right: 10px; top: calc(14px + 15px); pointer-events: none; }
 .mc-scr-mach-two { display: inline-flex; flex-direction: column; align-items: flex-start; gap: 2px; min-width: 0; }
-.mc-scr-mach-sub { font-size: 12px; line-height: 16px; color: var(--ink-subtle); }
-.mc-scr-mach-two .mc-life { font-size: 12px; }
-.mc-scr-mach-name.is-on { font-weight: 700; }
-.mc-scr-mach-insp { position: sticky; z-index: 3; top: 92px; flex: none; max-height: calc(100vh - 108px); }
+.mc-scr-mach-sub { font-size: 12px; line-height: 16px; font-weight: 400; color: var(--ink-subtle); }
+.mc-scr-mach-name { font-weight: 600; }
+.mc-scr-mach-name.is-on { color: var(--accent); }
+.mc-scr-mach-fin { font-variant-numeric: tabular-nums; color: var(--ink-muted); }
+.mc-scr-mach-fin.is-warn { color: var(--status-warn); }
+.mc-scr-mach-fin.is-critical { color: var(--status-critical); }
+.mc-scr-mach-ok { font-size: 13px; color: var(--ink-subtle); }
 .mc-scr-mach-insp .body { grid-template-columns: minmax(0, 1fr); }
 .mc-scr-mach-more { position: relative; display: inline-flex; }
 .mc-scr-mach-menu.is-placed { left: auto !important; right: 0; }
@@ -645,11 +661,8 @@ const lifeLabel = (s: Status) => (s === 'warn' ? 'Fin de support le' : 'Support�
 .mc-scr-mach-impact .mc-over { margin: 0; color: var(--status-critical); }
 .mc-scr-mach-impact-text { margin: 0; font-size: 13px; line-height: 18px; color: var(--ink); }
 @media (min-width: 1800px) {
-  .mc-scr-mach-wrap, .mc-scr-mach-wrap.has-insp { max-width: 1760px; padding-inline: 40px; }
-  .mc-scr-mach-bar { width: 1728px; max-width: calc(100% - 32px); margin-inline: auto; box-sizing: border-box; }
 }
 @media (max-width: 1280px) {
-  .mc-scr-mach-wrap { padding-inline: 24px; }
   .mc-scr-mach-titles { flex-basis: 100%; }
   .mc-scr-mach-search, .mc-scr-mach-sort { flex: 1 1 200px; width: auto; }
   .mc-scr-mach-sel { width: 190px; }

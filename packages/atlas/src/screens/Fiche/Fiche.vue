@@ -22,6 +22,7 @@ import type { RelationGroup, RelationItem } from '../../components/McRelationLis
 import McStatusChip from '../../components/McStatusChip/McStatusChip.vue'
 import McTabs, { type TabItem } from '../../components/McTabs/McTabs.vue'
 import McToastHost from '../../components/McToast/McToastHost.vue'
+import AppEditModal from '../shared/AppEditModal.vue'
 import { useToast } from '../../components/McToast/useToast'
 import McTypeChip from '../../components/McTypeChip/McTypeChip.vue'
 import McIcon from '../../icons/McIcon.vue'
@@ -257,11 +258,11 @@ function onRelation(item: RelationItem) {
   goPath(`/explorateur?q=${encodeURIComponent(item.name)}`)
 }
 
-/** Modifier : le formulaire de l'explorateur. Une application hors inventaire y est ajoutée à l'enregistrement. */
+/** Modifier : la fenêtre de modification s'ouvre sur la fiche. Une application hors inventaire y est ajoutée à l'enregistrement. */
+const appEdit = ref<InstanceType<typeof AppEditModal>>()
 function edit() {
   const a = app.value
-  if (!a) return
-  goPath(`/explorateur?modifier=${a.slug}`)
+  if (a) appEdit.value?.openApp(a.name)
 }
 
 /* ---------- Partager et exporter ---------- */
@@ -332,7 +333,7 @@ function onMore(item: ContextMenuItem) {
   if (item.id === 'impact' && impactMap.value?.path) goPath(impactMap.value.path)
   else if (item.id === 'copy')
     copyLink().then((ok) => (ok ? toast.success('Lien de la fiche copié') : toast.error('Copie impossible : le navigateur refuse l’accès au presse-papiers.')))
-  else if (item.id === 'dup') goPath(`/explorateur?modifier=${app.value?.slug}&dupliquer=1`)
+  else if (item.id === 'dup' && app.value) appEdit.value?.openApp(app.value.name, { duplicate: true })
   else if (item.id === 'del') delOpen.value = true
 }
 const delText = computed(() => {
@@ -576,14 +577,15 @@ function followPath(e: MouseEvent, path: string) {
     </McModal>
 
     <McCommandPalette v-model:open="paletteOpen" :items="paletteItems" @select="onSelect" />
+    <AppEditModal ref="appEdit" />
     <McToastHost />
   </div>
 </template>
 
 <style>
 .mc-scr-fiche { position: relative; min-height: 100vh; background: var(--canvas); color: var(--ink); font-family: var(--font-sans); box-sizing: border-box; }
-.mc-scr-fiche-bar { position: sticky; top: 16px; z-index: 20; margin: 16px 16px 0; }
-.mc-scr-fiche-main { max-width: 1280px; margin: 0 auto; padding: 24px 32px 40px; box-sizing: border-box; display: grid; gap: 20px; }
+.mc-scr-fiche-bar { position: sticky; top: 16px; z-index: 20; margin: 16px var(--page-inset) 0; }
+.mc-scr-fiche-main { max-width: var(--page-w); margin: 0 auto; padding: 24px var(--page-pad) 40px; box-sizing: border-box; display: grid; gap: 20px; }
 
 .mc-scr-fhead { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; }
 .mc-scr-ftile { width: 64px; height: 64px; border-radius: 16px; background: var(--layer-applicatif); color: var(--surface); display: inline-flex; align-items: center; justify-content: center; flex: none; }
@@ -648,17 +650,15 @@ function followPath(e: MouseEvent, path: string) {
 .mc-scr-tl .ev span { font-size: 11px; line-height: 14px; color: var(--ink-subtle); }
 .mc-scr-all { justify-self: start; }
 
-/* Grands écrans : la fiche s'élargit (1600px au plus) et la colonne latérale gagne un peu de place. */
+/* Grands écrans : la colonne latérale gagne un peu de place (la largeur de la fiche suit --page-w). */
 @media (min-width: 1760px) {
-  .mc-scr-fiche-main { max-width: 1600px; padding-inline: 40px; }
-  .mc-scr-fiche-bar { width: 1728px; max-width: calc(100% - 32px); margin-inline: auto; box-sizing: border-box; }
   .mc-scr-cols { grid-template-columns: minmax(0, 2fr) minmax(360px, 1fr); }
 }
 @media (max-width: 1240px) {
   .mc-scr-maps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 900px) {
-  .mc-scr-fiche-main { padding: 20px 24px 32px; }
+  .mc-scr-fiche-main { padding-block: 20px 32px; }
   .mc-scr-facts { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .mc-scr-factc:nth-child(4) { border-left: 0; }
   .mc-scr-factc:nth-child(n + 4) { border-top: 1px solid var(--line); }

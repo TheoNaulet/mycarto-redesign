@@ -110,9 +110,9 @@ watch(
 )
 
 /* ---------- Barre du haut ---------- */
-const trail: TrailStep[] = [{ label: 'Accueil' }, { label: 'Couche technique', layer: 'technique' }, { label: 'Sites' }]
+const trail: TrailStep[] = [{ label: 'Accueil' }, { label: 'Sites' }]
 function onTrail(_s: TrailStep, i: number) {
-  if (i === 0 || i === 1) goPath('/')
+  if (i === 0) goPath('/')
 }
 function onHome(e: MouseEvent) {
   if (e.metaKey || e.ctrlKey || e.shiftKey) return
@@ -277,8 +277,8 @@ const searchCount = computed(() => (query.value.trim() ? (shown.value ? plural(s
 
 <style>
 .mc-scr-site { position: relative; min-height: 100vh; background: var(--canvas); color: var(--ink); font-family: var(--font-sans); box-sizing: border-box; }
-.mc-scr-site-bar { position: sticky; top: 16px; z-index: 20; margin: 16px 16px 0; }
-.mc-scr-site-wrap { max-width: 1280px; margin: 0 auto; padding: 24px 32px 40px; box-sizing: border-box; display: grid; gap: 20px; }
+.mc-scr-site-bar { position: sticky; top: 16px; z-index: 20; margin: 16px var(--page-inset) 0; }
+.mc-scr-site-wrap { max-width: var(--page-w); margin: 0 auto; padding: 24px var(--page-pad) 40px; box-sizing: border-box; display: grid; gap: 20px; }
 .mc-scr-site-head { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
 .mc-scr-site-titles { flex: 1; min-width: 180px; }
 .mc-scr-site-titles .mc-over { margin: 0 0 2px; }
@@ -306,17 +306,14 @@ const searchCount = computed(() => (query.value.trim() ? (shown.value ? plural(s
 .mc-scr-site-search { width: 260px; }
 .mc-scr-site-over { margin: 8px 0 0; }
 .mc-scr-site-racks { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0 16px; align-items: start; --behind: var(--surface); }
-.mc-scr-site-rack > .gb { gap: 10px 10px; }
+.mc-scr-site-rack > .gb { gap: 12px 10px; }
 .mc-scr-site-rack .mc-node { width: 228px; }
 .mc-scr-site-a { color: var(--accent); font-weight: 600; text-decoration: none; }
 .mc-scr-site-a:hover { text-decoration: underline; }
 .mc-scr-site-legend { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 4px 0 0; }
 @media (min-width: 1800px) {
-  .mc-scr-site-wrap { max-width: 1760px; padding-inline: 40px; }
-  .mc-scr-site-bar { width: 1728px; max-width: calc(100% - 32px); margin-inline: auto; box-sizing: border-box; }
 }
 @media (max-width: 1280px) {
-  .mc-scr-site-wrap { padding-inline: 24px; }
   .mc-scr-site-card-desc { min-height: 0; }
 }
 </style>

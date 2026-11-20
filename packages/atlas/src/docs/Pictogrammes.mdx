@@ -1,5 +1,5 @@
-import { Meta } from '@storybook/addon-docs/blocks'
-import IconGallery from './blocks/IconGallery.vue'
+import { Meta, Story } from '@storybook/addon-docs/blocks'
+import * as Blocs from './blocks/Fondations.stories'
 
 <Meta title="Fondations/Pictogrammes" />
 
@@ -9,4 +9,4 @@ Jeu provisoire au trait (grille 24, trait 1,75). Un type d'objet = un pictogramm
 
 Tailles : `sm` 14px, `md` 16px (défaut), `lg` 20px, `xl` 28px. Ajoutez `label` quand l'icône porte seule un sens.
 
-<IconGallery />
+<Story of={Blocs.Pictogrammes} />

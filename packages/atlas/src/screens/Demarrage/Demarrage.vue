@@ -418,7 +418,6 @@ const subtitle = computed(() => (imported.value ? appsLabel(importedCount.value)
 .mc-scr-dm-main > * { pointer-events: auto; }
 /* Grands écrans : le parcours reste centré (1440px au plus) et descend un peu sur les écrans hauts. */
 @media (min-width: 1800px) {
-  .mc-scr-dm-bar { max-width: 1728px; margin-inline: auto; }
   .mc-scr-dm-main { max-width: 1440px; margin-inline: auto; }
 }
 @media (min-height: 1000px) {

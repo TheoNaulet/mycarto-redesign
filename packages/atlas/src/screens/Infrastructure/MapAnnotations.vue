@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // Post-its et commentaires d'une carte, posés dans le calque du canevas (ils suivent le zoom et le déplacement).
 // Partagé par les écrans Carte, Impact, Infrastructure, POS et Contrats. Les données vivent dans src/data/annotations.ts.
-import { computed, nextTick, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import McIcon from '../../icons/McIcon.vue'
 import McButton from '../../components/McButton/McButton.vue'
 import McIconButton from '../../components/McIconButton/McIconButton.vue'
@@ -65,6 +65,8 @@ function endDrag() {
 /* ---------- Commentaires ---------- */
 const openId = ref<string | null>(null)
 const draft = ref('')
+/** Brouillons par fil : fermer un fil en cours d'écriture ne perd pas le texte. */
+const drafts = new Map<string, string>()
 async function placeComment(x: number, y: number) {
   closeThread()
   const c = addComment(props.screen, x, y)
@@ -73,7 +75,7 @@ async function placeComment(x: number, y: number) {
 async function openThread(c: MapComment) {
   if (openId.value && openId.value !== c.id) closeThread()
   openId.value = c.id
-  draft.value = ''
+  draft.value = drafts.get(c.id) ?? ''
   await nextTick()
   root.value?.querySelector<HTMLTextAreaElement>(`[data-thread="${c.id}"] textarea`)?.focus()
 }
@@ -85,7 +87,9 @@ function togglePin(c: MapComment) {
 /** Fermer un fil sans message retire son épingle : rien n'a été dit. */
 function closeThread() {
   const c = data.value.comments.find((x) => x.id === openId.value)
-  if (c && !c.messages.length) removeComment(props.screen, c.id)
+  if (c && draft.value.trim()) drafts.set(c.id, draft.value)
+  else if (c) drafts.delete(c.id)
+  if (c && !c.messages.length && !draft.value.trim()) removeComment(props.screen, c.id)
   openId.value = null
   draft.value = ''
 }
@@ -94,6 +98,7 @@ function send(c: MapComment) {
   if (!text) return
   reply(c, text)
   draft.value = ''
+  drafts.delete(c.id)
 }
 function onDraftKey(e: KeyboardEvent, c: MapComment) {
   if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
@@ -116,7 +121,79 @@ function deleteThread(c: MapComment) {
   if (copy.messages.length) toast.info('Fil de commentaire supprimé', { actionLabel: 'Annuler', onAction: () => annotationsOf(props.screen).comments.push(copy) })
 }
 
-defineExpose({ placeNote, placeComment })
+/* Un fil ouvert se ferme dès qu'on clique ailleurs (comme dans Figma) : il ne reste jamais devant la carte.
+ * Le clic n'est pas avalé : il sélectionne aussi ce qu'il vise. Échap ferme également. */
+function onOutsideDown(e: PointerEvent) {
+  const id = openId.value
+  const t = e.target as HTMLElement | null
+  if (!id || !t) return
+  if (t.closest(`[data-thread="${id}"], [data-pin="${id}"]`)) return
+  closeThread()
+}
+function onOutsideKey(e: KeyboardEvent) {
+  if (e.key === 'Escape' && openId.value) closeThread()
+}
+watch(openId, (id) => {
+  window.removeEventListener('pointerdown', onOutsideDown, true)
+  window.removeEventListener('keydown', onOutsideKey)
+  if (id) {
+    window.addEventListener('pointerdown', onOutsideDown, true)
+    window.addEventListener('keydown', onOutsideKey)
+  }
+})
+onBeforeUnmount(() => {
+  window.removeEventListener('pointerdown', onOutsideDown, true)
+  window.removeEventListener('keydown', onOutsideKey)
+})
+
+/* ---------- Mode placement : le curseur devient une épingle, un clic sur la carte pose le commentaire ---------- */
+const placing = ref(false)
+const canvasRoot = () => root.value?.closest<HTMLElement>('.mc-canvas-root') ?? null
+function armComment() {
+  if (placing.value) return disarm()
+  closeThread()
+  placing.value = true
+  canvasRoot()?.classList.add('is-placing-comment')
+  window.addEventListener('pointerdown', onPlaceDown, true)
+  window.addEventListener('keydown', onPlaceKey, true)
+}
+function disarm() {
+  placing.value = false
+  canvasRoot()?.classList.remove('is-placing-comment')
+  window.removeEventListener('pointerdown', onPlaceDown, true)
+  window.removeEventListener('keydown', onPlaceKey, true)
+}
+/** Avale le clic qui suit la pose, pour que le canevas ne désélectionne pas ou n'ouvre pas l'objet dessous. */
+function swallowClick(e: MouseEvent) {
+  e.stopPropagation()
+  e.preventDefault()
+}
+function onPlaceDown(e: PointerEvent) {
+  const t = e.target as HTMLElement
+  const canvas = canvasRoot()
+  // La barre d'outils garde la main : son bouton Commentaire désarme, ses autres outils aussi.
+  if (t.closest('.mc-toolbar')) {
+    if (!t.closest('[aria-label="Commentaire"]')) disarm()
+    return
+  }
+  // Ailleurs qu'au-dessus de la carte (panneaux flottants, hors du canevas) : on annule sans rien poser.
+  if (!canvas || !canvas.contains(t) || t.closest('.mc-float') || e.button !== 0) return disarm()
+  e.preventDefault()
+  e.stopPropagation()
+  window.addEventListener('click', swallowClick, { capture: true, once: true })
+  const origin = root.value!.getBoundingClientRect()
+  const z = props.zoom || 1
+  disarm()
+  placeComment(Math.round((e.clientX - origin.left) / z), Math.round((e.clientY - origin.top) / z))
+}
+function onPlaceKey(e: KeyboardEvent) {
+  if (e.key !== 'Escape') return
+  e.stopPropagation()
+  disarm()
+}
+onBeforeUnmount(disarm)
+
+defineExpose({ placeNote, placeComment, armComment, placing })
 </script>
 
 <template>
@@ -145,9 +222,11 @@ defineExpose({ placeNote, placeComment })
         type="button"
         class="mc-ann-pin"
         :class="{ 'is-open': openId === c.id, 'is-resolved': c.resolved }"
+        :data-pin="c.id"
         :style="{ left: c.x + 'px', top: c.y + 'px' }"
         :aria-label="`Commentaire${c.messages.length ? ` : ${c.messages.length} message${c.messages.length > 1 ? 's' : ''}` : ''}`"
         :aria-expanded="openId === c.id"
+        title="Cliquer pour ouvrir, glisser pour déplacer"
         @pointerdown="startDrag($event, 'pin', c)"
         @pointermove="moveDrag"
         @pointerup="endDrag"
@@ -158,6 +237,17 @@ defineExpose({ placeNote, placeComment })
         <span>{{ c.messages[0]?.author.initials ?? 'TN' }}</span>
         <b v-if="c.messages.length > 1">{{ c.messages.length }}</b>
       </button>
+      <!-- Aperçu au survol de l'épingle : le premier message, sans ouvrir le fil. -->
+      <div
+        v-if="c.messages.length && openId !== c.id"
+        class="mc-ann-peek mc-float"
+        :style="{ left: c.x + 22 + 'px', top: c.y - 30 + 'px', transform: `scale(${1 / (zoom || 1)})` }"
+        aria-hidden="true"
+      >
+        <div class="mc-ann-meta"><b>{{ c.messages[0]!.author.name }}</b> · {{ c.messages[0]!.time }}<template v-if="c.resolved"> · Résolu</template></div>
+        <p>{{ c.messages[0]!.text }}</p>
+        <span v-if="c.messages.length > 1" class="mc-ann-more">{{ c.messages.length - 1 }} réponse{{ c.messages.length > 2 ? 's' : '' }}</span>
+      </div>
       <div
         v-if="openId === c.id"
         class="mc-ann-thread mc-float"
@@ -199,6 +289,13 @@ defineExpose({ placeNote, placeComment })
 </template>
 
 <style>
+/* Mode placement : curseur en forme d'épingle de commentaire (pointe en bas à gauche), sur la carte seulement. */
+.mc-canvas-root.is-placing-comment,
+.mc-canvas-root.is-placing-comment .mc-canvas-layer,
+.mc-canvas-root.is-placing-comment .mc-canvas-layer * {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cpath d='M3 25V12a9 9 0 0 1 9-9h4a9 9 0 0 1 0 18H7z' fill='%23262e6f' stroke='white' stroke-width='2' stroke-linejoin='round'/%3E%3Cpath d='M14 8v8M10 12h8' stroke='white' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") 3 25, crosshair;
+}
+.mc-canvas-root.is-placing-comment .mc-float { cursor: default; }
 .mc-ann { position: absolute; left: 0; top: 0; width: 0; height: 0; z-index: 4; }
 .mc-ann-note { position: absolute; cursor: grab; touch-action: none; }
 .mc-ann-note:active { cursor: grabbing; }
@@ -209,13 +306,19 @@ defineExpose({ placeNote, placeComment })
 .mc-ann-note:hover .mc-ann-del, .mc-ann-note:focus-within .mc-ann-del { opacity: 1; }
 .mc-ann-del:hover { color: var(--status-critical); }
 .mc-ann-del:focus-visible { opacity: 1; outline: 2px solid var(--accent); }
-.mc-ann-pin { position: absolute; transform: translate(-4px, -100%); display: inline-flex; align-items: center; gap: 2px; height: 30px; min-width: 30px; padding: 0 3px; box-sizing: border-box; border: 2px solid var(--surface); border-radius: 15px 15px 15px 2px; background: var(--data-1); color: var(--on-navy, #fff); font: 700 11px/1 var(--font-sans); cursor: pointer; box-shadow: var(--shadow-pop); touch-action: none; }
+.mc-ann-pin { position: absolute; transform: translate(-4px, -100%); display: inline-flex; align-items: center; gap: 2px; height: 30px; min-width: 30px; padding: 0 3px; box-sizing: border-box; border: 2px solid var(--surface); border-radius: 15px 15px 15px 2px; background: var(--data-1); color: var(--on-navy, #fff); font: 700 11px/1 var(--font-sans); cursor: grab; box-shadow: var(--shadow-pop); touch-action: none; }
+.mc-ann-pin:active { cursor: grabbing; }
 .mc-ann-pin span { width: 22px; text-align: center; }
 .mc-ann-pin b { padding: 0 5px 0 0; font-size: 11px; }
 .mc-ann-pin.is-open { outline: 2px solid var(--accent); outline-offset: 1px; }
 .mc-ann-pin.is-resolved { opacity: .55; }
+.mc-ann-peek { position: absolute; transform-origin: 0 0; width: 240px; padding: 8px 10px; box-sizing: border-box; display: grid; gap: 2px; pointer-events: none; opacity: 0; translate: -4px 0; transition: opacity 120ms var(--ease-out), translate 160ms var(--ease-out); font-family: var(--font-sans); color: var(--ink); z-index: 1; }
+.mc-ann-peek p { margin: 0; font-size: 12px; line-height: 16px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.mc-ann-more { font-size: 11px; color: var(--accent); }
+.mc-ann-pin:hover + .mc-ann-peek { opacity: 1; translate: 0 0; transition-delay: 250ms; }
 .mc-ann-pin:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.mc-ann-thread { position: absolute; transform-origin: 0 0; width: 288px; padding: 10px; box-sizing: border-box; display: grid; gap: 10px; cursor: default; color: var(--ink); font-family: var(--font-sans); }
+@keyframes mc-ann-in { from { opacity: 0; scale: .96; } }
+.mc-ann-thread { animation: mc-ann-in 160ms var(--ease-out); z-index: 2; position: absolute; transform-origin: 0 0; width: 288px; padding: 10px; box-sizing: border-box; display: grid; gap: 10px; cursor: default; color: var(--ink); font-family: var(--font-sans); }
 .mc-ann-hd { display: flex; align-items: center; gap: 2px; font: 600 13px/16px var(--font-display); }
 .mc-ann-hd .grow { flex: 1; }
 .mc-ann-msgs { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; max-height: 220px; overflow-y: auto; }

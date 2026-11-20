@@ -86,17 +86,18 @@ export function adminSections(active: string): SideNavSection[] {
   ]
 }
 
-/** Adresse de chaque entrée du menu d'administration. */
+/** Adresse de chaque entrée du menu d'administration. Toutes restent dans l'administration (menu visible),
+ * sauf « Cartographie » : les canevas plein écran (éditeur, comparaison, BPMN) s'ouvrent depuis une liste. */
 export const navPaths: Record<string, string> = {
   'Tableaux de bord': '/tableaux-de-bord',
   Cartographie: '/',
   Explorateur: '/explorateur',
   Dictionnaires: '/dictionnaires',
-  Historique: '/historique',
+  Historique: '/journal',
   Corbeille: '/corbeille',
   "Types d'objets": '/types-objets',
-  'Modèles de carte': '/editeur',
-  'Diagrammes BPMN': '/processus',
+  'Modèles de carte': '/modeles-carte',
+  'Diagrammes BPMN': '/diagrammes',
   'Règles de couleur': '/reglages',
   'Modèles de requête': '/requetes',
   'Utilisateurs et groupes': '/utilisateurs',

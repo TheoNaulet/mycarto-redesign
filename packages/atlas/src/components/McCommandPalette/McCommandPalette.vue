@@ -175,102 +175,104 @@ const hasPreview = computed(() => !!slots.preview)
 </script>
 
 <template>
-  <div v-if="open" class="mc-cmd-layer" :class="{ contained }">
-    <div class="mc-cmd-scrim" aria-hidden="true" @click="open = false" />
-    <div
-      class="mc-pop mc-palette"
-      :class="{ 'has-preview': hasPreview }"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Rechercher"
-      @keydown="onKey"
-    >
-      <div class="mc-cmd-main">
-        <label class="q">
-          <McIcon name="search" size="lg" />
-          <input
-            ref="input"
-            v-model="query"
-            class="grow"
-            type="text"
-            role="combobox"
-            autocomplete="off"
-            spellcheck="false"
-            aria-autocomplete="list"
-            :aria-expanded="true"
-            :aria-controls="`${id}-list`"
-            :aria-activedescendant="current ? optId(active) : undefined"
-            :placeholder="placeholder"
-            aria-label="Rechercher"
-          />
-          <span class="mc-kbd">Échap</span>
-        </label>
-        <div class="scopes" role="radiogroup" aria-label="Portée">
-          <button
-            v-for="s in SCOPES"
-            :key="s"
-            type="button"
-            role="radio"
-            class="mc-chip"
-            :class="scope === s ? 'filter' : 'neutral'"
-            :aria-checked="scope === s"
-            tabindex="-1"
-            @click="scope = s; input?.focus()"
-          >{{ s }}<template v-if="q && !loading"> · {{ counts[s] }}</template></button>
-        </div>
-
-        <div :id="`${id}-list`" ref="list" class="mc-cmd-list" role="listbox" aria-label="Résultats">
-          <template v-if="loading">
-            <div v-for="n in 5" :key="n" class="res mc-cmd-skel" aria-hidden="true">
-              <span class="mc-skel" style="width: 92px; height: 20px" />
-              <span class="mc-skel" :style="{ width: `${40 + ((n * 37) % 40)}%`, height: '12px' }" />
-            </div>
-            <span class="mc-sr" role="status">Recherche en cours</span>
-          </template>
-          <div v-else-if="!flat.length" class="mc-cmd-empty" role="status">
-            <b>Aucun résultat pour « {{ query.trim() }} »</b>
-            <span>Vérifiez l’orthographe<template v-if="scope !== 'Tout'">, ou cherchez dans <button type="button" class="mc-cmd-link" @click="scope = 'Tout'">Tout</button></template>.</span>
+  <Transition name="mc-overlay">
+    <div v-if="open" class="mc-cmd-layer" :class="{ contained }">
+      <div class="mc-cmd-scrim" aria-hidden="true" @click="open = false" />
+      <div
+        class="mc-pop mc-palette"
+        :class="{ 'has-preview': hasPreview }"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Rechercher"
+        @keydown="onKey"
+      >
+        <div class="mc-cmd-main">
+          <label class="q">
+            <McIcon name="search" size="lg" />
+            <input
+              ref="input"
+              v-model="query"
+              class="grow"
+              type="text"
+              role="combobox"
+              autocomplete="off"
+              spellcheck="false"
+              aria-autocomplete="list"
+              :aria-expanded="true"
+              :aria-controls="`${id}-list`"
+              :aria-activedescendant="current ? optId(active) : undefined"
+              :placeholder="placeholder"
+              aria-label="Rechercher"
+            />
+            <span class="mc-kbd">Échap</span>
+          </label>
+          <div class="scopes" role="radiogroup" aria-label="Portée">
+            <button
+              v-for="s in SCOPES"
+              :key="s"
+              type="button"
+              role="radio"
+              class="mc-chip"
+              :class="scope === s ? 'filter' : 'neutral'"
+              :aria-checked="scope === s"
+              tabindex="-1"
+              @click="scope = s; input?.focus()"
+            >{{ s }}<template v-if="q && !loading"> · {{ counts[s] }}</template></button>
           </div>
-          <template v-else>
-            <div v-for="g in groups" :key="g.name" role="group" :aria-labelledby="`${id}-g-${g.name}`">
-              <div :id="`${id}-g-${g.name}`" class="grp mc-over">{{ !q && g.name === 'Cartes' ? 'Cartes récentes' : g.name }}</div>
-              <div
-                v-for="it in g.rows"
-                :id="optId(indexOf(it))"
-                :key="it.id"
-                class="res"
-                :class="[it.layer && `l-${it.layer}`, { 'is-on': indexOf(it) === active }]"
-                role="option"
-                :aria-selected="indexOf(it) === active"
-                @mousemove="active = indexOf(it)"
-                @click="choose(it, $event.metaKey || $event.ctrlKey)"
-              >
-                <span v-if="it.group === 'Objets' && it.type" class="mc-chip type">
-                  <span class="sw"><McIcon :name="it.icon ?? 'app'" /></span>{{ it.type }}
-                </span>
-                <McIcon v-else :name="it.icon ?? (it.group === 'Cartes' ? 'map' : 'arrow-right')" />
-                <span class="grow mc-cmd-label">
-                  <template v-for="(p, k) in parts(it.label)" :key="k"><mark v-if="p.m">{{ p.t }}</mark><template v-else>{{ p.t }}</template></template>
-                  <span v-if="it.detail" class="sub"> · <template v-for="(p, k) in parts(it.detail)" :key="k"><mark v-if="p.m">{{ p.t }}</mark><template v-else>{{ p.t }}</template></template></span>
-                </span>
-                <McStatusChip v-if="it.status && it.statusLabel" :status="it.status" size="sm">{{ it.statusLabel }}</McStatusChip>
-                <span v-if="it.group === 'Cartes' && it.type" class="mc-cap">{{ it.type }}</span>
-                <span v-if="it.shortcut" class="mc-kbd">{{ it.shortcut }}</span>
-              </div>
-            </div>
-          </template>
-        </div>
 
-        <div class="foot" aria-hidden="true">
-          <span>↑↓ naviguer</span><span>Entrée ouvrir</span><span>⌘Entrée ouvrir à côté</span><span>Tab portée</span>
+          <div :id="`${id}-list`" ref="list" class="mc-cmd-list" role="listbox" aria-label="Résultats">
+            <template v-if="loading">
+              <div v-for="n in 5" :key="n" class="res mc-cmd-skel" aria-hidden="true">
+                <span class="mc-skel" style="width: 92px; height: 20px" />
+                <span class="mc-skel" :style="{ width: `${40 + ((n * 37) % 40)}%`, height: '12px' }" />
+              </div>
+              <span class="mc-sr" role="status">Recherche en cours</span>
+            </template>
+            <div v-else-if="!flat.length" class="mc-cmd-empty" role="status">
+              <b>Aucun résultat pour « {{ query.trim() }} »</b>
+              <span>Vérifiez l’orthographe<template v-if="scope !== 'Tout'">, ou cherchez dans <button type="button" class="mc-cmd-link" @click="scope = 'Tout'">Tout</button></template>.</span>
+            </div>
+            <template v-else>
+              <div v-for="g in groups" :key="g.name" role="group" :aria-labelledby="`${id}-g-${g.name}`">
+                <div :id="`${id}-g-${g.name}`" class="grp mc-over">{{ !q && g.name === 'Cartes' ? 'Cartes récentes' : g.name }}</div>
+                <div
+                  v-for="it in g.rows"
+                  :id="optId(indexOf(it))"
+                  :key="it.id"
+                  class="res"
+                  :class="[it.layer && `l-${it.layer}`, { 'is-on': indexOf(it) === active }]"
+                  role="option"
+                  :aria-selected="indexOf(it) === active"
+                  @mousemove="active = indexOf(it)"
+                  @click="choose(it, $event.metaKey || $event.ctrlKey)"
+                >
+                  <span v-if="it.group === 'Objets' && it.type" class="mc-chip type">
+                    <span class="sw"><McIcon :name="it.icon ?? 'app'" /></span>{{ it.type }}
+                  </span>
+                  <McIcon v-else :name="it.icon ?? (it.group === 'Cartes' ? 'map' : 'arrow-right')" />
+                  <span class="grow mc-cmd-label">
+                    <template v-for="(p, k) in parts(it.label)" :key="k"><mark v-if="p.m">{{ p.t }}</mark><template v-else>{{ p.t }}</template></template>
+                    <span v-if="it.detail" class="sub"> · <template v-for="(p, k) in parts(it.detail)" :key="k"><mark v-if="p.m">{{ p.t }}</mark><template v-else>{{ p.t }}</template></template></span>
+                  </span>
+                  <McStatusChip v-if="it.status && it.statusLabel" :status="it.status" size="sm">{{ it.statusLabel }}</McStatusChip>
+                  <span v-if="it.group === 'Cartes' && it.type" class="mc-cap">{{ it.type }}</span>
+                  <span v-if="it.shortcut" class="mc-kbd">{{ it.shortcut }}</span>
+                </div>
+              </div>
+            </template>
+          </div>
+
+          <div class="foot" aria-hidden="true">
+            <span>↑↓ naviguer</span><span>Entrée ouvrir</span><span>⌘Entrée ouvrir à côté</span><span>Tab portée</span>
+          </div>
         </div>
-      </div>
-      <div v-if="hasPreview" class="mc-cmd-prev" :class="current?.layer && `l-${current.layer}`" aria-live="polite">
-        <slot v-if="current && !loading" name="preview" :item="current" />
-        <p v-else class="mc-cap" style="margin: 0">L’aperçu du résultat actif s’affiche ici.</p>
+        <div v-if="hasPreview" class="mc-cmd-prev" :class="current?.layer && `l-${current.layer}`" aria-live="polite">
+          <slot v-if="current && !loading" name="preview" :item="current" />
+          <p v-else class="mc-cap" style="margin: 0">L’aperçu du résultat actif s’affiche ici.</p>
+        </div>
       </div>
     </div>
-  </div>
+  </Transition>
 </template>
 
 <style>

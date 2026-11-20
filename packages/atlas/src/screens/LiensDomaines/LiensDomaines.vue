@@ -4,6 +4,7 @@
 // Clic sur un lien : la liste de ses flux. Clic sur un domaine : ses liens ; Scolarité ouvre sa carte des flux.
 import { computed, reactive, ref, watch } from 'vue'
 import McIcon from '../../icons/McIcon.vue'
+import McPanelTransition from '../../components/McPanelTransition/McPanelTransition.vue'
 import McAppBar from '../../components/McAppBar/McAppBar.vue'
 import type { TrailStep } from '../../components/McMapTrail/McMapTrail.vue'
 import McAvatarStack, { type McAvatarPerson } from '../../components/McAvatar/McAvatarStack.vue'
@@ -29,7 +30,6 @@ import { ficheHref, goFiche, goPath, pathHref } from '../bridge'
 import { useCanvasView } from '../Infrastructure/canvasView'
 import { domaineOf, domaines, liensDomaines, type FluxDomaine, type LienDomaines } from '../../data/domaines'
 import { applications, getApplication } from '../../data/applications'
-import { de } from '../../data/a-texte'
 
 const toast = useToast()
 const paletteOpen = ref(false)
@@ -245,9 +245,9 @@ watch(selected, (sel) => {
 const fluxSorted = (l: LienDomaines): FluxDomaine[] => [...l.flux].sort((a, b) => a.from.localeCompare(b.from, 'fr'))
 
 /* ---------- Barre du haut ---------- */
-const trail: TrailStep[] = [{ label: 'Accueil', href: pathHref('/') }, { label: 'Couche fonctionnelle', layer: 'fonctionnel' }, { label: 'Liens entre domaines' }]
+const trail: TrailStep[] = [{ label: 'Accueil', href: pathHref('/') }, { label: 'Liens entre domaines' }]
 function onTrail(_s: TrailStep, i: number) {
-  if (i === 0 || i === 1) goPath('/')
+  if (i === 0) goPath('/')
 }
 function onHome(e: MouseEvent) {
   e.preventDefault()
@@ -348,61 +348,63 @@ const { zoom, pan, tool, fit, vars, handlers } = useCanvasView(root, {
       </template>
 
       <template #right>
-        <McInspector v-if="inspected" :key="selected?.id" :object="inspected" @close="selected = null">
-          <template #actions>
-            <template v-if="selDomain">
-              <McButton
-                v-if="selDomain.inventaire"
-                size="sm"
-                variant="secondary"
-                icon="list"
-                :href="pathHref(`/explorateur?domaine=${selDomain.inventaire}`)"
-                @click.prevent="goPath(`/explorateur?domaine=${encodeURIComponent(selDomain.inventaire)}`)"
-              >Voir ses applications</McButton>
-              <McButton v-if="selDomain.name === 'Scolarité'" size="sm" variant="outline" icon="map" :href="pathHref('/carte')" @click.prevent="openDomainMap(selDomain.name)">Ouvrir sa carte</McButton>
-              <McButton v-else size="sm" variant="outline" icon="flow" :aria-expanded="showDomainFlux" @click="openDomainMap(selDomain.name)">{{ showDomainFlux ? 'Masquer ses flux' : 'Lister ses flux' }}</McButton>
-              <McIconButton size="sm" icon="plus" :label="`Ajouter un flux depuis ${selDomain.name}`" @click="openAdd" />
+        <McPanelTransition>
+          <McInspector v-if="inspected" :key="selected?.id" :object="inspected" @close="selected = null">
+            <template #actions>
+              <template v-if="selDomain">
+                <McButton
+                  v-if="selDomain.inventaire"
+                  size="sm"
+                  variant="secondary"
+                  icon="list"
+                  :href="pathHref(`/explorateur?domaine=${selDomain.inventaire}`)"
+                  @click.prevent="goPath(`/explorateur?domaine=${encodeURIComponent(selDomain.inventaire)}`)"
+                >Voir ses applications</McButton>
+                <McButton v-if="selDomain.name === 'Scolarité'" size="sm" variant="outline" icon="map" :href="pathHref('/carte')" @click.prevent="openDomainMap(selDomain.name)">Ouvrir sa carte</McButton>
+                <McButton v-else size="sm" variant="outline" icon="flow" :aria-expanded="showDomainFlux" @click="openDomainMap(selDomain.name)">{{ showDomainFlux ? 'Masquer ses flux' : 'Lister ses flux' }}</McButton>
+                <McIconButton size="sm" icon="plus" :label="`Ajouter un flux depuis ${selDomain.name}`" @click="openAdd" />
+              </template>
+              <McButton v-else size="sm" variant="outline" icon="plus" @click="openAdd">Ajouter un flux</McButton>
             </template>
-            <McButton v-else size="sm" variant="outline" icon="plus" @click="openAdd">Ajouter un flux</McButton>
-          </template>
-          <template v-if="selDomain">
-            <McKeyValueList
-              :items="[
-                { key: 'Applications', value: selDomain.apps },
-                { key: 'Domaines reliés', value: linksOf(selDomain.name).length },
-                { key: 'Flux vers les autres domaines', value: linksOf(selDomain.name).reduce((n, l) => n + l.flux.length, 0) },
-              ]"
-            />
-            <McRelationList v-if="!showDomainFlux" :groups="domainGroups" :visible="8" @open="openRelation" />
-            <div v-else class="mc-scr-ldom-dflux">
-              <section v-for="g in domainFlux" :key="g.id">
-                <button type="button" class="mc-scr-ldom-dhead" @click="onLink(g.id)">Avec {{ g.other }} <span>{{ plural(g.flux.length, 'flux', 'flux') }}</span></button>
-                <ul class="mc-scr-ldom-flows">
-                  <li v-for="(f, i) in g.flux" :key="i" class="mc-scr-ldom-flow">
-                    <span class="mc-scr-ldom-ends">
-                      <a v-if="appLink(f.from)" :href="appLink(f.from)" @click="openApp(f.from, $event)">{{ f.from }}</a><span v-else>{{ f.from }}</span>
-                      <McIcon name="arrow-right" size="sm" />
-                      <a v-if="appLink(f.to)" :href="appLink(f.to)" @click="openApp(f.to, $event)">{{ f.to }}</a><span v-else>{{ f.to }}</span>
-                    </span>
-                    <span class="mc-scr-ldom-label">{{ f.label }}</span>
-                  </li>
-                </ul>
-              </section>
-              <p v-if="!domainFlux.length" class="mc-cap">Aucun flux vers un autre domaine.</p>
-            </div>
-          </template>
-          <ul v-else-if="selLink" class="mc-scr-ldom-flows" aria-label="Flux">
-            <li v-for="(f, i) in fluxSorted(selLink)" :key="i" class="mc-scr-ldom-flow">
-              <span class="mc-scr-ldom-ends">
-                <a v-if="appLink(f.from)" :href="appLink(f.from)" @click="openApp(f.from, $event)">{{ f.from }}</a><span v-else :title="`${f.from} n’a pas de fiche dans l’inventaire`">{{ f.from }}</span>
-                <McIcon name="arrow-right" size="sm" />
-                <a v-if="appLink(f.to)" :href="appLink(f.to)" @click="openApp(f.to, $event)">{{ f.to }}</a><span v-else :title="`${f.to} n’a pas de fiche dans l’inventaire`">{{ f.to }}</span>
-              </span>
-              <span class="mc-scr-ldom-label">{{ f.label }}</span>
-              <span v-if="f.meta" class="mc-scr-ldom-meta">{{ f.meta }}</span>
-            </li>
-          </ul>
-        </McInspector>
+            <template v-if="selDomain">
+              <McKeyValueList
+                :items="[
+                  { key: 'Applications', value: selDomain.apps },
+                  { key: 'Domaines reliés', value: linksOf(selDomain.name).length },
+                  { key: 'Flux vers les autres domaines', value: linksOf(selDomain.name).reduce((n, l) => n + l.flux.length, 0) },
+                ]"
+              />
+              <McRelationList v-if="!showDomainFlux" :groups="domainGroups" :visible="8" @open="openRelation" />
+              <div v-else class="mc-scr-ldom-dflux">
+                <section v-for="g in domainFlux" :key="g.id">
+                  <button type="button" class="mc-scr-ldom-dhead" @click="onLink(g.id)">Avec {{ g.other }} <span>{{ plural(g.flux.length, 'flux', 'flux') }}</span></button>
+                  <ul class="mc-scr-ldom-flows">
+                    <li v-for="(f, i) in g.flux" :key="i" class="mc-scr-ldom-flow">
+                      <span class="mc-scr-ldom-ends">
+                        <a v-if="appLink(f.from)" :href="appLink(f.from)" @click="openApp(f.from, $event)">{{ f.from }}</a><span v-else>{{ f.from }}</span>
+                        <McIcon name="arrow-right" size="sm" />
+                        <a v-if="appLink(f.to)" :href="appLink(f.to)" @click="openApp(f.to, $event)">{{ f.to }}</a><span v-else>{{ f.to }}</span>
+                      </span>
+                      <span class="mc-scr-ldom-label">{{ f.label }}</span>
+                    </li>
+                  </ul>
+                </section>
+                <p v-if="!domainFlux.length" class="mc-cap">Aucun flux vers un autre domaine.</p>
+              </div>
+            </template>
+            <ul v-else-if="selLink" class="mc-scr-ldom-flows" aria-label="Flux">
+              <li v-for="(f, i) in fluxSorted(selLink)" :key="i" class="mc-scr-ldom-flow">
+                <span class="mc-scr-ldom-ends">
+                  <a v-if="appLink(f.from)" :href="appLink(f.from)" @click="openApp(f.from, $event)">{{ f.from }}</a><span v-else :title="`${f.from} n’a pas de fiche dans l’inventaire`">{{ f.from }}</span>
+                  <McIcon name="arrow-right" size="sm" />
+                  <a v-if="appLink(f.to)" :href="appLink(f.to)" @click="openApp(f.to, $event)">{{ f.to }}</a><span v-else :title="`${f.to} n’a pas de fiche dans l’inventaire`">{{ f.to }}</span>
+                </span>
+                <span class="mc-scr-ldom-label">{{ f.label }}</span>
+                <span v-if="f.meta" class="mc-scr-ldom-meta">{{ f.meta }}</span>
+              </li>
+            </ul>
+          </McInspector>
+        </McPanelTransition>
       </template>
 
       <template #bottom-left>
@@ -461,27 +463,27 @@ const { zoom, pan, tool, fit, vars, handlers } = useCanvasView(root, {
       @confirm="saveFlux"
     >
       <div class="mc-scr-ldom-form">
+        <!-- Une seule grille : chaque application sous son domaine, la flèche entre les deux colonnes. -->
         <div class="mc-scr-ldom-pair">
           <McSelect v-model="draft.fromDomain" label="Domaine de départ" required :options="domainOptions" :error="tried ? draftErrors.fromDomain : undefined" />
           <McIconButton class="mc-scr-ldom-swap" size="sm" icon="arrow-right" label="Inverser le sens" @click="swapDraft" />
           <McSelect v-model="draft.toDomain" label="Domaine d’arrivée" required :options="domainOptions" :error="tried ? draftErrors.toDomain : undefined" />
-        </div>
-        <div class="mc-grid2">
           <McSelect
             v-model="draft.from"
             label="Application source"
             required
             :disabled="!draft.fromDomain"
-            :placeholder="draft.fromDomain ? `Une application ${de(String(draft.fromDomain))}` : 'Choisir d’abord le domaine'"
+            :placeholder="draft.fromDomain ? 'Choisir une application' : 'Choisir d’abord le domaine'"
             :options="fromOptions"
             :error="tried ? draftErrors.from : undefined"
           />
           <McSelect
             v-model="draft.to"
+            class="mc-scr-ldom-to"
             label="Application cible"
             required
             :disabled="!draft.toDomain"
-            :placeholder="draft.toDomain ? `Une application ${de(String(draft.toDomain))}` : 'Choisir d’abord le domaine'"
+            :placeholder="draft.toDomain ? 'Choisir une application' : 'Choisir d’abord le domaine'"
             :options="toOptions"
             :error="tried ? draftErrors.to : undefined"
           />
@@ -503,7 +505,7 @@ const { zoom, pan, tool, fit, vars, handlers } = useCanvasView(root, {
 .mc-scr-ldom.is-hand .mc-canvas-layer { cursor: grab; }
 .mc-scr-ldom .mc-canvas-layer > .mc-node { z-index: 2; }
 .mc-scr-ldom .mc-canvas-right { align-items: stretch; }
-.mc-scr-ldom .mc-canvas-right > .mc-insp { flex: 0 1 auto; min-height: 0; overflow: auto; }
+.mc-scr-ldom .mc-canvas-right > .mc-insp { flex: 0 1 auto; min-height: 0; overflow: hidden auto; }
 .mc-scr-ldom .mc-insp .body { grid-template-columns: minmax(0, 1fr); }
 .mc-scr-ldom-top { display: flex; flex-direction: column; gap: 12px; pointer-events: none; }
 .mc-scr-ldom-top > * { pointer-events: auto; }
@@ -539,7 +541,9 @@ const { zoom, pan, tool, fit, vars, handlers } = useCanvasView(root, {
 .mc-scr-ldom-dhead span { font-weight: 400; font-size: 12px; color: var(--ink-subtle); }
 .mc-scr-ldom-dhead:hover { color: var(--accent); }
 .mc-scr-ldom-form { display: grid; gap: 14px; }
-.mc-scr-ldom-pair { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: end; }
+.mc-scr-ldom-pair { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 14px 8px; align-items: end; }
+.mc-scr-ldom-pair > * { min-width: 0; }
+.mc-scr-ldom-to { grid-column: 3; }
 .mc-scr-ldom-swap { margin-bottom: 4px; }
 .mc-scr-ldom-flows { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
 .mc-scr-ldom-flow { display: grid; gap: 2px; padding: 8px 10px; border-radius: var(--radius-sm); background: var(--surface-sunken); }
