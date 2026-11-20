@@ -5,6 +5,7 @@
 import { computed, ref } from 'vue'
 import McModal, { type ModalSection } from '../../components/McModal/McModal.vue'
 import McTextField from '../../components/McTextField/McTextField.vue'
+import McDateField from '../../components/McDateField/McDateField.vue'
 import McSelect, { type McSelectOption, type McSelectValue } from '../../components/McSelect/McSelect.vue'
 import McFormField from '../../components/McFormField/McFormField.vue'
 import { useToast } from '../../components/McToast/useToast'
@@ -240,8 +241,8 @@ defineExpose({ openEdit, openCreate, openApp })
     <section data-section="cycle" class="mc-appedit-sec">
       <h3>Cycle de vie</h3>
       <div class="mc-grid2">
-        <McTextField v-model="form.miseEnService" label="Mise en service" icon-end="calendar" placeholder="JJ/MM/AAAA" :modified="isMod('miseEnService')" />
-        <McTextField v-model="form.finDeService" label="Fin de service" icon-end="calendar" placeholder="JJ/MM/AAAA" help="Laissez vide si aucune fin n'est prévue." :modified="isMod('finDeService')" />
+        <McDateField v-model="form.miseEnService" label="Mise en service" :modified="isMod('miseEnService')" />
+        <McDateField v-model="form.finDeService" label="Fin de service" help="Laissez vide si aucune fin n'est prévue." :modified="isMod('finDeService')" />
       </div>
     </section>
 

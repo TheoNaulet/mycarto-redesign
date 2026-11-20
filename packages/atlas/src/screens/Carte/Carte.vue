@@ -201,7 +201,7 @@ const boxes = computed<Record<string, McBox>>(() => {
   }
   return out
 })
-const visiblePills = computed(() => (collapsed.value['Scolarité'] ? [] : pills))
+const visiblePills = computed(() => (collapsed.value['Scolarité'] || !flowsOn.value ? [] : pills))
 
 /* ---------- Sélection ---------- */
 const selected = ref<string | null>('APOGEE')
@@ -314,7 +314,7 @@ const legendSections = computed<McLegendSection[]>(() => {
         { id: 'type-Domaine', label: 'Domaine', count: 5, layer: 'fonctionnel' },
         { id: 'type-Application', label: 'Application', count: apps, layer: 'applicatif' },
         { id: 'type-Partenaire', label: 'Partenaire', count: partners, layer: 'applicatif' },
-        { id: 'type-Flux', label: 'Flux', count: visiblePills.value.length + chains.filter((c) => !c.pill).length, layer: 'applicatif' },
+        ...(flowsOn.value ? [{ id: 'type-Flux', label: 'Flux', count: visiblePills.value.length + chains.filter((c) => !c.pill).length, layer: 'applicatif' as Layer }] : []),
       ],
     },
   ]
@@ -331,7 +331,8 @@ const legendSections = computed<McLegendSection[]>(() => {
 watch(lens, () => (isolated.value = null))
 
 function dimmedNode(id: string) {
-  if (isNodeSelection.value && !related.value.has(id)) return true
+  // Sans les flux, sélectionner un objet n'estompe pas les autres : il n'y a pas de voisins à montrer.
+  if (flowsOn.value && isNodeSelection.value && !related.value.has(id)) return true
   const iso = isolated.value
   if (!iso) return false
   if (iso.startsWith('type-')) return iso !== `type-${N[id].type}`
@@ -347,6 +348,7 @@ function dimmedPill(p: Pill) {
 const edges = computed<McEdgeSpec[]>(() => {
   const b = boxes.value
   const list: McEdgeSpec[] = []
+  if (!flowsOn.value) return list
   for (const c of chains) {
     const src = b[c.from]
     if (!src) continue
@@ -386,6 +388,11 @@ const inspected = computed<InspectedObject | undefined>(() => {
   if (N[s]) return { name: s, type: N[s].type, layer: 'applicatif' as Layer, icon: N[s].icon, description: N[s].description }
   const f = fluxOf(s)
   if (f) return { name: f.name, type: 'Flux', layer: 'applicatif', icon: 'flow', description: `Données échangées : ${f.data}.` }
+  const p = posSel.value
+  if (p)
+    return p.ilot
+      ? { name: p.ilot.name, type: 'Îlot', layer: 'fonctionnel', icon: 'pos', description: `Îlot du quartier ${p.q.name}.` }
+      : { name: p.q.name, type: 'Quartier', layer: 'fonctionnel', icon: 'pos', description: p.q.name === POS_QUARTIER ? 'Vie de l’étudiant, de l’inscription au diplôme.' : `Quartier de la zone ${POS_ZONE}.` }
   if (s === 'Scolarité' || rightDomains.some((d) => d.name === s))
     return { name: s, type: 'Domaine', layer: 'fonctionnel', icon: 'folder', description: s === 'Scolarité' ? 'Vie de l’étudiant, de l’inscription au diplôme.' : undefined }
   return undefined
@@ -636,18 +643,95 @@ const people: McAvatarPerson[] = [
   { name: 'William Vidal', initials: 'WV', color: 4 },
   { name: 'Samuel Faure', initials: 'SF', color: 5 },
 ]
-const view = ref('flux')
-// Les autres vues de la carte ouvrent leur écran : la liste des applications du domaine, le POS.
+/* ---------- Vues de la carte ----------
+ * Les trois vues changent ce que montre la carte, sur place : on passe de l'une à l'autre et on revient d'un clic,
+ * sans quitter l'écran. « Applications » retire les flux ; « POS » montre la place de Scolarité dans le plan d'occupation des sols.
+ * La vue ouverte s'écrit dans l'adresse (?vue=pos) : un rechargement ou un lien partagé la retrouve. */
+type View = 'apps' | 'flux' | 'pos'
+const VIEWS: View[] = ['apps', 'flux', 'pos']
+const readView = (): View => {
+  try {
+    const v = new URLSearchParams(window.location.search).get('vue')
+    return VIEWS.includes(v as View) ? (v as View) : 'flux'
+  } catch {
+    return 'flux'
+  }
+}
+const view = ref<View>(readView())
+const flowsOn = computed(() => view.value === 'flux')
+if (view.value === 'pos') selected.value = 'Scolarité'
 watch(view, (v) => {
-  if (v === 'flux') return
-  goPath(v === 'pos' ? '/pos' : '/explorateur?domaine=Scolarit%C3%A9')
-  setTimeout(() => (view.value = 'flux'), 0)
+  // Un flux sélectionné n'existe plus sans les flux ; un objet de la carte, plus dans le POS.
+  if (v !== 'flux' && fluxOf(selected.value)) selected.value = null
+  if (v === 'pos' && selected.value && N[selected.value]) selected.value = 'Scolarité'
+  if (v !== 'pos' && selected.value?.startsWith('pos:')) selected.value = null
+  isolated.value = null
+  try {
+    const url = new URL(window.location.href)
+    if (v === 'flux') url.searchParams.delete('vue')
+    else url.searchParams.set('vue', v)
+    history.replaceState(history.state, '', url)
+  } catch {
+    /* Storybook en iframe : l'adresse reste telle quelle. */
+  }
 })
 const views: TabItem[] = [
   { value: 'apps', label: 'Applications', icon: 'app' },
   { value: 'flux', label: 'Applications et flux', icon: 'flow' },
   { value: 'pos', label: 'POS', icon: 'layers' },
 ]
+
+/* ---------- Vue POS : la zone Opération, le quartier et l'îlot de Scolarité en avant ---------- */
+interface PosIlot {
+  name: string
+  n: number
+}
+interface PosQuartier {
+  name: string
+  ilots: PosIlot[]
+  moreEmpty: number
+}
+const POS_ZONE = 'Opération'
+const POS_QUARTIER = 'Enseignement supérieur'
+const POS_QUARTIERS: PosQuartier[] = [
+  { name: 'Enseignement supérieur', ilots: [{ name: 'Scolarité', n: scolariteCount }, { name: 'Quartier', n: 1 }], moreEmpty: 0 },
+  { name: 'Scolarité de l’élève', ilots: [{ name: 'Inscriptions', n: 0 }, { name: 'Orientation', n: 0 }], moreEmpty: 3 },
+  { name: 'Recherche', ilots: [{ name: 'Quartier', n: 1 }], moreEmpty: 0 },
+  { name: 'Gestion financière des EPLE', ilots: [{ name: 'Quartier', n: 0 }], moreEmpty: 2 },
+  { name: 'TIC pour l’éducation', ilots: [{ name: 'Quartier', n: 0 }], moreEmpty: 0 },
+  { name: 'Action sociale et santé', ilots: [{ name: 'Quartier', n: 0 }], moreEmpty: 0 },
+]
+const posApps = (q: PosQuartier) => q.ilots.reduce((s, x) => s + x.n, 0)
+const posZoneApps = POS_QUARTIERS.reduce((s, q) => s + posApps(q), 0)
+/** Sélection dans le POS : « pos:Quartier » ou « pos:Quartier/Îlot ». L'îlot Scolarité, c'est le domaine de la carte. */
+const posQId = (q: PosQuartier) => `pos:${q.name}`
+const posIId = (q: PosQuartier, x: PosIlot) => (q.name === POS_QUARTIER && x.name === 'Scolarité' ? 'Scolarité' : `pos:${q.name}/${x.name}`)
+const posSel = computed(() => {
+  const s = selected.value
+  if (!s?.startsWith('pos:')) return undefined
+  const [qn, iname] = s.slice(4).split('/')
+  const q = POS_QUARTIERS.find((x) => x.name === qn)
+  if (!q) return undefined
+  return { q, ilot: iname ? q.ilots.find((x) => x.name === iname) : undefined }
+})
+const posInfos = computed<KeyValueItem[]>(() => {
+  const p = posSel.value
+  if (!p) return []
+  const plural = (n: number, w: string) => `${n} ${w}${n > 1 ? 's' : ''}`
+  if (p.ilot) return [
+    { key: 'Zone', value: POS_ZONE },
+    { key: 'Quartier', value: p.q.name },
+    { key: 'Applications', value: p.ilot.n ? String(p.ilot.n) : 'Aucune : un trou du SI' },
+  ]
+  return [
+    { key: 'Zone', value: POS_ZONE },
+    { key: 'Îlots', value: plural(p.q.ilots.length + p.q.moreEmpty, 'îlot') },
+    { key: 'Applications', value: posApps(p.q) ? String(posApps(p.q)) : 'Aucune' },
+  ]
+})
+function selectPos(id: string) {
+  selected.value = selected.value === id ? null : id
+}
 
 /* ---------- Zoom, déplacement, vue d'ensemble ---------- */
 const CONTENT = { x: 0, y: 120, w: 1040, h: 700 }
@@ -672,6 +756,7 @@ const minimapBlocks = computed<McMinimapBlock[]>(() => {
     w: (b.w / CONTENT.w) * 100,
     h: (b.h / CONTENT.h) * 100,
   })
+  if (view.value === 'pos') return [{ layer: 'fonctionnel', ...pct({ x: 20, y: 164, w: 1000, h: 200 }) }]
   const list: McMinimapBlock[] = [{ layer: 'fonctionnel', ...pct({ x: 236, y: 150, w: 520, h: collapsed.value['Scolarité'] ? 42 : 640 }) }]
   for (const d of rightLayout.value) list.push({ layer: 'fonctionnel', ...pct({ x: RIGHT_X, y: d.top, w: RIGHT_W, h: d.h }) })
   for (const b of Object.values(boxes.value)) list.push({ layer: 'applicatif', ...pct(b) })
@@ -700,6 +785,7 @@ function select(id: string) {
     @wheel="handlers.onWheel"
   >
     <McCanvas fill :zoom="zoom" :pan="pan" label="Carte Applications et flux du domaine Scolarité" @deselect="selected = null" @fit="fit">
+      <template v-if="view !== 'pos'">
       <!-- Domaine principal : ses objets sont posés sur le canevas, le conteneur garde la place. -->
       <McContainer
         v-model:collapsed="collapsed['Scolarité']"
@@ -728,7 +814,7 @@ function select(id: string) {
         :count="d.count"
         :count-label="`${d.count} applications`"
         :selected="selected === d.name"
-        :dimmed="isNodeSelection && !d.children.some((c) => related.has(c))"
+        :dimmed="flowsOn && isNodeSelection && !d.children.some((c) => related.has(c))"
         :style="{ left: RIGHT_X + 'px', top: d.top + 'px', width: RIGHT_W + 'px' }"
         @select="select(d.name)"
         @open="openDomain(d.name)"
@@ -797,6 +883,48 @@ function select(id: string) {
         class="mc-scr-abs"
         style="left: 28px; top: 470px"
       />
+      </template>
+
+      <!-- Vue POS : la zone Opération du plan d'occupation des sols, Scolarité mise en avant. -->
+      <div v-else class="mc-scr-carte-pos" style="left: 20px; top: 150px; width: 1000px">
+        <McContainer :name="POS_ZONE" type="Zone" layer="fonctionnel" variant="zone" icon="pos" :count="posZoneApps" :count-label="`${POS_QUARTIERS.length} quartiers · ${posZoneApps} applications`">
+          <div class="mc-scr-carte-pos-grid">
+            <div
+              v-for="q in POS_QUARTIERS"
+              :key="q.name"
+              class="mc-scr-carte-pos-q"
+              :class="{ 'is-here': q.name === POS_QUARTIER, 'is-sel': selected === posQId(q) }"
+              role="button"
+              tabindex="0"
+              :aria-pressed="selected === posQId(q)"
+              @click.stop="selectPos(posQId(q))"
+              @keydown.enter.space.prevent="selectPos(posQId(q))"
+            >
+              <span class="mc-scr-carte-pos-qh"><span>{{ q.name }}</span><em>{{ posApps(q) }} appli.</em></span>
+              <span class="mc-scr-carte-pos-ilots">
+                <button
+                  v-for="x in q.ilots"
+                  :key="x.name"
+                  type="button"
+                  class="mc-scr-carte-pos-ilot"
+                  :class="{ 'is-empty': !x.n, 'is-here': posIId(q, x) === 'Scolarité', 'is-sel': selected === posIId(q, x) }"
+                  :aria-pressed="selected === posIId(q, x)"
+                  :title="x.n ? `${x.name} : ${x.n} application${x.n > 1 ? 's' : ''}` : `${x.name} : aucune application`"
+                  @click.stop="selectPos(posIId(q, x))"
+                  @keydown.stop
+                >
+                  {{ x.name }}<b v-if="x.n">{{ x.n }}</b>
+                </button>
+                <span v-if="q.moreEmpty" class="mc-scr-carte-pos-ilot is-more">+{{ q.moreEmpty }} vides</span>
+              </span>
+            </div>
+          </div>
+        </McContainer>
+        <p class="mc-scr-carte-pos-foot">
+          Scolarité est un îlot du quartier {{ POS_QUARTIER }}, dans la zone {{ POS_ZONE }}.
+          <a :href="pathHref('/pos')" @click.prevent="goPath('/pos')">Ouvrir le POS complet<McIcon name="arrow-right" size="sm" /></a>
+        </p>
+      </div>
       <McPresenceCursor name="Samuel" :color="5" class="mc-scr-abs" style="left: 880px; top: 722px" />
       <MapAnnotations ref="annotations" screen="carte" :zoom="zoom" />
 
@@ -833,6 +961,9 @@ function select(id: string) {
                 <McButton size="sm" variant="outline" icon="impact" @click="goPath('/impact')">Voir l’impact</McButton>
                 <button type="button" class="mc-ibtn sm" aria-label="Plus d’actions" @click="openMenu($event, 'APOGEE')"><McIcon name="more" size="sm" /></button>
               </template>
+              <template v-else-if="posSel">
+                <McButton size="sm" variant="outline" icon="pos" @click="goPath('/pos')">Ouvrir le POS complet</McButton>
+              </template>
               <template v-else>
                 <McButton v-if="isApp(selected)" size="sm" icon="external" @click="openFiche(selected!)">Ouvrir la fiche</McButton>
                 <McButton size="sm" variant="outline" icon="pencil" @click="editSelected">Modifier</McButton>
@@ -857,12 +988,15 @@ function select(id: string) {
                 <div v-else class="mc-scr-carte-maps">
                   <p class="mc-scr-note">4 cartes montrent APOGEE.</p>
                   <button type="button" class="mc-scr-carte-map is-on" aria-current="true" @click="fit"><McIcon name="flow" size="sm" />Applications et flux<span>Carte ouverte</span></button>
-                  <a v-for="m in OTHER_MAPS" :key="m.path" class="mc-scr-carte-map" :href="pathHref(m.path)" @click.prevent="goPath(m.path)"><McIcon :name="m.icon" size="sm" />{{ m.label }}<McIcon name="arrow-right" size="sm" /></a>
+                  <a v-for="m in OTHER_MAPS" :key="m.path" class="mc-scr-carte-map" :href="pathHref(m.path)" @click.prevent="m.path === '/pos' ? (view = 'pos') : goPath(m.path)"><McIcon :name="m.icon" size="sm" />{{ m.label }}<McIcon name="arrow-right" size="sm" /></a>
                 </div>
               </template>
               <template v-else-if="N[selected!]">
                 <McKeyValueList :items="shortInfos" />
                 <McRelationList :groups="neighbourGroups" @open="openRelation" />
+              </template>
+              <template v-else-if="posSel">
+                <McKeyValueList :items="posInfos" />
               </template>
               <template v-else-if="fluxOf(selected)">
                 <McKeyValueList :items="fluxInfos" />
@@ -873,6 +1007,7 @@ function select(id: string) {
                 <p class="mc-scr-note">
                   Domaine fonctionnel{{ selected === 'Scolarité' ? ' : c’est la carte ouverte.' : '. Double-cliquez sur son en-tête pour voir ses applications.' }}
                 </p>
+                <McButton v-if="selected === 'Scolarité' && view === 'pos'" size="sm" variant="outline" icon="flow" @click="view = 'flux'">Voir ses applications et flux</McButton>
                 <McButton size="sm" variant="outline" icon="app" @click="goPath(`/explorateur?domaine=${encodeURIComponent(selected!)}`)">Voir les applications de {{ selected }}</McButton>
               </template>
             </template>
@@ -946,5 +1081,31 @@ function select(id: string) {
 .mc-scr-carte-map > .mc-ico:last-child, .mc-scr-carte-map > span { margin-left: auto; color: var(--ink-subtle); font-size: 12px; }
 .mc-scr-carte-map.is-on { background: var(--accent-soft); }
 .mc-scr-carte-fluxedit { justify-self: start; }
+/* Vue POS */
+.mc-scr-carte .mc-canvas-layer > .mc-scr-carte-pos { position: absolute; display: grid; gap: 12px; }
+.mc-scr-carte-pos > .mc-group { margin-top: 14px; }
+.mc-scr-carte-pos > .mc-group > .gb { display: block; }
+.mc-scr-carte-pos-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.mc-scr-carte-pos-q { box-sizing: border-box; display: grid; gap: 8px; align-content: start; min-width: 0; padding: 10px; border-radius: var(--radius-sm); background: var(--surface); border: 1px solid var(--line); cursor: pointer; transition: box-shadow .12s, border-color .12s; }
+.mc-scr-carte-pos-q:hover { border-color: var(--line-strong); box-shadow: var(--shadow-hover); }
+.mc-scr-carte-pos-q:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.mc-scr-carte-pos-q.is-here { border-color: var(--accent); }
+.mc-scr-carte-pos-q.is-sel { background: var(--accent-soft); border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.mc-scr-carte-pos-qh { display: flex; gap: 6px; align-items: baseline; }
+.mc-scr-carte-pos-qh > span { flex: 1; min-width: 0; font: 600 13px/16px var(--font-display); color: var(--ink); }
+.mc-scr-carte-pos-qh em { font: 600 11px/14px var(--font-sans); font-style: normal; color: var(--ink-subtle); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.mc-scr-carte-pos-ilots { display: flex; flex-wrap: wrap; gap: 4px; }
+.mc-scr-carte-pos-ilot { all: unset; box-sizing: border-box; display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 7px; border-radius: 6px; font-size: 11px; line-height: 14px; white-space: nowrap; background: var(--surface-sunken); color: var(--ink-muted); }
+.mc-scr-carte-pos-ilot b { font-weight: 700; font-variant-numeric: tabular-nums; }
+.mc-scr-carte-pos-ilot.is-empty { background: transparent; border: 1px dashed var(--line-strong); color: var(--ink-subtle); }
+.mc-scr-carte-pos-ilot.is-more { background: transparent; color: var(--ink-subtle); padding: 0 2px; }
+.mc-scr-carte-pos-ilot:not(.is-more) { cursor: pointer; }
+.mc-scr-carte-pos-ilot:not(.is-more):hover { box-shadow: inset 0 0 0 1px var(--line-strong); }
+.mc-scr-carte-pos-ilot:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.mc-scr-carte-pos-ilot.is-here { background: var(--accent); color: var(--on-accent); font-weight: 600; }
+.mc-scr-carte-pos-ilot.is-sel { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent); }
+.mc-scr-carte-pos-foot { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; font-size: 13px; line-height: 18px; color: var(--ink-muted); }
+.mc-scr-carte-pos-foot a { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; color: var(--accent); text-decoration: none; }
+.mc-scr-carte-pos-foot a:hover { text-decoration: underline; }
 .mc-scr-carte-form { display: grid; gap: 16px; }
 </style>

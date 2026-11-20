@@ -30,7 +30,7 @@ import type { IconName } from '../../icons/icons'
 import type { Layer, Status } from '../../utils/types'
 import { attentionPoints, getApplication, slugOf, type AppMap, type Contract } from '../../data/applications'
 import { deletedApps, moveToTrash, restoreFromTrash } from '../../data/session'
-import { copyLink, goFiche, goPath, pathHref } from '../bridge'
+import { copyLink, goFiche, goPath, pathHref, queryParam } from '../bridge'
 import { de, goTo, openPaletteItem, paletteItems, screenHref, type ScreenKey } from '../Accueil/nav'
 import SharePanel, { type ExportItem } from '../shared/SharePanel.vue'
 
@@ -80,15 +80,29 @@ const tabs: TabItem[] = [
   { value: 'pos', label: 'POS', icon: 'pos' },
   { value: 'historique', label: 'Historique', icon: 'history' },
 ]
-const tab = ref('fiche')
+/* Les onglets changent la vue sur place. Seul « Infrastructure » mène à un autre écran, et seulement quand cet écran
+ * reprend la même barre d'onglets (la carte de l'infrastructure) : on revient d'un clic. « Flux » et « POS » montrent
+ * ici un aperçu, avec un lien explicite vers la carte. L'onglet ouvert s'écrit dans l'adresse (?vue=pos). */
+const TAB_VALUES = tabs.map((t) => t.value)
+const initialTab = queryParam('vue')
+const tab = ref(TAB_VALUES.includes(initialTab) && !(initialTab === 'infra' && infraPath.value) ? initialTab : 'fiche')
 watch(tab, (v, old) => {
-  const path = v === 'flux' ? fluxPath.value : v === 'infra' ? infraPath.value : undefined
-  if (path) {
-    goPath(path)
+  if (v === 'infra' && infraPath.value) {
+    goPath(infraPath.value)
     // Garde l'onglet précédent actif si la navigation est bloquée (story ouverte hors du gestionnaire).
     tab.value = old
+    return
+  }
+  try {
+    const url = new URL(window.location.href)
+    if (v === 'fiche') url.searchParams.delete('vue')
+    else url.searchParams.set('vue', v)
+    history.replaceState(history.state, '', url)
+  } catch {
+    /* Storybook en iframe : l'adresse reste telle quelle. */
   }
 })
+const fluxMap = computed(() => maps.value.find((m) => m.kind === 'flux'))
 // Une autre fiche (lien d'une relation) : on revient sur l'onglet Fiche.
 watch(slug, () => (tab.value = 'fiche'))
 
@@ -411,8 +425,8 @@ function followPath(e: MouseEvent, path: string) {
         </div>
         <div class="mc-scr-fact">
           <div class="mc-row mc-scr-fbtns">
-            <McButton v-if="fluxPath" variant="primary" icon="map" :href="pathHref(fluxPath)" @click="(e: MouseEvent) => followPath(e, fluxPath!)">Ouvrir la carte des flux</McButton>
-            <McButton v-else variant="primary" icon="list" :href="pathHref('/explorateur')" @click="(e: MouseEvent) => followPath(e, '/explorateur')">Voir dans l’explorateur</McButton>
+            <McButton v-if="fluxPath && tab !== 'flux'" variant="primary" icon="map" :href="pathHref(fluxPath)" @click="(e: MouseEvent) => followPath(e, fluxPath!)">Ouvrir la carte des flux</McButton>
+            <McButton v-else-if="!(fluxPath && tab === 'flux')" variant="primary" icon="list" :href="pathHref('/explorateur')" @click="(e: MouseEvent) => followPath(e, '/explorateur')">Voir dans l’explorateur</McButton>
             <McButton variant="outline" icon="pencil" @click="edit">Modifier</McButton>
             <McIconButton icon="more" label="Plus d'actions" :variant="moreOpen ? 'pressed' : 'default'" @click="toggleMore" />
             <McContextMenu v-model:open="moreOpen" :items="moreItems" :header="app.name" :x="0" :y="40" class="mc-scr-more" @select="onMore" />
@@ -532,6 +546,27 @@ function followPath(e: MouseEvent, path: string) {
         </McEmptyState>
       </section>
 
+      <section v-else-if="tab === 'flux' && fluxMap" class="mc-scr-card">
+        <div class="mc-scr-preview">
+          <span class="mc-scr-thumb mc-scr-thumb-lg" aria-hidden="true">
+            <i
+              v-for="(b, i) in fluxMap.blocks"
+              :key="i"
+              :class="`l-${b.layer}`"
+              :style="{ left: `${b.l * 2.2}px`, top: `${b.t * 2.2}px`, width: `${b.w * 2.2}px`, height: `${b.h * 2.2}px` }"
+            />
+          </span>
+          <div class="mc-scr-preview-txt">
+            <h2>{{ fluxMap.title }}</h2>
+            <p class="mc-cap">{{ fluxMap.sub }} · {{ app.flux ?? 0 }} flux déclarés dans la fiche</p>
+            <div class="mc-scr-preview-act">
+              <McButton variant="primary" icon="flow" :href="pathHref(mapPathOf(fluxMap))" @click="(e: MouseEvent) => openMap(e, fluxMap!)">Ouvrir la carte des flux</McButton>
+              <McButton variant="outline" icon="info" @click="tab = 'fiche'">Revenir à la fiche</McButton>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section v-else-if="tab === 'flux' || tab === 'infra'" class="mc-scr-card mc-scr-alt">
         <McEmptyState
           :icon="tab === 'flux' ? 'flow' : 'server'"
@@ -629,6 +664,12 @@ function followPath(e: MouseEvent, path: string) {
 .mc-scr-mapc .s { font-size: 11px; line-height: 14px; color: var(--ink-subtle); }
 .mc-scr-mapc .mc-scr-thumb { position: relative; display: block; width: 100%; height: 84px; border-radius: 8px; box-sizing: border-box; background-color: var(--canvas); background-image: radial-gradient(var(--canvas-dot) 1px, transparent 1.2px); background-size: 6px 6px; border: 1px solid var(--line); overflow: hidden; }
 .mc-scr-mapc .mc-scr-thumb i { position: absolute; border-radius: 2px; background: var(--lc); opacity: .75; }
+.mc-scr-preview { display: flex; gap: 24px; align-items: center; flex-wrap: wrap; }
+.mc-scr-preview .mc-scr-thumb-lg { position: relative; display: block; flex: none; width: 300px; height: 184px; border-radius: 10px; box-sizing: border-box; background-color: var(--canvas); background-image: radial-gradient(var(--canvas-dot) 1px, transparent 1.2px); background-size: 8px 8px; border: 1px solid var(--line); overflow: hidden; }
+.mc-scr-preview .mc-scr-thumb-lg i { position: absolute; border-radius: 3px; background: var(--lc); opacity: .75; }
+.mc-scr-preview-txt { display: grid; gap: 8px; min-width: 240px; flex: 1; }
+.mc-scr-preview-txt h2 { margin: 0; }
+.mc-scr-preview-act { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
 
 .mc-scr-alert { display: flex; gap: 12px; align-items: flex-start; padding: 12px; border-radius: var(--radius-sm); }
 .mc-scr-alert.critical { background: var(--status-critical-soft); }
@@ -647,7 +688,7 @@ function followPath(e: MouseEvent, path: string) {
 .mc-scr-tl .ev:last-child { padding-bottom: 0; }
 .mc-scr-tl .ev:last-child::before { display: none; }
 .mc-scr-tl .ev p { margin: 0; font-size: 13px; line-height: 18px; color: var(--ink); }
-.mc-scr-tl .ev span { font-size: 11px; line-height: 14px; color: var(--ink-subtle); }
+.mc-scr-tl .ev > div > span { font-size: 11px; line-height: 14px; color: var(--ink-subtle); }
 .mc-scr-all { justify-self: start; }
 
 /* Grands écrans : la colonne latérale gagne un peu de place (la largeur de la fiche suit --page-w). */

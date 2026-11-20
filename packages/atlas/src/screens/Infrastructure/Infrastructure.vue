@@ -506,8 +506,11 @@ const views: TabItem[] = [
   { value: 'flux', label: 'Flux', icon: 'flow' },
   { value: 'infra', label: 'Infrastructure', icon: 'server' },
   { value: 'pos', label: 'POS', icon: 'pos' },
+  { value: 'historique', label: 'Historique', icon: 'history' },
 ]
-const VIEW_PATHS: Record<string, string> = { fiche: '/fiche/apogee', flux: '/carte', pos: '/pos' }
+// Mêmes onglets que la fiche d'APOGEE : les autres vues s'ouvrent sur la fiche, à leur onglet, qui garde cette barre
+// (on revient ici d'un clic sur « Infrastructure »).
+const VIEW_PATHS: Record<string, string> = { fiche: '/fiche/apogee', flux: '/fiche/apogee?vue=flux', pos: '/fiche/apogee?vue=pos', historique: '/fiche/apogee?vue=historique' }
 watch(view, (v) => {
   if (!VIEW_PATHS[v]) return
   goPath(VIEW_PATHS[v])

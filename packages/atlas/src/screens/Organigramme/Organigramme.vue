@@ -12,7 +12,6 @@ import McIconButton from '../../components/McIconButton/McIconButton.vue'
 import McTabs, { type TabItem } from '../../components/McTabs/McTabs.vue'
 import McCanvas from '../../components/McCanvas/McCanvas.vue'
 import McContainer from '../../components/McContainer/McContainer.vue'
-import McCountBadge from '../../components/McCountBadge/McCountBadge.vue'
 import McSearchField from '../../components/McSearchField/McSearchField.vue'
 import McToolbar from '../../components/McToolbar/McToolbar.vue'
 import McInspector, { type InspectedObject } from '../../components/McInspector/McInspector.vue'
@@ -102,6 +101,13 @@ for (const d of directions) for (const app of [...d.services.flatMap((sv) => sv.
 
 const appsOf = (d: Direction) => [...d.services.flatMap((s) => s.apps ?? []), ...(d.own ?? [])]
 const plural = (n: number, one: string, many: string) => `${n} ${n > 1 ? many : one}`
+/** Sous-titre d'un service : ses applications, et combien sont non valides. */
+function serviceSub(sv: Service) {
+  const apps = sv.apps ?? []
+  if (!apps.length) return 'Aucune application'
+  const bad = apps.filter((x) => x.invalid).length
+  return plural(apps.length, 'application', 'applications') + (bad ? ` · ${plural(bad, 'non valide', 'non valides')}` : '')
+}
 
 /* ---------- Filtres (bouton Filtrer de la barre d'outils) et légende ---------- */
 const filterOpen = ref(false)
@@ -335,16 +341,18 @@ const people: McAvatarPerson[] = [
   { name: 'Samuel Faure', initials: 'SF', color: 5 },
 ]
 const view = ref('organigramme')
+// Les vues de la couche métier : mêmes onglets, au même endroit, que sur l'écran des processus, qui les reprend.
+// On passe de l'un à l'autre et on revient d'un clic.
 const views: TabItem[] = [
   { value: 'organigramme', label: 'Organigramme', icon: 'org' },
-  { value: 'processus', label: 'Processus', icon: 'process' },
+  { value: 'macro', label: 'Macro-processus', icon: 'layers' },
+  { value: 'diagramme', label: 'Diagramme', icon: 'process' },
 ]
 watch(view, (v) => {
-  if (v === 'processus') {
-    goPath('/processus')
-    // Reste sur l'organigramme si la navigation ne quitte pas l'écran.
-    setTimeout(() => (view.value = 'organigramme'), 300)
-  }
+  if (v === 'organigramme') return
+  goPath(v === 'diagramme' ? '/processus?vue=diagramme' : '/processus')
+  // Reste sur l'organigramme si la navigation ne quitte pas l'écran (story ouverte hors du gestionnaire).
+  setTimeout(() => (view.value = 'organigramme'), 0)
 })
 const paletteOpen = ref(false)
 function onPalette(item: PaletteItem) {
@@ -372,7 +380,8 @@ async function fit() {
     if (!h) return
     const z = Math.round(Math.min(1, (size.value.h - GRID_Y - 80) / h) * 100) / 100
     if (z === zoom.value) break
-    zoom.value = Math.max(0.5, z)
+    // Plancher lisible : en dessous, les noms des services deviennent trop petits ; le reste se fait défiler.
+    zoom.value = Math.max(0.85, z)
   }
   pan.value = { x: GRID_X, y: GRID_Y }
 }
@@ -434,6 +443,9 @@ function onWheel(e: WheelEvent) {
           :name="s.dir.name"
           :type="s.dir.code"
           layer="metier"
+          icon="org"
+          :count="s.services.length"
+          :count-label="plural(s.services.length, 'service', 'services')"
           :collapsible="false"
           :selected="selected === s.dir.code"
           tabindex="0"
@@ -442,10 +454,18 @@ function onWheel(e: WheelEvent) {
           @keydown.enter.self.prevent="select(s.dir.code)"
           @keydown.space.self.prevent="select(s.dir.code)"
         >
-          <div v-for="sv in s.services" :key="sv.name" class="mc-scr-org-sv">
-            <span class="mc-scr-org-svn">{{ sv.name }}</span>
-            <McCountBadge v-if="sv.apps?.length" :count="sv.apps.length" :label="plural(sv.apps.length, 'application', 'applications')" />
-          </div>
+          <McNode
+            v-for="sv in s.services"
+            :key="sv.name"
+            layer="metier"
+            icon="org"
+            type="Service"
+            :name="sv.name"
+            :subtitle="serviceSub(sv)"
+            :status="sv.apps?.some((x) => x.invalid) ? 'critical' : undefined"
+            :title="sv.name"
+            @select="select(s.dir.code)"
+          />
         </McContainer>
       </div>
       <div v-if="!shown.length" class="mc-scr-org-none" :style="{ width: gridW + 'px' }">
@@ -592,10 +612,9 @@ function onWheel(e: WheelEvent) {
 .mc-scr-org-dir > .mc-tab { letter-spacing: .06em; font-weight: 700; }
 .mc-scr-org-dir > .gh { cursor: pointer; }
 .mc-scr-org-dir > .gh b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.mc-scr-org-dir > .gb { display: grid; gap: 6px; }
+.mc-scr-org-dir > .gb { display: grid; gap: 0; }
+.mc-scr-org-dir > .gb > .mc-node { width: auto; min-width: 0; }
 .mc-scr-org-dir:hover:not(.is-selected) { border-color: color-mix(in srgb, var(--lc) 60%, transparent); }
-.mc-scr-org-sv { display: flex; align-items: center; gap: 6px; min-height: 26px; padding: 4px 8px; border-radius: 6px; background: var(--surface); font-size: 12px; line-height: 16px; color: var(--ink); box-sizing: border-box; }
-.mc-scr-org-svn { flex: 1; min-width: 0; }
 .mc-scr-org-none { padding-top: 40px; display: flex; justify-content: center; }
 .mc-scr-org-uo { font-size: 12px; color: var(--ink-subtle); }
 .mc-scr-org-chips { gap: 6px; flex-wrap: wrap; }

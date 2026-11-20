@@ -31,7 +31,7 @@ import McLegend, { type McLegendItem, type McLegendSection } from '../../compone
 import McCheckbox from '../../components/McCheckbox/McCheckbox.vue'
 import McTextField from '../../components/McTextField/McTextField.vue'
 import SharePanel, { type ExportItem } from '../shared/SharePanel.vue'
-import { copyLink, ficheHref, goFiche, goPath, pathHref } from '../bridge'
+import { copyLink, ficheHref, goFiche, goPath, pathHref, queryParam } from '../bridge'
 import { getApplication, slugOf } from '../../data/applications'
 import { openPaletteItem, paletteItems } from '../Accueil/nav'
 import { maxFitFor } from '../Infrastructure/canvasView'
@@ -158,11 +158,30 @@ const storeApps: Record<string, StoreApp> = {
 }
 
 /* ---------- Vue et sélection ---------- */
-const view = ref<string>('macro')
+/* Les vues de la couche métier : mêmes onglets, au même endroit, que sur l'organigramme. Macro-processus et Diagramme
+ * changent sur place ; Organigramme ouvre son écran, qui garde cette barre : on revient d'un clic. */
+const view = ref<string>(queryParam('vue') === 'diagramme' ? 'diagramme' : 'macro')
 const views = computed<TabItem[]>(() => [
+  { value: 'organigramme', label: 'Organigramme', icon: 'org' },
   { value: 'macro', label: 'Macro-processus', icon: 'layers' },
   { value: 'diagramme', label: 'Diagramme', icon: 'process' },
 ])
+watch(view, (v, old) => {
+  if (v === 'organigramme') {
+    goPath('/organigramme')
+    // Reste sur la vue précédente si la navigation ne quitte pas l'écran (story ouverte hors du gestionnaire).
+    setTimeout(() => (view.value = old), 0)
+    return
+  }
+  try {
+    const url = new URL(window.location.href)
+    if (v === 'macro') url.searchParams.delete('vue')
+    else url.searchParams.set('vue', v)
+    history.replaceState(history.state, '', url)
+  } catch {
+    /* Storybook en iframe : l'adresse reste telle quelle. */
+  }
+})
 const selectedProc = ref<string | null>(null)
 const selectedStore = ref<string | null>('carambole')
 /** Tâche du diagramme ouverte dans l'inspecteur (pour la renommer). */
@@ -725,10 +744,9 @@ function deselect() {
             </template>
           </McAppBar>
           <div class="mc-scr-proc-bar">
-            <McTabs v-model="view" :tabs="views" variant="pill" aria-label="Vues des processus" />
+            <McTabs v-model="view" :tabs="views" variant="pill" aria-label="Vues de la couche métier" />
             <template v-if="view === 'macro'">
               <span class="mc-cap">{{ filterActive || isolated ? `${shownCount} processus sur ${processCount}` : `${macros.length} macro-processus · ${processCount} processus` }}</span>
-              <McButton variant="ghost" size="sm" icon="org" @click="goPath('/organigramme')">Organigramme</McButton>
             </template>
             <template v-else>
               <McTypeChip type="Diagramme BPMN" layer="metier" icon="process" />
