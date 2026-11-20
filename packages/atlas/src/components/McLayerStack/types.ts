@@ -7,9 +7,9 @@ export interface LayerStackCell {
   icon: IconName
   /** Nom du type, au pluriel : « Applications », « Unités organisationnelles ». */
   label: string
-  /** Nombre d'objets, affiché en grand. Absent : `description` prend sa place. */
+  /** Nombre d'objets, affiché en grand. Absent : le nom du type passe en gras, `description` dessous. */
   count?: number
-  /** Texte court à la place du nombre : « Registre RGPD », « Par application ». */
+  /** Précision sous le nom quand il n'y a pas de nombre : « Registre RGPD », « Par application ». */
   description?: string
   /** Nombre de cartes de ce type : « 3 cartes ». */
   maps?: number

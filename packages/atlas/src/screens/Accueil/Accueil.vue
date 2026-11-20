@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import McAppBar from '../../components/McAppBar/McAppBar.vue'
+import McAvatar from '../../components/McAvatar/McAvatar.vue'
 import McAvatarStack, { type McAvatarPerson } from '../../components/McAvatar/McAvatarStack.vue'
 import McButton from '../../components/McButton/McButton.vue'
 import McCommandPalette, { type PaletteItem } from '../../components/McCommandPalette/McCommandPalette.vue'
@@ -25,6 +26,7 @@ import {
   obsoleteSoftware,
   supplierSeeds,
 } from '../../data/applications'
+import { journalEntries } from '../../data/journal'
 
 const people: McAvatarPerson[] = [
   { name: 'Théo Naulet', initials: 'TN', color: 1 },
@@ -102,48 +104,88 @@ const todos: Todo[] = [
   { status: 'warn', icon: 'alert-triangle', title: 'Composants sans logiciel', text: 'Infrastructure incomplète', count: catalogue.composantsSansLogiciel, path: '/logiciels?filtre=sans-composant' },
 ]
 
+/** Une carte récente : un aperçu schématique (blocs aux couleurs des couches, reliés par des traits). */
 interface Recent {
   title: string
+  kind: string
+  icon: IconName
   when: string
   path: string
-  blocks: { layer: Layer; l: number; t: number; w: number; h: number }[]
+  /** Blocs dans un repère de 200 × 112. */
+  blocks: { layer: Layer; x: number; y: number; w: number; h: number; alert?: boolean }[]
+  /** Liens entre blocs, par index. */
+  links: [number, number][]
 }
 const recents: Recent[] = [
   {
     title: 'Applications et flux de Scolarité',
+    kind: 'Flux',
+    icon: 'map',
     when: 'Il y a 5 min · par vous',
     path: '/carte',
     blocks: [
-      { layer: 'fonctionnel', l: 4, t: 4, w: 30, h: 34 },
-      { layer: 'applicatif', l: 40, t: 6, w: 18, h: 5 },
-      { layer: 'applicatif', l: 40, t: 16, w: 18, h: 5 },
-      { layer: 'applicatif', l: 40, t: 26, w: 18, h: 5 },
+      { layer: 'fonctionnel', x: 12, y: 14, w: 64, h: 84 },
+      { layer: 'applicatif', x: 120, y: 18, w: 66, h: 16 },
+      { layer: 'applicatif', x: 120, y: 48, w: 66, h: 16 },
+      { layer: 'applicatif', x: 120, y: 78, w: 66, h: 16 },
     ],
+    links: [[0, 1], [0, 2], [0, 3], [1, 2]],
+  },
+  {
+    title: 'Les flux d’APOGEE',
+    kind: 'Flux',
+    icon: 'flow',
+    when: 'Ce matin · par Samuel',
+    path: '/carte',
+    blocks: [
+      { layer: 'applicatif', x: 72, y: 44, w: 56, h: 24 },
+      { layer: 'applicatif', x: 12, y: 14, w: 46, h: 16 },
+      { layer: 'applicatif', x: 142, y: 14, w: 46, h: 16 },
+      { layer: 'applicatif', x: 12, y: 82, w: 46, h: 16 },
+      { layer: 'applicatif', x: 142, y: 82, w: 46, h: 16 },
+    ],
+    links: [[0, 1], [0, 2], [0, 3], [0, 4]],
   },
   {
     title: 'Machines nécessaires à APOGEE',
+    kind: 'Infrastructure',
+    icon: 'server',
     when: 'Hier · par William',
     path: '/infrastructure',
     blocks: [
-      { layer: 'applicatif', l: 4, t: 4, w: 32, h: 34 },
-      { layer: 'technique', l: 42, t: 6, w: 16, h: 6 },
-      { layer: 'technique', l: 42, t: 18, w: 16, h: 6 },
-      { layer: 'technique', l: 42, t: 30, w: 16, h: 6 },
+      { layer: 'applicatif', x: 12, y: 38, w: 62, h: 36 },
+      { layer: 'technique', x: 128, y: 14, w: 58, h: 18 },
+      { layer: 'technique', x: 128, y: 47, w: 58, h: 18 },
+      { layer: 'technique', x: 128, y: 80, w: 58, h: 18 },
     ],
+    links: [[0, 1], [0, 2], [0, 3]],
   },
   {
     title: "Impact d'un arrêt de sophocle",
+    kind: 'Impact',
+    icon: 'impact',
     when: 'Hier · par William',
     path: '/impact',
     blocks: [
-      { layer: 'technique', l: 4, t: 14, w: 12, h: 12 },
-      { layer: 'technique', l: 24, t: 14, w: 12, h: 12 },
-      { layer: 'applicatif', l: 44, t: 6, w: 14, h: 6 },
-      { layer: 'applicatif', l: 44, t: 18, w: 14, h: 6 },
-      { layer: 'applicatif', l: 44, t: 30, w: 14, h: 6 },
+      { layer: 'technique', x: 12, y: 44, w: 34, h: 24, alert: true },
+      { layer: 'technique', x: 72, y: 44, w: 34, h: 24 },
+      { layer: 'applicatif', x: 138, y: 14, w: 50, h: 18 },
+      { layer: 'applicatif', x: 138, y: 47, w: 50, h: 18 },
+      { layer: 'applicatif', x: 138, y: 80, w: 50, h: 18 },
     ],
+    links: [[0, 1], [1, 2], [1, 3], [1, 4]],
   },
 ]
+const mid = (b: Recent['blocks'][number]) => ({ x: b.x + b.w / 2, y: b.y + b.h / 2 })
+
+/** Les dernières modifications de l'équipe (le journal complet est dans l'écran Historique). */
+const activity = journalEntries.slice(0, 3)
+const colorOfPerson = (name: string) => people.find((p) => p.name === name)?.color
+const MONTHS = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.']
+const shortDate = (iso: string, heure: string) => {
+  const [, m, d] = iso.split('-').map(Number)
+  return `${d} ${MONTHS[m! - 1]}, ${heure}`
+}
 
 // Sous 1200px de large, les strates se décalent moins : plus de place pour les libellés.
 const offset = ref(20)
@@ -264,31 +306,68 @@ function followPath(e: MouseEvent, path: string) {
             </a>
           </section>
 
-          <section class="mc-float mc-scr-panel" aria-labelledby="mc-scr-rec">
+          <section class="mc-float mc-scr-panel" aria-labelledby="mc-scr-act">
             <div class="mc-scr-panel-head">
-              <h2 id="mc-scr-rec" class="mc-over">Récemment consultées</h2>
+              <h2 id="mc-scr-act" class="mc-over">Dernières modifications</h2>
+              <McButton variant="ghost" size="sm" :href="pathHref('/journal')" @click="(e) => followPath(e, '/journal')">Historique</McButton>
             </div>
             <a
-              v-for="r in recents"
-              :key="r.title"
-              class="mc-scr-row"
-              :href="pathHref(r.path)"
+              v-for="e in activity"
+              :key="e.id"
+              class="mc-scr-row mc-scr-act"
+              :href="pathHref('/journal')"
               target="_top"
-              @click="followPath($event, r.path)"
+              @click="followPath($event, '/journal')"
             >
-              <span class="mc-scr-thumb" aria-hidden="true">
-                <i
-                  v-for="(b, i) in r.blocks"
-                  :key="i"
-                  :class="`l-${b.layer}`"
-                  :style="{ left: `${b.l}px`, top: `${b.t}px`, width: `${b.w}px`, height: `${b.h}px` }"
-                />
+              <McAvatar :name="e.par" :color="colorOfPerson(e.par)" />
+              <span class="mc-scr-ttx">
+                <b>{{ e.objet }}</b>
+                <span class="mc-scr-act-txt">{{ e.texte }}</span>
+                <span>{{ e.par }} · {{ shortDate(e.date, e.heure) }}</span>
               </span>
-              <span class="mc-scr-ttx"><b>{{ r.title }}</b><span>{{ r.when }}</span></span>
             </a>
           </section>
         </aside>
       </div>
+
+      <section class="mc-scr-maps" aria-labelledby="mc-scr-rec">
+        <h2 id="mc-scr-rec" class="mc-over">Cartes récentes</h2>
+        <div class="mc-scr-maps-grid">
+          <a
+            v-for="r in recents"
+            :key="r.title"
+            class="mc-float mc-scr-map"
+            :href="pathHref(r.path)"
+            target="_top"
+            @click="followPath($event, r.path)"
+          >
+            <svg class="mc-scr-map-prev" viewBox="0 0 200 112" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+              <line
+                v-for="([a, b], i) in r.links"
+                :key="`l${i}`"
+                :x1="mid(r.blocks[a]!).x"
+                :y1="mid(r.blocks[a]!).y"
+                :x2="mid(r.blocks[b]!).x"
+                :y2="mid(r.blocks[b]!).y"
+              />
+              <rect
+                v-for="(b, i) in r.blocks"
+                :key="`b${i}`"
+                :class="[`l-${b.layer}`, { 'is-alert': b.alert }]"
+                :x="b.x"
+                :y="b.y"
+                :width="b.w"
+                :height="b.h"
+                rx="3"
+              />
+            </svg>
+            <span class="mc-scr-map-txt">
+              <b>{{ r.title }}</b>
+              <span><McIcon :name="r.icon" size="sm" />{{ r.kind }} · {{ r.when }}</span>
+            </span>
+          </a>
+        </div>
+      </section>
     </main>
 
     <McCommandPalette v-model:open="paletteOpen" v-model:query="query" :items="paletteItems" @select="onSelect" />
@@ -308,7 +387,7 @@ function followPath(e: MouseEvent, path: string) {
 .mc-scr-acc-search { flex: 1 1 520px; max-width: 640px; display: flex; min-width: 0; }
 .mc-scr-acc-search .mc-hsearch { max-width: none; }
 
-.mc-scr-acc-body { flex: 1; display: flex; gap: 24px; flex-wrap: wrap; align-items: stretch; min-height: 0; }
+.mc-scr-acc-body { display: flex; gap: 24px; flex-wrap: wrap; align-items: stretch; min-height: 0; }
 .mc-scr-acc-stack { flex: 999 1 720px; min-width: 0; display: flex; flex-direction: column; }
 .mc-scr-acc-stack .mc-lstack { flex: 1; }
 .mc-scr-acc-side { flex: 1 1 340px; max-width: 360px; display: grid; gap: 16px; align-content: start; }
@@ -328,18 +407,30 @@ function followPath(e: MouseEvent, path: string) {
 .mc-scr-ttx b { font-weight: 600; font-size: 13px; line-height: 18px; color: var(--ink); }
 .mc-scr-ttx span { font-size: 11px; line-height: 14px; color: var(--ink-subtle); }
 .mc-scr-tnum { font: 700 20px/24px var(--font-display); font-variant-numeric: tabular-nums; color: var(--ink); }
-.mc-scr-thumb { position: relative; width: 64px; height: 44px; border-radius: 8px; flex: none; box-sizing: border-box; background-color: var(--canvas); background-image: radial-gradient(var(--canvas-dot) 1px, transparent 1.2px); background-size: 6px 6px; border: 1px solid var(--line); overflow: hidden; }
-.mc-scr-thumb i { position: absolute; border-radius: 2px; background: var(--lc); opacity: .75; }
+
+.mc-scr-act { align-items: flex-start; padding-block: 6px; }
+.mc-scr-panel:has(.mc-scr-act) { gap: 0; }
+.mc-scr-act .mc-avatar { margin-top: 1px; }
+.mc-scr-ttx .mc-scr-act-txt { color: var(--ink-muted); font-size: 12px; line-height: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mc-scr-maps { display: grid; gap: 10px; }
+.mc-scr-maps h2 { margin: 0; padding-left: 4px; }
+.mc-scr-maps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+.mc-scr-map { display: grid; padding: 8px; gap: 10px; color: inherit; text-decoration: none; transition: border-color .12s, transform .12s; }
+.mc-scr-map:hover { color: inherit; border-color: var(--line-strong); transform: translateY(-1px); }
+.mc-scr-map:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.mc-scr-map-prev { display: block; width: 100%; height: auto; aspect-ratio: 200 / 112; box-sizing: border-box; border-radius: var(--radius-sm); border: 1px solid var(--line); background-color: var(--canvas); background-image: radial-gradient(var(--canvas-dot) 1px, transparent 1.2px); background-size: 10px 10px; }
+.mc-scr-map-prev line { stroke: var(--ink-subtle); stroke-width: 1.2; opacity: .55; }
+.mc-scr-map-prev rect { fill: color-mix(in srgb, var(--lc) 18%, var(--surface)); stroke: var(--lc); stroke-width: 1.2; }
+.mc-scr-map-prev rect.is-alert { fill: var(--status-critical-soft); stroke: var(--status-critical); }
+.mc-scr-map-txt { display: grid; gap: 2px; padding: 0 4px 4px; min-width: 0; }
+.mc-scr-map-txt b { font-weight: 600; font-size: 13px; line-height: 18px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mc-scr-map-txt span { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; line-height: 14px; color: var(--ink-subtle); }
 
 /* Grands écrans : le contenu reste centré (1760px au plus) sous une barre pleine largeur, colonne latérale un peu plus large. */
 @media (min-width: 1792px) {
   .mc-scr-acc-side { max-width: 400px; }
 }
-/* Écrans hauts : les couches gardent leur hauteur naturelle au lieu de s'étirer jusqu'en bas. */
-@media (min-height: 1000px) {
-  .mc-scr-acc-stack .mc-lstack { flex: none; }
-}
-/* Jusqu’à 1300px, « À traiter » et « Récemment consultées » passent sous les couches, côte à côte. */
+/* Jusqu’à 1300px, « À traiter » et « Dernières modifications » passent sous les couches, côte à côte. */
 @media (max-width: 1300px) {
   .mc-scr-acc-side { max-width: none; flex-basis: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
 }

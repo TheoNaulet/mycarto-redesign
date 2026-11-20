@@ -79,9 +79,14 @@ const ariaOf = (c: LayerStackCell) =>
             >
               <span class="cic"><McIcon :name="c.icon" size="lg" /></span>
               <span class="ctx">
-                <span v-if="c.count !== undefined" class="cnum">{{ fmt(c.count) }}</span>
-                <span v-else class="cdesc">{{ c.description }}</span>
-                <span class="clab">{{ c.label }}</span>
+                <template v-if="c.count !== undefined">
+                  <span class="cnum">{{ fmt(c.count) }}</span>
+                  <span class="clab">{{ c.label }}</span>
+                </template>
+                <template v-else>
+                  <span class="cdesc">{{ c.label }}</span>
+                  <span v-if="c.description" class="clab">{{ c.description }}</span>
+                </template>
               </span>
               <span class="cmeta">
                 <McStatusChip v-if="c.alert" :status="c.alert.status" size="sm">{{ c.alert.label }}</McStatusChip>
@@ -108,7 +113,7 @@ const ariaOf = (c: LayerStackCell) =>
 .mc-cell .cic { width: 40px; height: 40px; border-radius: 10px; background: var(--ls); color: var(--lc); display: inline-flex; align-items: center; justify-content: center; grid-row: 1 / span 2; }
 .mc-cell .ctx { display: grid; min-width: 0; }
 .mc-cell .cnum { font: 700 24px/26px var(--font-display); color: var(--ink); font-variant-numeric: tabular-nums; }
-.mc-cell .cdesc { font: 600 13px/26px var(--font-display); color: var(--ink-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mc-cell .cdesc { font: 600 14px/26px var(--font-display); color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mc-cell .clab { font-size: 12px; line-height: 16px; color: var(--ink-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mc-cell .cmeta { grid-column: 2; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; min-height: 18px; }
 .mc-cell .cmaps { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; line-height: 14px; color: var(--ink-subtle); }

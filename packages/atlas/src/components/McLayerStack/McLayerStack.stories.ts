@@ -59,7 +59,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Les « strates » de l’accueil : les 4 couches du SI empilées comme des feuilles, de la couche métier (en haut) à la couche technique (en bas), chacune décalée vers la droite. Onglet numéroté à la couleur de la couche ; cases séparées par des filets. Chaque case montre un nombre (ou une courte description), le type, les alertes et le nombre de cartes. Clic : `open(cell, layer)`. Une case sans objet est estompée. L’accueil est une page, pas un canevas.',
+          'Les « strates » de l’accueil : les 4 couches du SI empilées comme des feuilles, de la couche métier (en haut) à la couche technique (en bas), chacune décalée vers la droite. Onglet numéroté à la couleur de la couche ; cases séparées par des filets. Chaque case montre un nombre et le type (sans nombre : le type en gras et une courte précision dessous), les alertes et le nombre de cartes. Clic : `open(cell, layer)`. Une case sans objet est estompée. L’accueil est une page, pas un canevas.',
       },
     },
   },
